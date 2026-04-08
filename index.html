@@ -6,107 +6,127 @@
   <title>Meta Ads Dashboard — MRN + Dream Baby</title>
   <style>
     :root {
-      --bg:       #0f1117;
-      --card:     #1a1d27;
-      --card2:    #222536;
-      --border:   #2a2d3e;
-      --text:     #e2e8f0;
-      --muted:    #8892a4;
-      --green:    #2dd4a0;
+      --bg:       #0d1117;
+      --card:     #161b22;
+      --card2:    #1c2333;
+      --border:   #30363d;
+      --text:     #e6edf3;
+      --muted:    #7d8590;
+      --green:    #7ee787;
+      --green-bg: #1a3a2a;
       --red:      #f87171;
+      --red-bg:   #3a1a1a;
       --yellow:   #fbbf24;
-      --blue:     #60a5fa;
-      --purple:   #a78bfa;
+      --yellow-bg:#3a321a;
+      --blue:     #58a6ff;
+      --purple:   #bc8cff;
       --orange:   #fb923c;
-      --accent:   #3b82f6;
+      --accent:   #238636;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; min-height: 100vh; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 14px; min-height: 100vh; }
 
     /* ── Header ── */
     .header {
-      background: var(--card);
+      background: linear-gradient(135deg, #161b22 0%, #1a2332 100%);
       border-bottom: 1px solid var(--border);
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      padding: 16px 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      position: sticky; top: 0; z-index: 100;
     }
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    .header h1 { font-size: 16px; font-weight: 600; }
-    .header-meta { font-size: 12px; color: var(--muted); }
-    .badge-account { background: #1e3a5f; color: var(--blue); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .header h1 { font-size: 18px; font-weight: 700; }
+    .header-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .badge-account { padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+    .badge-mrn  { background: #1e3a5f; color: var(--blue); }
+    .badge-db   { background: #2d1b69; color: var(--purple); }
     .header-right { display: flex; align-items: center; gap: 10px; }
-    .btn { background: var(--card2); border: 1px solid var(--border); color: var(--text); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: background .15s; }
-    .btn:hover { background: var(--border); }
-    .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-    .btn-primary:hover { background: #2563eb; }
+    .btn { background: var(--card2); border: 1px solid var(--border); color: var(--text); padding: 7px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all .15s; font-weight: 500; }
+    .btn:hover { background: var(--border); border-color: #484f58; }
+    .btn-green { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn-green:hover { background: #2ea043; }
+    .btn-sm { padding: 4px 10px; font-size: 11px; }
     .last-update { font-size: 11px; color: var(--muted); }
     .dot-live { display: inline-block; width: 7px; height: 7px; background: var(--green); border-radius: 50%; margin-right: 5px; animation: blink 2s infinite; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
     /* ── Tabs ── */
-    .tabs {
-      background: var(--card);
-      border-bottom: 1px solid var(--border);
-      padding: 0 20px;
-      display: flex;
-      gap: 4px;
-    }
-    .tab {
-      padding: 12px 16px;
-      cursor: pointer;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 500;
-      border-bottom: 2px solid transparent;
-      transition: all .15s;
-      white-space: nowrap;
-    }
+    .tabs { background: var(--card); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; gap: 2px; }
+    .tab { padding: 12px 18px; cursor: pointer; color: var(--muted); font-size: 13px; font-weight: 500; border-bottom: 2px solid transparent; transition: all .15s; white-space: nowrap; }
     .tab:hover { color: var(--text); }
-    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab.active { color: var(--green); border-bottom-color: var(--green); }
+    .tab-badge { background: var(--accent); color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 10px; margin-left: 4px; }
 
     /* ── Layout ── */
-    .main { padding: 20px; max-width: 1400px; margin: 0 auto; }
+    .main { padding: 24px; max-width: 1440px; margin: 0 auto; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* ── Cards de métrica ── */
-    .metrics-grid {
+    /* ── Noah-style colored cards ── */
+    .finance-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .finance-card {
+      border-radius: 12px;
+      padding: 18px 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .finance-card .fc-icon {
+      position: absolute; right: 14px; top: 14px;
+      font-size: 20px; opacity: 0.4;
+    }
+    .fc-green  { background: linear-gradient(135deg, #1a4a2a 0%, #1a3a22 100%); border: 1px solid #2a5a3a; }
+    .fc-red    { background: linear-gradient(135deg, #4a1a1a 0%, #3a1a1a 100%); border: 1px solid #5a2a2a; }
+    .fc-yellow { background: linear-gradient(135deg, #4a3a0a 0%, #3a2a0a 100%); border: 1px solid #5a4a1a; }
+    .fc-blue   { background: linear-gradient(135deg, #1a2a4a 0%, #1a2240 100%); border: 1px solid #2a3a5a; }
+    .fc-label { font-size: 11px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+    .fc-value { font-size: 24px; font-weight: 800; line-height: 1; }
+    .fc-sub { font-size: 11px; color: var(--muted); margin-top: 6px; }
+    .fc-green .fc-value { color: var(--green); }
+    .fc-red .fc-value   { color: var(--red); }
+    .fc-yellow .fc-value{ color: var(--yellow); }
+    .fc-blue .fc-value  { color: var(--blue); }
+
+    /* ── Metrics row 2 ── */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
       gap: 12px;
       margin-bottom: 20px;
     }
     .metric-card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 12px;
       padding: 16px;
     }
     .metric-label { font-size: 11px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
-    .metric-value { font-size: 22px; font-weight: 700; line-height: 1; }
-    .metric-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .metric-value { font-size: 24px; font-weight: 800; line-height: 1; }
+    .metric-sub { font-size: 11px; color: var(--muted); margin-top: 5px; }
     .metric-delta { font-size: 11px; margin-top: 4px; }
     .delta-up   { color: var(--green); }
     .delta-down { color: var(--red); }
-    .color-green  { color: var(--green); }
-    .color-blue   { color: var(--blue); }
-    .color-yellow { color: var(--yellow); }
-    .color-red    { color: var(--red); }
-    .color-purple { color: var(--purple); }
-    .color-orange { color: var(--orange); }
 
     /* ── Seção / Card container ── */
-    .section { background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; overflow: hidden; }
-    .section-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-    .section-title { font-size: 13px; font-weight: 600; }
+    .section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 16px; overflow: hidden; }
+    .section-header { padding: 16px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .section-title { font-size: 14px; font-weight: 700; }
     .section-sub { font-size: 11px; color: var(--muted); }
+
+    /* ── Two column layout ── */
+    .two-col { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+    /* ── Chart ── */
+    .chart-wrap { padding: 16px; }
+    .chart-wrap canvas { width: 100% !important; height: 250px !important; }
+    .chart-legend { display: flex; gap: 16px; padding: 0 16px 12px; }
+    .chart-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+    .chart-legend-dot { width: 10px; height: 10px; border-radius: 3px; }
 
     /* ── Tabela ── */
     .table-wrap { overflow-x: auto; }
@@ -120,83 +140,77 @@
     .nowrap { white-space: nowrap; }
 
     /* ROAS badges */
-    .roas-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
-    .roas-great { background: rgba(45,212,160,.15); color: var(--green); }
-    .roas-good  { background: rgba(96,165,250,.15); color: var(--blue); }
+    .roas-badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; }
+    .roas-great { background: rgba(126,231,135,.15); color: var(--green); }
+    .roas-good  { background: rgba(88,166,255,.15); color: var(--blue); }
     .roas-bad   { background: rgba(248,113,113,.15); color: var(--red); }
-    .roas-zero  { background: rgba(136,146,164,.15); color: var(--muted); }
+    .roas-zero  { background: rgba(125,133,144,.1); color: var(--muted); }
 
     /* Tipo badges */
-    .tipo-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .tipo-badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; }
     .tipo-PAUSAR             { background: rgba(248,113,113,.2);  color: var(--red); }
-    .tipo-ESCALAR            { background: rgba(45,212,160,.2);   color: var(--green); }
-    .tipo-AUMENTAR_BUDGET    { background: rgba(96,165,250,.2);   color: var(--blue); }
+    .tipo-ESCALAR            { background: rgba(126,231,135,.2);  color: var(--green); }
+    .tipo-AUMENTAR_BUDGET    { background: rgba(88,166,255,.2);   color: var(--blue); }
     .tipo-DIMINUIR_BUDGET    { background: rgba(251,191,36,.2);   color: var(--yellow); }
-    .tipo-MONITORAR          { background: rgba(167,139,250,.2);  color: var(--purple); }
-
+    .tipo-MONITORAR          { background: rgba(188,140,255,.2);  color: var(--purple); }
     .status-nova { color: var(--yellow); font-size: 11px; font-weight: 600; }
     .status-lida { color: var(--muted);  font-size: 11px; }
 
     /* ── Criativos grid ── */
-    .criativos-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 12px;
-      padding: 16px;
-    }
-    .criativo-card {
-      background: var(--card2);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 14px;
-      transition: border-color .15s;
-    }
-    .criativo-card:hover { border-color: var(--accent); }
-    .criativo-name { font-size: 12px; font-weight: 600; margin-bottom: 8px; line-height: 1.3;
-                     overflow: hidden; text-overflow: ellipsis; display: -webkit-box;
-                     -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-    .criativo-camp { font-size: 11px; color: var(--muted); margin-bottom: 10px;
-                     overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .criativos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; padding: 16px; }
+    .criativo-card { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 14px; transition: border-color .15s; }
+    .criativo-card:hover { border-color: var(--green); }
+    .criativo-name { font-size: 12px; font-weight: 600; margin-bottom: 6px; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .criativo-camp { font-size: 11px; color: var(--muted); margin-bottom: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .criativo-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .criativo-metric { text-align: center; }
     .criativo-metric-val { font-size: 15px; font-weight: 700; }
     .criativo-metric-lbl { font-size: 10px; color: var(--muted); }
-    .criativo-conta { display: inline-block; font-size: 10px; padding: 1px 6px;
-                      border-radius: 3px; margin-bottom: 8px; }
-    .conta-MRN        { background: #1e3a5f; color: var(--blue); }
-    .conta-DB         { background: #1e3350; color: var(--purple); }
+    .criativo-conta { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 8px; margin-bottom: 6px; }
+    .conta-MRN { background: #1e3a5f; color: var(--blue); }
+    .conta-DB  { background: #2d1b69; color: var(--purple); }
+    .conta-pill { font-size: 10px; padding: 2px 8px; border-radius: 8px; }
 
     /* ── Hora por hora ── */
     .hora-bar-wrap { padding: 16px; }
-    .hora-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
-    .hora-label { font-size: 11px; color: var(--muted); width: 32px; flex-shrink: 0; text-align: right; }
-    .hora-bar-bg { flex: 1; height: 18px; background: var(--card2); border-radius: 4px; overflow: hidden; }
-    .hora-bar-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width .3s; min-width: 2px; }
-    .hora-val { font-size: 11px; color: var(--muted); width: 70px; flex-shrink: 0; }
-    .hora-conv { font-size: 11px; color: var(--green); width: 45px; flex-shrink: 0; text-align: right; }
-    .hora-atual { background: rgba(59,130,246,.1); border-radius: 6px; }
+    .hora-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; padding: 3px 6px; border-radius: 6px; }
+    .hora-label { font-size: 11px; color: var(--muted); width: 32px; flex-shrink: 0; text-align: right; font-weight: 600; }
+    .hora-bar-bg { flex: 1; height: 20px; background: var(--card2); border-radius: 5px; overflow: hidden; }
+    .hora-bar-fill { height: 100%; background: linear-gradient(90deg, #238636 0%, #2ea043 100%); border-radius: 5px; transition: width .3s; min-width: 2px; }
+    .hora-val { font-size: 12px; color: var(--text); width: 80px; flex-shrink: 0; font-weight: 500; }
+    .hora-conv { font-size: 11px; color: var(--green); width: 55px; flex-shrink: 0; text-align: right; font-weight: 600; }
+    .hora-atual { background: rgba(35,134,54,.12); }
 
     /* ── Loading / Empty ── */
     .loading { text-align: center; padding: 60px 20px; color: var(--muted); }
-    .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent);
-               border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 12px; }
+    .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 12px; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 13px; }
 
     /* ── Marcar lida btn ── */
-    .btn-lida { background: transparent; border: 1px solid var(--border); color: var(--muted);
-                padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;
-                transition: all .15s; }
+    .btn-lida { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 3px 8px; border-radius: 6px; cursor: pointer; font-size: 11px; transition: all .15s; }
     .btn-lida:hover { border-color: var(--green); color: var(--green); }
 
-    /* ── Conta pill ── */
-    .conta-pill { font-size: 10px; padding: 1px 6px; border-radius: 3px; }
+    /* ── Bar chart horizontal (UTM style) ── */
+    .bar-chart { padding: 16px; }
+    .bar-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .bar-label { font-size: 12px; width: 200px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
+    .bar-bg { flex: 1; height: 24px; background: var(--card2); border-radius: 6px; overflow: hidden; position: relative; }
+    .bar-fill { height: 100%; border-radius: 6px; transition: width .3s; }
+    .bar-fill-green { background: linear-gradient(90deg, #1a4a2a, #2ea043); }
+    .bar-fill-blue  { background: linear-gradient(90deg, #1a2a4a, #388bfd); }
+    .bar-fill-purple{ background: linear-gradient(90deg, #2d1b49, #8b5cf6); }
+    .bar-value { font-size: 12px; color: var(--muted); width: 120px; flex-shrink: 0; text-align: right; }
 
     /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .finance-grid { grid-template-columns: repeat(2, 1fr); }
+      .metrics-row { grid-template-columns: repeat(2, 1fr); }
+      .two-col { grid-template-columns: 1fr; }
+    }
     @media (max-width: 600px) {
-      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      .finance-grid { grid-template-columns: 1fr; }
       .criativos-grid { grid-template-columns: repeat(2, 1fr); }
-      .header h1 { font-size: 13px; }
     }
   </style>
 </head>
@@ -204,40 +218,80 @@
 
 <div class="header">
   <div class="header-left">
-    <span style="font-size:20px">📊</span>
+    <span style="font-size:24px">📊</span>
     <div>
       <h1>Meta Ads Dashboard</h1>
-      <div class="header-meta">
-        <span class="badge-account">MRN</span>&nbsp;
-        <span class="badge-account" style="background:#2d1b69;color:var(--purple)">Dream Baby</span>
+      <div class="header-subtitle">
+        <span class="badge-account badge-mrn">MRN</span>&nbsp;
+        <span class="badge-account badge-db">Dream Baby</span>
       </div>
     </div>
   </div>
   <div class="header-right">
     <span class="last-update" id="lastUpdate">Carregando...</span>
-    <button class="btn btn-primary" onclick="loadData()">↻ Atualizar</button>
+    <button class="btn btn-sm" onclick="populateData(this)" title="Busca dados frescos da Meta API e salva na planilha">⚡ Sync Meta</button>
+    <button class="btn btn-green" onclick="loadData()">↻ Atualizar</button>
   </div>
 </div>
 
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('campanhas')">Campanhas</div>
-  <div class="tab" onclick="switchTab('criativos')">Criativos</div>
-  <div class="tab" onclick="switchTab('hora')">Por Hora</div>
-  <div class="tab" onclick="switchTab('recomendacoes')" id="tabRec">Recomendações</div>
+  <div class="tab active" onclick="switchTab('overview')">📊 Overview</div>
+  <div class="tab" onclick="switchTab('campanhas')">📋 Campanhas</div>
+  <div class="tab" onclick="switchTab('criativos')">🎨 Criativos</div>
+  <div class="tab" onclick="switchTab('hora')">⏰ Por Hora</div>
+  <div class="tab" onclick="switchTab('recomendacoes')" id="tabRec">🤖 Recomendações</div>
 </div>
 
 <div class="main">
 
-  <!-- TAB: CAMPANHAS -->
-  <div class="tab-content active" id="tab-campanhas">
-    <div class="metrics-grid" id="metricsGrid">
+  <!-- TAB: OVERVIEW -->
+  <div class="tab-content active" id="tab-overview">
+    <!-- Finance cards row 1 -->
+    <div class="finance-grid" id="financeGrid">
       <div class="loading"><div class="spinner"></div>Carregando dados...</div>
     </div>
+    <!-- Metrics row 2 -->
+    <div class="metrics-row" id="metricsRow"></div>
+    <!-- Chart + breakdown -->
+    <div class="two-col">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Gasto por Hora — Hoje</div>
+        </div>
+        <div id="miniChart">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Performance por Conta</div>
+        </div>
+        <div id="contaBreakdown">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+    <!-- Top campaigns mini table -->
     <div class="section">
       <div class="section-header">
         <div>
-          <div class="section-title">Campanhas de Hoje</div>
-          <div class="section-sub">Ordenado por ROAS (maior primeiro)</div>
+          <div class="section-title">Campanhas Ativas Hoje</div>
+          <div class="section-sub">Ordenado por ROAS</div>
+        </div>
+      </div>
+      <div class="table-wrap" id="overviewCampTable">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: CAMPANHAS -->
+  <div class="tab-content" id="tab-campanhas">
+    <div class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Todas as Campanhas — Hoje</div>
+          <div class="section-sub">Dados da Meta Ads API em tempo real</div>
         </div>
       </div>
       <div class="table-wrap" id="campanhasTable">
@@ -294,12 +348,9 @@
 </div>
 
 <script>
-// ─── CONFIG ─────────────────────────────────────────────────────────────────
-// Substitua pela URL do seu webhook (ou use a URL hardcoded abaixo)
 const API_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/meta-dashboard-api';
-
 let DATA = null;
-let activeTab = 'campanhas';
+let activeTab = 'overview';
 
 // ─── LOAD DATA ──────────────────────────────────────────────────────────────
 async function loadData() {
@@ -317,11 +368,28 @@ async function loadData() {
   }
 }
 
+// ─── POPULATE (Sync Meta API → Sheets) ──────────────────────────────────────
+async function populateData(btn) {
+  const orig = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '⏳ Sincronizando...';
+  try {
+    const resp = await fetch(`${API_URL}?acao=populate`);
+    const data = await resp.json();
+    btn.textContent = `✅ ${data.campanhas || 0} camp, ${data.criativos || 0} criat`;
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 3000);
+    loadData(); // refresh dashboard
+  } catch (e) {
+    btn.textContent = `❌ ${e.message}`;
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 3000);
+  }
+}
+
 // ─── SWITCH TAB ─────────────────────────────────────────────────────────────
 function switchTab(name) {
   activeTab = name;
+  const names = ['overview','campanhas','criativos','hora','recomendacoes'];
   document.querySelectorAll('.tab').forEach((t, i) => {
-    const names = ['campanhas','criativos','hora','recomendacoes'];
     t.classList.toggle('active', names[i] === name);
   });
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -331,67 +399,173 @@ function switchTab(name) {
 // ─── RENDER ALL ─────────────────────────────────────────────────────────────
 function renderAll() {
   if (!DATA) return;
-  renderMetrics();
+  renderOverview();
   renderCampanhas();
   renderCriativos();
   renderHora();
   renderRecomendacoes();
 }
 
-// ─── METRICS GRID ───────────────────────────────────────────────────────────
-function renderMetrics() {
+// ─── OVERVIEW ───────────────────────────────────────────────────────────────
+function renderOverview() {
   const r = DATA.resumo || {};
+  const gHoje  = parseFloat(r.gasto_hoje || 0);
   const gOntem = parseFloat(r.gasto_ontem || 0);
-  const gHoje  = parseFloat(r.gasto_hoje  || 0);
-  const delta  = gOntem > 0 ? ((gHoje - gOntem) / gOntem * 100).toFixed(1) : null;
+  const convVal = parseFloat(r.conversion_value || 0);
+  const lucro = convVal - gHoje;
+  const roas = parseFloat(r.roas || 0);
+
+  // Delta vs ontem
+  const delta = gOntem > 0 ? ((gHoje - gOntem) / gOntem * 100).toFixed(1) : null;
   const deltaHtml = delta !== null
-    ? `<div class="metric-delta ${parseFloat(delta) >= 0 ? 'delta-up' : 'delta-down'}">${parseFloat(delta) >= 0 ? '▲' : '▼'} ${Math.abs(delta)}% vs ontem</div>`
+    ? `<div class="fc-sub" style="color:${parseFloat(delta)>=0?'var(--red)':'var(--green)'}">${parseFloat(delta)>=0?'▲':'▼'} ${Math.abs(delta)}% vs ontem</div>`
     : '';
 
-  const roasNum = parseFloat(r.roas || 0);
-  const roasColor = roasNum >= 3 ? 'color-green' : roasNum >= 1 ? 'color-blue' : 'color-red';
-
-  document.getElementById('metricsGrid').innerHTML = `
-    <div class="metric-card">
-      <div class="metric-label">💰 Gasto Hoje</div>
-      <div class="metric-value color-yellow">R$ ${fmt(r.gasto_hoje)}</div>
+  // Finance cards (Noah style)
+  document.getElementById('financeGrid').innerHTML = `
+    <div class="finance-card fc-green">
+      <span class="fc-icon">💰</span>
+      <div class="fc-label">Receita (Conversões)</div>
+      <div class="fc-value">R$ ${fmt(convVal)}</div>
+      <div class="fc-sub">${r.conversoes || 0} vendas hoje</div>
+    </div>
+    <div class="finance-card fc-red">
+      <span class="fc-icon">📢</span>
+      <div class="fc-label">Investimento Meta</div>
+      <div class="fc-value">R$ ${fmt(gHoje)}</div>
       ${deltaHtml}
     </div>
+    <div class="finance-card ${lucro >= 0 ? 'fc-green' : 'fc-red'}">
+      <span class="fc-icon">📈</span>
+      <div class="fc-label">Resultado</div>
+      <div class="fc-value">${lucro >= 0 ? '' : '-'}R$ ${fmt(Math.abs(lucro))}</div>
+      <div class="fc-sub">${lucro >= 0 ? 'Positivo' : 'Negativo'} no dia</div>
+    </div>
+    <div class="finance-card fc-blue">
+      <span class="fc-icon">📊</span>
+      <div class="fc-label">ROAS Geral</div>
+      <div class="fc-value">${roas.toFixed(2)}x</div>
+      <div class="fc-sub">Return on Ad Spend</div>
+    </div>
+    <div class="finance-card fc-yellow">
+      <span class="fc-icon">🎯</span>
+      <div class="fc-label">Campanhas Ativas</div>
+      <div class="fc-value">${r.campanhas_ativas || 0}</div>
+      <div class="fc-sub">${fmtN(r.impressoes)} impressões</div>
+    </div>
+  `;
+
+  // Metrics row 2
+  const ctrNum = parseFloat(r.ctr || 0);
+  const cpcNum = parseFloat(r.cpc || 0);
+  document.getElementById('metricsRow').innerHTML = `
     <div class="metric-card">
       <div class="metric-label">👁 Impressões</div>
-      <div class="metric-value color-blue">${fmtN(r.impressoes)}</div>
-      <div class="metric-sub">CPM: R$ ${fmt(r.cpc)}</div>
+      <div class="metric-value" style="color:var(--blue)">${fmtN(r.impressoes)}</div>
+      <div class="metric-sub">CPM: R$ ${fmt(gHoje / Math.max(parseInt(r.impressoes||1), 1) * 1000)}</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">🖱 Cliques</div>
-      <div class="metric-value color-purple">${fmtN(r.cliques)}</div>
-      <div class="metric-sub">CTR: ${r.ctr || '0'}%</div>
+      <div class="metric-value" style="color:var(--purple)">${fmtN(r.cliques)}</div>
+      <div class="metric-sub">CTR: ${ctrNum.toFixed(2)}%</div>
     </div>
     <div class="metric-card">
       <div class="metric-label">💵 CPC Médio</div>
-      <div class="metric-value color-orange">R$ ${fmt(r.cpc)}</div>
+      <div class="metric-value" style="color:var(--orange)">R$ ${fmt(r.cpc)}</div>
     </div>
     <div class="metric-card">
-      <div class="metric-label">🎯 Conversões</div>
-      <div class="metric-value color-green">${r.conversoes || 0}</div>
-      <div class="metric-sub">R$ ${fmt(r.conversion_value)}</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">📈 ROAS</div>
-      <div class="metric-value ${roasColor}">${r.roas || '0'}x</div>
-      <div class="metric-sub">${r.campanhas_ativas || 0} campanhas</div>
+      <div class="metric-label">🔄 Conversões</div>
+      <div class="metric-value" style="color:var(--green)">${r.conversoes || 0}</div>
+      <div class="metric-sub">R$ ${fmt(convVal)} receita</div>
     </div>
   `;
+
+  // Mini chart (gasto por hora)
+  renderMiniChart();
+
+  // Conta breakdown
+  renderContaBreakdown();
+
+  // Overview campaign table
+  renderOverviewCampaigns();
 }
 
-// ─── CAMPANHAS TABLE ─────────────────────────────────────────────────────────
-function renderCampanhas() {
-  const campanhas = DATA.campanhas || [];
-  if (!campanhas.length) {
-    document.getElementById('campanhasTable').innerHTML = '<div class="empty">Nenhuma campanha com dados para hoje.<br>O coletor roda a cada hora (8h-22h BRT).</div>';
+// ─── Mini Chart (bar chart por hora usando canvas) ──────────────────────────
+function renderMiniChart() {
+  const horas = DATA.gasto_por_hora || [];
+  if (!horas.length || horas.every(h => parseFloat(h.spend) === 0)) {
+    document.getElementById('miniChart').innerHTML = '<div class="empty">Sem dados por hora ainda.</div>';
     return;
   }
 
+  const maxSpend = Math.max(...horas.map(h => parseFloat(h.spend || 0)), 0.01);
+  const horaAtualBRT = new Date().getHours();
+
+  let html = '<div style="padding:16px;display:flex;align-items:flex-end;gap:3px;height:180px;">';
+  for (let i = 0; i < 24; i++) {
+    const h = horas[i] || {spend: 0, conversoes: 0};
+    const spend = parseFloat(h.spend || 0);
+    const pct = (spend / maxSpend * 100).toFixed(1);
+    const isAtual = i === horaAtualBRT;
+    const barColor = isAtual ? 'var(--green)' : spend > 0 ? 'var(--accent)' : 'var(--card2)';
+    const label = spend > 0 ? `R$${fmt(spend)}` : '';
+    html += `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;" title="${String(i).padStart(2,'0')}h: R$${fmt(spend)}${h.conversoes > 0 ? ' | '+h.conversoes+' conv' : ''}">
+      <div style="font-size:9px;color:var(--muted);height:14px;overflow:hidden;">${spend > 10 ? 'R$'+Math.round(spend) : ''}</div>
+      <div style="width:100%;height:${Math.max(pct, spend > 0 ? 3 : 0)}%;background:${barColor};border-radius:3px 3px 0 0;min-height:${spend > 0 ? '3px' : '1px'};transition:height .3s;"></div>
+      <div style="font-size:9px;color:${isAtual ? 'var(--green)' : 'var(--muted)'};font-weight:${isAtual ? '700' : '400'}">${String(i).padStart(2,'0')}</div>
+    </div>`;
+  }
+  html += '</div>';
+  document.getElementById('miniChart').innerHTML = html;
+}
+
+// ─── Conta Breakdown ────────────────────────────────────────────────────────
+function renderContaBreakdown() {
+  const campanhas = DATA.campanhas || [];
+  if (!campanhas.length) {
+    document.getElementById('contaBreakdown').innerHTML = '<div class="empty">Sem dados</div>';
+    return;
+  }
+
+  // Agregar por conta
+  const contas = {};
+  for (const c of campanhas) {
+    if (!contas[c.conta]) contas[c.conta] = { spend: 0, conv: 0, convVal: 0, camps: 0 };
+    contas[c.conta].spend += parseFloat(c.spend || 0);
+    contas[c.conta].conv += parseFloat(c.conversions || 0);
+    contas[c.conta].convVal += parseFloat(c.conversion_value || 0);
+    contas[c.conta].camps++;
+  }
+
+  let html = '<div class="bar-chart">';
+  const maxSpend = Math.max(...Object.values(contas).map(c => c.spend), 0.01);
+  for (const [nome, d] of Object.entries(contas)) {
+    const pct = (d.spend / maxSpend * 100).toFixed(1);
+    const roas = d.spend > 0 ? (d.convVal / d.spend).toFixed(2) : '0';
+    const fillClass = nome === 'MRN' ? 'bar-fill-blue' : 'bar-fill-purple';
+    html += `
+    <div class="bar-item">
+      <div class="bar-label"><span class="conta-pill criativo-conta ${nome === 'MRN' ? 'conta-MRN' : 'conta-DB'}">${nome}</span> ${d.camps} camp</div>
+      <div class="bar-bg"><div class="bar-fill ${fillClass}" style="width:${pct}%"></div></div>
+      <div class="bar-value">R$ ${fmt(d.spend)} · ${d.conv} conv · ${roas}x</div>
+    </div>`;
+  }
+  html += '</div>';
+  document.getElementById('contaBreakdown').innerHTML = html;
+}
+
+// ─── Overview Campaigns table ───────────────────────────────────────────────
+function renderOverviewCampaigns() {
+  const campanhas = DATA.campanhas || [];
+  if (!campanhas.length) {
+    document.getElementById('overviewCampTable').innerHTML = '<div class="empty">Nenhuma campanha ativa hoje.</div>';
+    return;
+  }
+  renderCampTable(campanhas, 'overviewCampTable');
+}
+
+// ─── CAMPANHAS TABLE (shared) ───────────────────────────────────────────────
+function renderCampTable(campanhas, containerId) {
   const rows = campanhas.map(c => {
     const roas = parseFloat(c.roas || 0);
     const roasClass = roas >= 3 ? 'roas-great' : roas >= 1 ? 'roas-good' : roas > 0 ? 'roas-bad' : 'roas-zero';
@@ -409,34 +583,40 @@ function renderCampanhas() {
     </tr>`;
   }).join('');
 
-  document.getElementById('campanhasTable').innerHTML = `
+  document.getElementById(containerId).innerHTML = `
     <table>
       <thead><tr>
         <th>Conta</th><th>Campanha</th>
-        <th class="text-right">Gasto</th>
-        <th class="text-right">Impressões</th>
-        <th class="text-right">Cliques</th>
-        <th class="text-right">CTR</th>
-        <th class="text-right">CPC</th>
-        <th class="text-right">Conv.</th>
+        <th class="text-right">Gasto</th><th class="text-right">Impressões</th>
+        <th class="text-right">Cliques</th><th class="text-right">CTR</th>
+        <th class="text-right">CPC</th><th class="text-right">Conv.</th>
         <th class="text-right">ROAS</th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
 }
 
+function renderCampanhas() {
+  const campanhas = DATA.campanhas || [];
+  if (!campanhas.length) {
+    document.getElementById('campanhasTable').innerHTML = '<div class="empty">Nenhuma campanha com dados para hoje.</div>';
+    return;
+  }
+  renderCampTable(campanhas, 'campanhasTable');
+}
+
 // ─── CRIATIVOS ────────────────────────────────────────────────────────────────
 function renderCriativos() {
   const criativos = DATA.criativos || [];
   if (!criativos.length) {
-    document.getElementById('criativosContent').innerHTML = '<div class="empty">Nenhum dado de criativo disponível.<br>O Daily Refresh roda às 8h BRT.</div>';
+    document.getElementById('criativosContent').innerHTML = '<div class="empty">Nenhum dado de criativo disponível.</div>';
     return;
   }
 
   const cards = criativos.slice(0, 20).map(a => {
     const contaClass = a.conta === 'MRN' ? 'conta-MRN' : 'conta-DB';
     const roas = parseFloat(a.roas || 0);
-    const roasColor = roas >= 3 ? 'color-green' : roas >= 1 ? 'color-blue' : 'color-red';
+    const roasColor = roas >= 3 ? 'color:var(--green)' : roas >= 1 ? 'color:var(--blue)' : 'color:var(--red)';
     return `
     <div class="criativo-card">
       <span class="criativo-conta ${contaClass}">${a.conta}</span>
@@ -444,19 +624,19 @@ function renderCriativos() {
       <div class="criativo-camp" title="${esc(a.campaign_name)}">${esc(a.campaign_name)}</div>
       <div class="criativo-metrics">
         <div class="criativo-metric">
-          <div class="criativo-metric-val color-yellow">R$ ${fmt(a.spend)}</div>
+          <div class="criativo-metric-val" style="color:var(--yellow)">R$ ${fmt(a.spend)}</div>
           <div class="criativo-metric-lbl">Gasto</div>
         </div>
         <div class="criativo-metric">
-          <div class="criativo-metric-val color-green">${a.conversions}</div>
+          <div class="criativo-metric-val" style="color:var(--green)">${a.conversions}</div>
           <div class="criativo-metric-lbl">Conv.</div>
         </div>
         <div class="criativo-metric">
-          <div class="criativo-metric-val color-blue">${a.ctr}%</div>
+          <div class="criativo-metric-val" style="color:var(--blue)">${parseFloat(a.ctr||0).toFixed(2)}%</div>
           <div class="criativo-metric-lbl">CTR</div>
         </div>
         <div class="criativo-metric">
-          <div class="criativo-metric-val ${roasColor}">${roas > 0 ? roas + 'x' : '—'}</div>
+          <div class="criativo-metric-val" style="${roasColor}">${roas > 0 ? roas.toFixed(2) + 'x' : '—'}</div>
           <div class="criativo-metric-lbl">ROAS</div>
         </div>
       </div>
@@ -475,7 +655,7 @@ function renderHora() {
   }
 
   const maxSpend = Math.max(...horas.map(h => parseFloat(h.spend || 0)), 0.01);
-  const horaAtualBRT = (new Date().getUTCHours() + 21) % 24;
+  const horaAtualBRT = new Date().getHours();
 
   const bars = horas.map(h => {
     const spend = parseFloat(h.spend || 0);
@@ -500,21 +680,20 @@ function renderHora() {
 function renderRecomendacoes() {
   const recs = DATA.recomendacoes || [];
 
-  // Atualizar subtítulo
   if (DATA.last_ai_run) {
     const d = new Date(DATA.last_ai_run);
-    document.getElementById('lastAiRun').textContent =
-      `Última análise: ${d.toLocaleString('pt-BR')}`;
+    document.getElementById('lastAiRun').textContent = `Última análise: ${d.toLocaleString('pt-BR')}`;
   }
 
-  // Contar novas para badge na tab
   const novas = recs.filter(r => r.status === 'NOVA').length;
-  document.getElementById('tabRec').textContent = novas > 0
-    ? `Recomendações (${novas})` : 'Recomendações';
+  const tabEl = document.getElementById('tabRec');
+  tabEl.innerHTML = novas > 0
+    ? `🤖 Recomendações <span class="tab-badge">${novas}</span>`
+    : '🤖 Recomendações';
 
   if (!recs.length) {
     document.getElementById('recsContent').innerHTML =
-      '<div class="empty">Nenhuma recomendação disponível.<br>O AI Optimizer roda às 8h BRT e analisa campanhas com gasto mínimo de R$20.</div>';
+      '<div class="empty">Nenhuma recomendação disponível.<br>O AI Optimizer roda às 8h BRT.</div>';
     return;
   }
 
@@ -525,7 +704,7 @@ function renderRecomendacoes() {
       : `<span class="status-lida">lida</span>`;
     const contaClass = r.conta === 'MRN' ? 'conta-MRN' : 'conta-DB';
     const btnLida = r.status === 'NOVA'
-      ? `<button class="btn-lida" onclick="marcarLida(${r.row}, this)">Marcar lida</button>`
+      ? `<button class="btn-lida" onclick="marcarLida(${r.row}, this)">✓</button>`
       : '';
     const dataFmt = r.data ? new Date(r.data).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
     return `<tr>
@@ -559,13 +738,12 @@ async function marcarLida(row, btn) {
   btn.textContent = '...';
   try {
     await fetch(`${API_URL}?acao=marcar_lida&rec_row=${row - 1}`);
-    // Atualiza localmente
     const rec = DATA.recomendacoes.find(r => r.row === row);
     if (rec) rec.status = 'LIDA';
     renderRecomendacoes();
   } catch (e) {
     btn.disabled = false;
-    btn.textContent = 'Marcar lida';
+    btn.textContent = '✓';
     alert('Erro: ' + e.message);
   }
 }
@@ -585,7 +763,7 @@ function esc(s) {
 
 // ─── INIT ───────────────────────────────────────────────────────────────────
 loadData();
-setInterval(loadData, 10 * 60 * 1000); // refresh a cada 10 min
+setInterval(loadData, 10 * 60 * 1000);
 </script>
 </body>
 </html>
