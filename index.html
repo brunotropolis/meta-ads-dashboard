@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meta Ads Dashboard — MRN + Dream Baby</title>
+  <style>
+    :root {
+      --bg:       #0f1117;
+      --card:     #1a1d27;
+      --card2:    #222536;
+      --border:   #2a2d3e;
+      --text:     #e2e8f0;
+      --muted:    #8892a4;
+      --green:    #2dd4a0;
+      --red:      #f87171;
+      --yellow:   #fbbf24;
+      --blue:     #60a5fa;
+      --purple:   #a78bfa;
+      --orange:   #fb923c;
+      --accent:   #3b82f6;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; min-height: 100vh; }
+
+    /* ── Header ── */
+    .header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header h1 { font-size: 16px; font-weight: 600; }
+    .header-meta { font-size: 12px; color: var(--muted); }
+    .badge-account { background: #1e3a5f; color: var(--blue); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .btn { background: var(--card2); border: 1px solid var(--border); color: var(--text); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: background .15s; }
+    .btn:hover { background: var(--border); }
+    .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #2563eb; }
+    .last-update { font-size: 11px; color: var(--muted); }
+    .dot-live { display: inline-block; width: 7px; height: 7px; background: var(--green); border-radius: 50%; margin-right: 5px; animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    /* ── Tabs ── */
+    .tabs {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+      display: flex;
+      gap: 4px;
+    }
+    .tab {
+      padding: 12px 16px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    /* ── Layout ── */
+    .main { padding: 20px; max-width: 1400px; margin: 0 auto; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── Cards de métrica ── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .metric-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .metric-label { font-size: 11px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+    .metric-value { font-size: 22px; font-weight: 700; line-height: 1; }
+    .metric-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .metric-delta { font-size: 11px; margin-top: 4px; }
+    .delta-up   { color: var(--green); }
+    .delta-down { color: var(--red); }
+    .color-green  { color: var(--green); }
+    .color-blue   { color: var(--blue); }
+    .color-yellow { color: var(--yellow); }
+    .color-red    { color: var(--red); }
+    .color-purple { color: var(--purple); }
+    .color-orange { color: var(--orange); }
+
+    /* ── Seção / Card container ── */
+    .section { background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; overflow: hidden; }
+    .section-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .section-title { font-size: 13px; font-weight: 600; }
+    .section-sub { font-size: 11px; color: var(--muted); }
+
+    /* ── Tabela ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,.02); }
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+    .nowrap { white-space: nowrap; }
+
+    /* ROAS badges */
+    .roas-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
+    .roas-great { background: rgba(45,212,160,.15); color: var(--green); }
+    .roas-good  { background: rgba(96,165,250,.15); color: var(--blue); }
+    .roas-bad   { background: rgba(248,113,113,.15); color: var(--red); }
+    .roas-zero  { background: rgba(136,146,164,.15); color: var(--muted); }
+
+    /* Tipo badges */
+    .tipo-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .tipo-PAUSAR             { background: rgba(248,113,113,.2);  color: var(--red); }
+    .tipo-ESCALAR            { background: rgba(45,212,160,.2);   color: var(--green); }
+    .tipo-AUMENTAR_BUDGET    { background: rgba(96,165,250,.2);   color: var(--blue); }
+    .tipo-DIMINUIR_BUDGET    { background: rgba(251,191,36,.2);   color: var(--yellow); }
+    .tipo-MONITORAR          { background: rgba(167,139,250,.2);  color: var(--purple); }
+
+    .status-nova { color: var(--yellow); font-size: 11px; font-weight: 600; }
+    .status-lida { color: var(--muted);  font-size: 11px; }
+
+    /* ── Criativos grid ── */
+    .criativos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+      padding: 16px;
+    }
+    .criativo-card {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      transition: border-color .15s;
+    }
+    .criativo-card:hover { border-color: var(--accent); }
+    .criativo-name { font-size: 12px; font-weight: 600; margin-bottom: 8px; line-height: 1.3;
+                     overflow: hidden; text-overflow: ellipsis; display: -webkit-box;
+                     -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .criativo-camp { font-size: 11px; color: var(--muted); margin-bottom: 10px;
+                     overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .criativo-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .criativo-metric { text-align: center; }
+    .criativo-metric-val { font-size: 15px; font-weight: 700; }
+    .criativo-metric-lbl { font-size: 10px; color: var(--muted); }
+    .criativo-conta { display: inline-block; font-size: 10px; padding: 1px 6px;
+                      border-radius: 3px; margin-bottom: 8px; }
+    .conta-MRN        { background: #1e3a5f; color: var(--blue); }
+    .conta-DB         { background: #1e3350; color: var(--purple); }
+
+    /* ── Hora por hora ── */
+    .hora-bar-wrap { padding: 16px; }
+    .hora-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .hora-label { font-size: 11px; color: var(--muted); width: 32px; flex-shrink: 0; text-align: right; }
+    .hora-bar-bg { flex: 1; height: 18px; background: var(--card2); border-radius: 4px; overflow: hidden; }
+    .hora-bar-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width .3s; min-width: 2px; }
+    .hora-val { font-size: 11px; color: var(--muted); width: 70px; flex-shrink: 0; }
+    .hora-conv { font-size: 11px; color: var(--green); width: 45px; flex-shrink: 0; text-align: right; }
+    .hora-atual { background: rgba(59,130,246,.1); border-radius: 6px; }
+
+    /* ── Loading / Empty ── */
+    .loading { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent);
+               border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 13px; }
+
+    /* ── Marcar lida btn ── */
+    .btn-lida { background: transparent; border: 1px solid var(--border); color: var(--muted);
+                padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 11px;
+                transition: all .15s; }
+    .btn-lida:hover { border-color: var(--green); color: var(--green); }
+
+    /* ── Conta pill ── */
+    .conta-pill { font-size: 10px; padding: 1px 6px; border-radius: 3px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+      .criativos-grid { grid-template-columns: repeat(2, 1fr); }
+      .header h1 { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <span style="font-size:20px">📊</span>
+    <div>
+      <h1>Meta Ads Dashboard</h1>
+      <div class="header-meta">
+        <span class="badge-account">MRN</span>&nbsp;
+        <span class="badge-account" style="background:#2d1b69;color:var(--purple)">Dream Baby</span>
+      </div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="last-update" id="lastUpdate">Carregando...</span>
+    <button class="btn btn-primary" onclick="loadData()">↻ Atualizar</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('campanhas')">Campanhas</div>
+  <div class="tab" onclick="switchTab('criativos')">Criativos</div>
+  <div class="tab" onclick="switchTab('hora')">Por Hora</div>
+  <div class="tab" onclick="switchTab('recomendacoes')" id="tabRec">Recomendações</div>
+</div>
+
+<div class="main">
+
+  <!-- TAB: CAMPANHAS -->
+  <div class="tab-content active" id="tab-campanhas">
+    <div class="metrics-grid" id="metricsGrid">
+      <div class="loading"><div class="spinner"></div>Carregando dados...</div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Campanhas de Hoje</div>
+          <div class="section-sub">Ordenado por ROAS (maior primeiro)</div>
+        </div>
+      </div>
+      <div class="table-wrap" id="campanhasTable">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: CRIATIVOS -->
+  <div class="tab-content" id="tab-criativos">
+    <div class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Melhores Criativos (7 dias)</div>
+          <div class="section-sub">Ordenado por conversões</div>
+        </div>
+      </div>
+      <div id="criativosContent">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: POR HORA -->
+  <div class="tab-content" id="tab-hora">
+    <div class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Gasto por Hora — Hoje</div>
+          <div class="section-sub">Acumulado de todas as campanhas (BRT)</div>
+        </div>
+      </div>
+      <div id="horaContent">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: RECOMENDAÇÕES IA -->
+  <div class="tab-content" id="tab-recomendacoes">
+    <div class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Recomendações de IA</div>
+          <div class="section-sub" id="lastAiRun">Última análise: —</div>
+        </div>
+      </div>
+      <div id="recsContent">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── CONFIG ─────────────────────────────────────────────────────────────────
+// Substitua pela URL do seu webhook (ou use a URL hardcoded abaixo)
+const API_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/meta-dashboard-api';
+
+let DATA = null;
+let activeTab = 'campanhas';
+
+// ─── LOAD DATA ──────────────────────────────────────────────────────────────
+async function loadData() {
+  document.getElementById('lastUpdate').innerHTML = '<span class="dot-live"></span>Atualizando...';
+  try {
+    const resp = await fetch(API_URL);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    DATA = await resp.json();
+    renderAll();
+    const now = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    document.getElementById('lastUpdate').innerHTML = `<span class="dot-live"></span>Atualizado às ${now}`;
+  } catch (e) {
+    document.getElementById('lastUpdate').textContent = `Erro: ${e.message}`;
+    console.error(e);
+  }
+}
+
+// ─── SWITCH TAB ─────────────────────────────────────────────────────────────
+function switchTab(name) {
+  activeTab = name;
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    const names = ['campanhas','criativos','hora','recomendacoes'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ─── RENDER ALL ─────────────────────────────────────────────────────────────
+function renderAll() {
+  if (!DATA) return;
+  renderMetrics();
+  renderCampanhas();
+  renderCriativos();
+  renderHora();
+  renderRecomendacoes();
+}
+
+// ─── METRICS GRID ───────────────────────────────────────────────────────────
+function renderMetrics() {
+  const r = DATA.resumo || {};
+  const gOntem = parseFloat(r.gasto_ontem || 0);
+  const gHoje  = parseFloat(r.gasto_hoje  || 0);
+  const delta  = gOntem > 0 ? ((gHoje - gOntem) / gOntem * 100).toFixed(1) : null;
+  const deltaHtml = delta !== null
+    ? `<div class="metric-delta ${parseFloat(delta) >= 0 ? 'delta-up' : 'delta-down'}">${parseFloat(delta) >= 0 ? '▲' : '▼'} ${Math.abs(delta)}% vs ontem</div>`
+    : '';
+
+  const roasNum = parseFloat(r.roas || 0);
+  const roasColor = roasNum >= 3 ? 'color-green' : roasNum >= 1 ? 'color-blue' : 'color-red';
+
+  document.getElementById('metricsGrid').innerHTML = `
+    <div class="metric-card">
+      <div class="metric-label">💰 Gasto Hoje</div>
+      <div class="metric-value color-yellow">R$ ${fmt(r.gasto_hoje)}</div>
+      ${deltaHtml}
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">👁 Impressões</div>
+      <div class="metric-value color-blue">${fmtN(r.impressoes)}</div>
+      <div class="metric-sub">CPM: R$ ${fmt(r.cpc)}</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">🖱 Cliques</div>
+      <div class="metric-value color-purple">${fmtN(r.cliques)}</div>
+      <div class="metric-sub">CTR: ${r.ctr || '0'}%</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">💵 CPC Médio</div>
+      <div class="metric-value color-orange">R$ ${fmt(r.cpc)}</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">🎯 Conversões</div>
+      <div class="metric-value color-green">${r.conversoes || 0}</div>
+      <div class="metric-sub">R$ ${fmt(r.conversion_value)}</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">📈 ROAS</div>
+      <div class="metric-value ${roasColor}">${r.roas || '0'}x</div>
+      <div class="metric-sub">${r.campanhas_ativas || 0} campanhas</div>
+    </div>
+  `;
+}
+
+// ─── CAMPANHAS TABLE ─────────────────────────────────────────────────────────
+function renderCampanhas() {
+  const campanhas = DATA.campanhas || [];
+  if (!campanhas.length) {
+    document.getElementById('campanhasTable').innerHTML = '<div class="empty">Nenhuma campanha com dados para hoje.<br>O coletor roda a cada hora (8h-22h BRT).</div>';
+    return;
+  }
+
+  const rows = campanhas.map(c => {
+    const roas = parseFloat(c.roas || 0);
+    const roasClass = roas >= 3 ? 'roas-great' : roas >= 1 ? 'roas-good' : roas > 0 ? 'roas-bad' : 'roas-zero';
+    const contaClass = c.conta === 'MRN' ? 'conta-MRN' : 'conta-DB';
+    return `<tr>
+      <td><span class="conta-pill criativo-conta ${contaClass}">${c.conta}</span></td>
+      <td class="nowrap">${esc(c.campaign_name)}</td>
+      <td class="text-right nowrap">R$ ${fmt(c.spend)}</td>
+      <td class="text-right">${fmtN(c.impressions)}</td>
+      <td class="text-right">${fmtN(c.clicks)}</td>
+      <td class="text-right">${c.ctr}%</td>
+      <td class="text-right">R$ ${fmt(c.cpc)}</td>
+      <td class="text-right">${c.conversions}</td>
+      <td class="text-right"><span class="roas-badge ${roasClass}">${roas > 0 ? roas.toFixed(2) + 'x' : '—'}</span></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('campanhasTable').innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Conta</th><th>Campanha</th>
+        <th class="text-right">Gasto</th>
+        <th class="text-right">Impressões</th>
+        <th class="text-right">Cliques</th>
+        <th class="text-right">CTR</th>
+        <th class="text-right">CPC</th>
+        <th class="text-right">Conv.</th>
+        <th class="text-right">ROAS</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+// ─── CRIATIVOS ────────────────────────────────────────────────────────────────
+function renderCriativos() {
+  const criativos = DATA.criativos || [];
+  if (!criativos.length) {
+    document.getElementById('criativosContent').innerHTML = '<div class="empty">Nenhum dado de criativo disponível.<br>O Daily Refresh roda às 8h BRT.</div>';
+    return;
+  }
+
+  const cards = criativos.slice(0, 20).map(a => {
+    const contaClass = a.conta === 'MRN' ? 'conta-MRN' : 'conta-DB';
+    const roas = parseFloat(a.roas || 0);
+    const roasColor = roas >= 3 ? 'color-green' : roas >= 1 ? 'color-blue' : 'color-red';
+    return `
+    <div class="criativo-card">
+      <span class="criativo-conta ${contaClass}">${a.conta}</span>
+      <div class="criativo-name" title="${esc(a.ad_name)}">${esc(a.ad_name)}</div>
+      <div class="criativo-camp" title="${esc(a.campaign_name)}">${esc(a.campaign_name)}</div>
+      <div class="criativo-metrics">
+        <div class="criativo-metric">
+          <div class="criativo-metric-val color-yellow">R$ ${fmt(a.spend)}</div>
+          <div class="criativo-metric-lbl">Gasto</div>
+        </div>
+        <div class="criativo-metric">
+          <div class="criativo-metric-val color-green">${a.conversions}</div>
+          <div class="criativo-metric-lbl">Conv.</div>
+        </div>
+        <div class="criativo-metric">
+          <div class="criativo-metric-val color-blue">${a.ctr}%</div>
+          <div class="criativo-metric-lbl">CTR</div>
+        </div>
+        <div class="criativo-metric">
+          <div class="criativo-metric-val ${roasColor}">${roas > 0 ? roas + 'x' : '—'}</div>
+          <div class="criativo-metric-lbl">ROAS</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('criativosContent').innerHTML = `<div class="criativos-grid">${cards}</div>`;
+}
+
+// ─── POR HORA ────────────────────────────────────────────────────────────────
+function renderHora() {
+  const horas = DATA.gasto_por_hora || [];
+  if (!horas.length || horas.every(h => parseFloat(h.spend) === 0)) {
+    document.getElementById('horaContent').innerHTML = '<div class="empty">Sem dados por hora ainda hoje.</div>';
+    return;
+  }
+
+  const maxSpend = Math.max(...horas.map(h => parseFloat(h.spend || 0)), 0.01);
+  const horaAtualBRT = (new Date().getUTCHours() + 21) % 24;
+
+  const bars = horas.map(h => {
+    const spend = parseFloat(h.spend || 0);
+    const conv  = h.conversoes || 0;
+    const pct   = (spend / maxSpend * 100).toFixed(1);
+    const isAtual = h.hora === horaAtualBRT;
+    return `
+    <div class="hora-row${isAtual ? ' hora-atual' : ''}">
+      <div class="hora-label">${String(h.hora).padStart(2,'0')}h</div>
+      <div class="hora-bar-bg">
+        <div class="hora-bar-fill" style="width:${pct}%"></div>
+      </div>
+      <div class="hora-val">${spend > 0 ? 'R$ ' + fmt(spend) : '—'}</div>
+      <div class="hora-conv">${conv > 0 ? conv + ' conv' : ''}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('horaContent').innerHTML = `<div class="hora-bar-wrap">${bars}</div>`;
+}
+
+// ─── RECOMENDAÇÕES ──────────────────────────────────────────────────────────
+function renderRecomendacoes() {
+  const recs = DATA.recomendacoes || [];
+
+  // Atualizar subtítulo
+  if (DATA.last_ai_run) {
+    const d = new Date(DATA.last_ai_run);
+    document.getElementById('lastAiRun').textContent =
+      `Última análise: ${d.toLocaleString('pt-BR')}`;
+  }
+
+  // Contar novas para badge na tab
+  const novas = recs.filter(r => r.status === 'NOVA').length;
+  document.getElementById('tabRec').textContent = novas > 0
+    ? `Recomendações (${novas})` : 'Recomendações';
+
+  if (!recs.length) {
+    document.getElementById('recsContent').innerHTML =
+      '<div class="empty">Nenhuma recomendação disponível.<br>O AI Optimizer roda às 8h BRT e analisa campanhas com gasto mínimo de R$20.</div>';
+    return;
+  }
+
+  const rows = recs.map(r => {
+    const tipoClass = `tipo-${r.tipo || 'MONITORAR'}`;
+    const statusHtml = r.status === 'NOVA'
+      ? `<span class="status-nova">● NOVA</span>`
+      : `<span class="status-lida">lida</span>`;
+    const contaClass = r.conta === 'MRN' ? 'conta-MRN' : 'conta-DB';
+    const btnLida = r.status === 'NOVA'
+      ? `<button class="btn-lida" onclick="marcarLida(${r.row}, this)">Marcar lida</button>`
+      : '';
+    const dataFmt = r.data ? new Date(r.data).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+    return `<tr>
+      <td class="nowrap"><span class="tipo-badge ${tipoClass}">${r.tipo || ''}</span></td>
+      <td><span class="conta-pill criativo-conta ${contaClass}">${r.conta}</span></td>
+      <td class="nowrap">${esc(r.campanha_nome)}</td>
+      <td>${esc(r.motivo)}</td>
+      <td>${esc(r.acao_sugerida)}</td>
+      <td class="text-center">${statusHtml}</td>
+      <td class="text-right nowrap">${dataFmt}</td>
+      <td>${btnLida}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('recsContent').innerHTML = `
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Tipo</th><th>Conta</th><th>Campanha</th>
+          <th>Motivo</th><th>Ação Sugerida</th>
+          <th class="text-center">Status</th><th class="text-right">Data</th><th></th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+// ─── MARCAR LIDA ────────────────────────────────────────────────────────────
+async function marcarLida(row, btn) {
+  btn.disabled = true;
+  btn.textContent = '...';
+  try {
+    await fetch(`${API_URL}?acao=marcar_lida&rec_row=${row - 1}`);
+    // Atualiza localmente
+    const rec = DATA.recomendacoes.find(r => r.row === row);
+    if (rec) rec.status = 'LIDA';
+    renderRecomendacoes();
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = 'Marcar lida';
+    alert('Erro: ' + e.message);
+  }
+}
+
+// ─── HELPERS ────────────────────────────────────────────────────────────────
+function fmt(v) {
+  const n = parseFloat(v || 0);
+  return n.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+function fmtN(v) {
+  return parseInt(v || 0).toLocaleString('pt-BR');
+}
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ─── INIT ───────────────────────────────────────────────────────────────────
+loadData();
+setInterval(loadData, 10 * 60 * 1000); // refresh a cada 10 min
+</script>
+</body>
+</html>
