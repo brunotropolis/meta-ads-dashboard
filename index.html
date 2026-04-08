@@ -402,7 +402,7 @@ function renderCampanhas() {
       <td class="text-right nowrap">R$ ${fmt(c.spend)}</td>
       <td class="text-right">${fmtN(c.impressions)}</td>
       <td class="text-right">${fmtN(c.clicks)}</td>
-      <td class="text-right">${c.ctr}%</td>
+      <td class="text-right">${parseFloat(c.ctr || 0).toFixed(2)}%</td>
       <td class="text-right">R$ ${fmt(c.cpc)}</td>
       <td class="text-right">${c.conversions}</td>
       <td class="text-right"><span class="roas-badge ${roasClass}">${roas > 0 ? roas.toFixed(2) + 'x' : '—'}</span></td>
