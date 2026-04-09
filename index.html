@@ -460,7 +460,13 @@ function applyCustomPeriod() {
 }
 
 // ─── LOAD DATA ──────────────────────────────────────────────────────────────
+let _abortCtrl = null;
 async function loadData() {
+  // Cancela request anterior se ainda estiver pendente
+  if (_abortCtrl) { try { _abortCtrl.abort(); } catch(e) {} }
+  _abortCtrl = new AbortController();
+  const signal = _abortCtrl.signal;
+
   document.getElementById('lastUpdate').innerHTML = '<span class="dot-live"></span>Atualizando...';
   try {
     let url = API_URL;
@@ -471,13 +477,14 @@ async function loadData() {
     } else {
       url += `?periodo=${currentPeriodo}`;
     }
-    const resp = await fetch(url);
+    const resp = await fetch(url, { signal });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     DATA = await resp.json();
     renderAll();
     const now = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
     document.getElementById('lastUpdate').innerHTML = `<span class="dot-live"></span>Atualizado às ${now}`;
   } catch (e) {
+    if (e.name === 'AbortError') return; // ignorar requests canceladas
     document.getElementById('lastUpdate').textContent = `Erro: ${e.message}`;
     console.error(e);
   }
