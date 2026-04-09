@@ -66,7 +66,7 @@
     /* ── Noah-style colored cards ── */
     .finance-grid {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 12px;
       margin-bottom: 16px;
     }
@@ -215,6 +215,20 @@
       margin-bottom: 16px;
     }
 
+    /* ── Period selector ── */
+    .period-btn {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      padding: 4px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .period-btn:hover { background: rgba(255,255,255,0.1); }
+    .period-btn.active { background: var(--blue); border-color: var(--blue); color: white; }
+
     /* ── Responsive ── */
     @media (max-width: 900px) {
       .finance-grid { grid-template-columns: repeat(2, 1fr); }
@@ -260,6 +274,22 @@
 </div>
 
 <div class="main">
+
+  <!-- Period Selector -->
+  <div id="periodSelector" style="display:flex;align-items:center;gap:8px;padding:8px 16px;margin-bottom:12px;background:rgba(255,255,255,0.03);border-radius:8px;flex-wrap:wrap">
+    <span style="color:var(--muted);font-size:13px;margin-right:4px">Periodo:</span>
+    <button class="period-btn active" onclick="setPeriodo('hoje')">Hoje</button>
+    <button class="period-btn" onclick="setPeriodo('semana')">Semana</button>
+    <button class="period-btn" onclick="setPeriodo('mes')">Mes</button>
+    <button class="period-btn" onclick="setPeriodo('personalizado')">Personalizado</button>
+    <div id="customDates" style="display:none;gap:6px;align-items:center">
+      <input type="date" id="dataInicio" style="background:var(--bg);color:var(--text);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:4px 8px;font-size:13px">
+      <span style="color:var(--muted)">→</span>
+      <input type="date" id="dataFim" style="background:var(--bg);color:var(--text);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:4px 8px;font-size:13px">
+      <button class="period-btn" onclick="applyCustomPeriod()">Aplicar</button>
+    </div>
+    <span id="periodLabel" style="color:var(--muted);font-size:12px;margin-left:auto"></span>
+  </div>
 
   <!-- TAB: OVERVIEW -->
   <div class="tab-content active" id="tab-overview">
@@ -370,6 +400,7 @@
         <div id="vendasPorUtm"><div class="empty">Sem dados de UTM</div></div>
       </div>
     </div>
+    <div id="reembolsoSection" style="margin-top:16px"></div>
     <div id="vendasCanais" style="margin-top:16px"></div>
     <div class="section">
       <div class="section-header">
@@ -405,12 +436,42 @@
 const API_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/meta-dashboard-api';
 let DATA = null;
 let activeTab = 'overview';
+let currentPeriodo = 'hoje';
+
+// ─── PERIOD SELECTOR ────────────────────────────────────────────────────────
+function setPeriodo(periodo) {
+  currentPeriodo = periodo;
+  document.querySelectorAll('#periodSelector .period-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  const customDiv = document.getElementById('customDates');
+  customDiv.style.display = periodo === 'personalizado' ? 'flex' : 'none';
+
+  if (periodo !== 'personalizado') {
+    loadData();
+  }
+}
+
+function applyCustomPeriod() {
+  const inicio = document.getElementById('dataInicio').value;
+  const fim = document.getElementById('dataFim').value;
+  if (!inicio || !fim) { alert('Selecione as datas'); return; }
+  loadData();
+}
 
 // ─── LOAD DATA ──────────────────────────────────────────────────────────────
 async function loadData() {
   document.getElementById('lastUpdate').innerHTML = '<span class="dot-live"></span>Atualizando...';
   try {
-    const resp = await fetch(API_URL);
+    let url = API_URL;
+    if (currentPeriodo === 'personalizado') {
+      const inicio = document.getElementById('dataInicio').value;
+      const fim = document.getElementById('dataFim').value;
+      url += `?periodo=personalizado&data_inicio=${inicio}&data_fim=${fim}`;
+    } else {
+      url += `?periodo=${currentPeriodo}`;
+    }
+    const resp = await fetch(url);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     DATA = await resp.json();
     renderAll();
@@ -453,6 +514,16 @@ function switchTab(name) {
 // ─── RENDER ALL ─────────────────────────────────────────────────────────────
 function renderAll() {
   if (!DATA) return;
+  // Update period label
+  const p = DATA.periodo;
+  if (p) {
+    const label = p.inicio === p.fim
+      ? new Date(p.inicio + 'T12:00:00').toLocaleDateString('pt-BR')
+      : `${new Date(p.inicio + 'T12:00:00').toLocaleDateString('pt-BR')} → ${new Date(p.fim + 'T12:00:00').toLocaleDateString('pt-BR')}`;
+    document.getElementById('periodLabel').textContent = label;
+  } else {
+    document.getElementById('periodLabel').textContent = '';
+  }
   renderOverview();
   renderCampanhas();
   renderCriativos();
@@ -532,6 +603,23 @@ function renderOverview() {
       <div class="fc-sub">${fmtN(r.impressoes)} impressões</div>
     </div>
   `;
+
+  // Reembolso indicator in overview
+  const reemb = DATA.reembolsos || {};
+  const reembCount = parseInt(reemb.count || 0);
+  const reembValor = parseFloat(reemb.valor || 0);
+  const taxaReemb = parseFloat(reemb.taxa || 0);
+  if (reembCount > 0) {
+    const reembColorClass = taxaReemb > 5 ? 'fc-red' : taxaReemb > 2 ? 'fc-orange' : 'fc-green';
+    document.getElementById('financeGrid').innerHTML += `
+      <div class="finance-card ${reembColorClass}">
+        <span class="fc-icon">↩️</span>
+        <div class="fc-label">Reembolsos</div>
+        <div class="fc-value">${reembCount}x</div>
+        <div class="fc-sub">R$ ${fmt(reembValor)} · Taxa: ${taxaReemb.toFixed(1)}%</div>
+      </div>
+    `;
+  }
 
   // Metrics row 2
   const ctrNum = parseFloat(r.ctr || 0);
@@ -789,7 +877,7 @@ function renderVendas() {
         <span class="fc-icon">🛒</span>
         <div class="fc-label">Vendas / Reembolsos</div>
         <div class="fc-value">${totalVendas} / ${totalReembolsos}</div>
-        <div class="fc-sub">Ticket médio: R$ ${fmt(ticketMedio)}</div>
+        <div class="fc-sub">Ticket médio: R$ ${fmt(ticketMedio)}${totalReembolsos > 0 ? ` · Taxa reemb: <span style="color:${(totalReembolsos/Math.max(totalVendas,1)*100) > 5 ? 'var(--red)' : (totalReembolsos/Math.max(totalVendas,1)*100) > 2 ? 'var(--orange)' : 'var(--green)'}">${(totalReembolsos/Math.max(totalVendas,1)*100).toFixed(1)}%</span>` : ''}</div>
       </div>
       <div class="finance-card fc-blue">
         <span class="fc-icon">📊</span>
@@ -847,6 +935,9 @@ function renderVendas() {
   // Vendas por canal (UTM classification)
   renderVendasCanais();
 
+  // Reembolsos section
+  renderReembolsoSection();
+
   // Vendas table
   document.getElementById('vendasCount').textContent = `${vendasHoje.length} registro${vendasHoje.length !== 1 ? 's' : ''} hoje`;
   if (vendasHoje.length) {
@@ -877,6 +968,57 @@ function renderVendas() {
       </table>`;
   } else {
     document.getElementById('vendasTable').innerHTML = '<div class="empty">Nenhuma venda registrada hoje.</div>';
+  }
+}
+
+// ─── REEMBOLSOS SECTION ────────────────────────────────────────────────────
+function renderReembolsoSection() {
+  const reemb = DATA.reembolsos || {};
+  const reembCount = parseInt(reemb.count || 0);
+  const reembValor = parseFloat(reemb.valor || 0);
+  const reembTaxa = parseFloat(reemb.taxa || 0);
+  const reembPorCanal = reemb.por_canal || {};
+  const reembPorProduto = reemb.por_produto || [];
+
+  if (reembCount > 0 || reembValor > 0) {
+    let reembHtml = `
+      <div class="section">
+        <div class="section-header" style="background:linear-gradient(135deg, #4a1a1a 0%, #3a1515 100%);border-bottom:1px solid #5a2a2a">
+          <div>
+            <div class="section-title" style="color:var(--red)">↩️ Reembolsos</div>
+            <div class="section-sub">${reembCount} reembolso${reembCount !== 1 ? 's' : ''} · R$ ${fmt(reembValor)} · Taxa: ${reembTaxa.toFixed(1)}%</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px">
+          <div>
+            <div style="color:var(--muted);font-size:12px;margin-bottom:6px">Por Canal</div>`;
+
+    for (const [canal, data] of Object.entries(reembPorCanal)) {
+      if (data && data.total > 0) {
+        const canalName = canal === 'organico' ? 'Organico' : canal === 'trafego' ? 'Trafego' : 'Recuperacao';
+        reembHtml += `<div style="font-size:13px;padding:2px 0"><span style="color:var(--muted)">${canalName}:</span> ${data.total}x · R$ ${fmt(data.valor)}</div>`;
+      }
+    }
+
+    if (!Object.values(reembPorCanal).some(d => d && d.total > 0)) {
+      reembHtml += '<div style="font-size:12px;color:var(--muted)">Sem dados de canal</div>';
+    }
+
+    reembHtml += `</div><div>
+            <div style="color:var(--muted);font-size:12px;margin-bottom:6px">Por Produto</div>`;
+
+    if (reembPorProduto.length) {
+      for (const p of reembPorProduto.slice(0, 5)) {
+        reembHtml += `<div style="font-size:13px;padding:2px 0"><span style="color:var(--muted)">${esc(p.produto).substring(0, 30)}:</span> ${p.count}x · R$ ${fmt(p.valor)}</div>`;
+      }
+    } else {
+      reembHtml += '<div style="font-size:12px;color:var(--muted)">Sem dados por produto</div>';
+    }
+
+    reembHtml += `</div></div></div>`;
+    document.getElementById('reembolsoSection').innerHTML = reembHtml;
+  } else {
+    document.getElementById('reembolsoSection').innerHTML = '';
   }
 }
 
