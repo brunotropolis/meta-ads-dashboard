@@ -202,15 +202,30 @@
     .bar-fill-purple{ background: linear-gradient(90deg, #2d1b49, #8b5cf6); }
     .bar-value { font-size: 12px; color: var(--muted); width: 120px; flex-shrink: 0; text-align: right; }
 
+    /* ── Vendas cards ── */
+    .fc-purple { background: linear-gradient(135deg, #2d1b4a 0%, #231540 100%); border: 1px solid #3d2b5a; }
+    .fc-purple .fc-value { color: var(--purple); }
+    .fc-orange { background: linear-gradient(135deg, #4a2a0a 0%, #3a2008 100%); border: 1px solid #5a3a1a; }
+    .fc-orange .fc-value { color: var(--orange); }
+
+    .vendas-summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 900px) {
       .finance-grid { grid-template-columns: repeat(2, 1fr); }
       .metrics-row { grid-template-columns: repeat(2, 1fr); }
+      .vendas-summary { grid-template-columns: repeat(2, 1fr); }
       .two-col { grid-template-columns: 1fr; }
     }
     @media (max-width: 600px) {
       .finance-grid { grid-template-columns: 1fr; }
       .criativos-grid { grid-template-columns: repeat(2, 1fr); }
+      .vendas-summary { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -239,6 +254,7 @@
   <div class="tab" onclick="switchTab('campanhas')">📋 Campanhas</div>
   <div class="tab" onclick="switchTab('criativos')">🎨 Criativos</div>
   <div class="tab" onclick="switchTab('hora')">⏰ Por Hora</div>
+  <div class="tab" onclick="switchTab('vendas')" id="tabVendas">💰 Vendas</div>
   <div class="tab" onclick="switchTab('recomendacoes')" id="tabRec">🤖 Recomendações</div>
 </div>
 
@@ -330,6 +346,42 @@
     </div>
   </div>
 
+  <!-- TAB: VENDAS (Greenn) -->
+  <div class="tab-content" id="tab-vendas">
+    <div id="vendasSummary"></div>
+    <div class="two-col">
+      <div class="section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Vendas por Produto</div>
+            <div class="section-sub">Faturamento do dia por produto</div>
+          </div>
+        </div>
+        <div id="vendasPorProduto"><div class="empty">Sem vendas hoje</div></div>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Vendas por UTM Source</div>
+            <div class="section-sub">De onde vieram as vendas</div>
+          </div>
+        </div>
+        <div id="vendasPorUtm"><div class="empty">Sem dados de UTM</div></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Vendas de Hoje</div>
+          <div class="section-sub" id="vendasCount">0 vendas</div>
+        </div>
+      </div>
+      <div class="table-wrap" id="vendasTable">
+        <div class="empty">Nenhuma venda registrada hoje.</div>
+      </div>
+    </div>
+  </div>
+
   <!-- TAB: RECOMENDAÇÕES IA -->
   <div class="tab-content" id="tab-recomendacoes">
     <div class="section">
@@ -388,7 +440,7 @@ async function populateData(btn) {
 // ─── SWITCH TAB ─────────────────────────────────────────────────────────────
 function switchTab(name) {
   activeTab = name;
-  const names = ['overview','campanhas','criativos','hora','recomendacoes'];
+  const names = ['overview','campanhas','criativos','hora','vendas','recomendacoes'];
   document.querySelectorAll('.tab').forEach((t, i) => {
     t.classList.toggle('active', names[i] === name);
   });
@@ -403,6 +455,7 @@ function renderAll() {
   renderCampanhas();
   renderCriativos();
   renderHora();
+  renderVendas();
   renderRecomendacoes();
 }
 
@@ -411,23 +464,46 @@ function renderOverview() {
   const r = DATA.resumo || {};
   const gHoje  = parseFloat(r.gasto_hoje || 0);
   const gOntem = parseFloat(r.gasto_ontem || 0);
+  const fatHoje = parseFloat(r.faturamento_hoje || 0);
+  const fatOntem = parseFloat(r.faturamento_ontem || 0);
   const convVal = parseFloat(r.conversion_value || 0);
-  const lucro = convVal - gHoje;
+  const roasReal = parseFloat(r.roas_real || 0);
   const roas = parseFloat(r.roas || 0);
+  const totalVendas = parseInt(r.total_vendas_hoje || 0);
+  const reembolsos = parseFloat(r.reembolsos_hoje || 0);
 
-  // Delta vs ontem
+  // Usa receita Greenn se disponível, senão pixel
+  const receita = fatHoje > 0 ? fatHoje : convVal;
+  const receitaLabel = fatHoje > 0 ? 'Receita Greenn' : 'Receita (Pixel)';
+  const receitaSub = fatHoje > 0
+    ? `${totalVendas} venda${totalVendas !== 1 ? 's' : ''} hoje`
+    : `${r.conversoes || 0} conv. pixel`;
+
+  const lucro = receita - gHoje;
+  const roasExibir = fatHoje > 0 ? roasReal : roas;
+  const roasLabel = fatHoje > 0 ? 'ROAS Real' : 'ROAS Pixel';
+  const roasSub = fatHoje > 0 ? 'Greenn / Meta Ads' : 'Return on Ad Spend';
+
+  // Delta gasto vs ontem
   const delta = gOntem > 0 ? ((gHoje - gOntem) / gOntem * 100).toFixed(1) : null;
   const deltaHtml = delta !== null
     ? `<div class="fc-sub" style="color:${parseFloat(delta)>=0?'var(--red)':'var(--green)'}">${parseFloat(delta)>=0?'▲':'▼'} ${Math.abs(delta)}% vs ontem</div>`
     : '';
 
-  // Finance cards (Noah style)
+  // Delta faturamento vs ontem
+  const deltaFat = fatOntem > 0 ? ((fatHoje - fatOntem) / fatOntem * 100).toFixed(1) : null;
+  const deltaFatHtml = deltaFat !== null
+    ? `<div class="fc-sub" style="color:${parseFloat(deltaFat)>=0?'var(--green)':'var(--red)'}">${parseFloat(deltaFat)>=0?'▲':'▼'} ${Math.abs(deltaFat)}% vs ontem</div>`
+    : '';
+
+  // Finance cards (Noah style + Greenn)
   document.getElementById('financeGrid').innerHTML = `
     <div class="finance-card fc-green">
       <span class="fc-icon">💰</span>
-      <div class="fc-label">Receita (Conversões)</div>
-      <div class="fc-value">R$ ${fmt(convVal)}</div>
-      <div class="fc-sub">${r.conversoes || 0} vendas hoje</div>
+      <div class="fc-label">${receitaLabel}</div>
+      <div class="fc-value">R$ ${fmt(receita)}</div>
+      <div class="fc-sub">${receitaSub}</div>
+      ${deltaFatHtml}
     </div>
     <div class="finance-card fc-red">
       <span class="fc-icon">📢</span>
@@ -443,9 +519,9 @@ function renderOverview() {
     </div>
     <div class="finance-card fc-blue">
       <span class="fc-icon">📊</span>
-      <div class="fc-label">ROAS Geral</div>
-      <div class="fc-value">${roas.toFixed(2)}x</div>
-      <div class="fc-sub">Return on Ad Spend</div>
+      <div class="fc-label">${roasLabel}</div>
+      <div class="fc-value">${roasExibir > 0 ? roasExibir + 'x' : '0x'}</div>
+      <div class="fc-sub">${roasSub}</div>
     </div>
     <div class="finance-card fc-yellow">
       <span class="fc-icon">🎯</span>
@@ -674,6 +750,129 @@ function renderHora() {
   }).join('');
 
   document.getElementById('horaContent').innerHTML = `<div class="hora-bar-wrap">${bars}</div>`;
+}
+
+// ─── VENDAS (Greenn) ────────────────────────────────────────────────────────
+function renderVendas() {
+  const r = DATA.resumo || {};
+  const v = DATA.vendas || {};
+  const vendasHoje = v.hoje || [];
+  const porProduto = v.por_produto || [];
+  const porUtm = v.por_utm || [];
+  const fatHoje = parseFloat(r.faturamento_hoje || 0);
+  const fatOntem = parseFloat(r.faturamento_ontem || 0);
+  const reembolsos = parseFloat(r.reembolsos_hoje || 0);
+  const totalVendas = parseInt(r.total_vendas_hoje || 0);
+  const totalReembolsos = parseInt(r.total_reembolsos_hoje || 0);
+  const gHoje = parseFloat(r.gasto_hoje || 0);
+  const roasReal = parseFloat(r.roas_real || 0);
+  const ticketMedio = totalVendas > 0 ? (fatHoje / totalVendas) : 0;
+
+  // Tab badge
+  const tabVendas = document.getElementById('tabVendas');
+  tabVendas.innerHTML = totalVendas > 0
+    ? `💰 Vendas <span class="tab-badge">${totalVendas}</span>`
+    : '💰 Vendas';
+
+  // Summary cards
+  document.getElementById('vendasSummary').innerHTML = `
+    <div class="vendas-summary">
+      <div class="finance-card fc-green">
+        <span class="fc-icon">💰</span>
+        <div class="fc-label">Faturamento Hoje</div>
+        <div class="fc-value">R$ ${fmt(fatHoje)}</div>
+        <div class="fc-sub">Ontem: R$ ${fmt(fatOntem)}</div>
+      </div>
+      <div class="finance-card fc-purple">
+        <span class="fc-icon">🛒</span>
+        <div class="fc-label">Vendas / Reembolsos</div>
+        <div class="fc-value">${totalVendas} / ${totalReembolsos}</div>
+        <div class="fc-sub">Ticket médio: R$ ${fmt(ticketMedio)}</div>
+      </div>
+      <div class="finance-card fc-blue">
+        <span class="fc-icon">📊</span>
+        <div class="fc-label">ROAS Real</div>
+        <div class="fc-value">${roasReal > 0 ? roasReal + 'x' : '—'}</div>
+        <div class="fc-sub">Greenn ÷ Meta Ads</div>
+      </div>
+      <div class="finance-card ${fatHoje - gHoje >= 0 ? 'fc-green' : 'fc-red'}">
+        <span class="fc-icon">📈</span>
+        <div class="fc-label">Lucro Líquido</div>
+        <div class="fc-value">${fatHoje - gHoje >= 0 ? '' : '-'}R$ ${fmt(Math.abs(fatHoje - gHoje - reembolsos))}</div>
+        <div class="fc-sub">Faturamento - Ads - Reembolsos</div>
+      </div>
+    </div>
+  `;
+
+  // Vendas por produto (bar chart)
+  if (porProduto.length) {
+    const maxVal = Math.max(...porProduto.map(p => p.valor), 0.01);
+    let html = '<div class="bar-chart">';
+    for (const p of porProduto) {
+      const pct = (p.valor / maxVal * 100).toFixed(1);
+      html += `
+      <div class="bar-item">
+        <div class="bar-label">${esc(p.produto)}</div>
+        <div class="bar-bg"><div class="bar-fill bar-fill-green" style="width:${pct}%"></div></div>
+        <div class="bar-value">${p.count}x · R$ ${fmt(p.valor)}</div>
+      </div>`;
+    }
+    html += '</div>';
+    document.getElementById('vendasPorProduto').innerHTML = html;
+  } else {
+    document.getElementById('vendasPorProduto').innerHTML = '<div class="empty">Sem vendas hoje</div>';
+  }
+
+  // Vendas por UTM
+  if (porUtm.length) {
+    const maxVal = Math.max(...porUtm.map(u => u.valor), 0.01);
+    let html = '<div class="bar-chart">';
+    for (const u of porUtm) {
+      const pct = (u.valor / maxVal * 100).toFixed(1);
+      html += `
+      <div class="bar-item">
+        <div class="bar-label">${esc(u.source)}</div>
+        <div class="bar-bg"><div class="bar-fill bar-fill-blue" style="width:${pct}%"></div></div>
+        <div class="bar-value">${u.count}x · R$ ${fmt(u.valor)}</div>
+      </div>`;
+    }
+    html += '</div>';
+    document.getElementById('vendasPorUtm').innerHTML = html;
+  } else {
+    document.getElementById('vendasPorUtm').innerHTML = '<div class="empty">Sem dados de UTM</div>';
+  }
+
+  // Vendas table
+  document.getElementById('vendasCount').textContent = `${vendasHoje.length} registro${vendasHoje.length !== 1 ? 's' : ''} hoje`;
+  if (vendasHoje.length) {
+    const rows = vendasHoje.map(v => {
+      const tipoColor = v.tipo === 'VENDA' ? 'color:var(--green)' : 'color:var(--red)';
+      const tipoIcon = v.tipo === 'VENDA' ? '✅' : '↩️';
+      const hora = v.timestamp ? v.timestamp.split(' ')[1] || '' : '';
+      return `<tr>
+        <td class="nowrap"><span style="${tipoColor};font-weight:600">${tipoIcon} ${v.tipo}</span></td>
+        <td class="nowrap">${esc(v.produto_nome)}</td>
+        <td class="text-right nowrap" style="font-weight:700">R$ ${fmt(v.valor)}</td>
+        <td>${esc(v.cliente_nome)}</td>
+        <td class="nowrap">${esc(v.metodo_pagamento)}</td>
+        <td class="nowrap">${esc(v.utm_source || '—')}</td>
+        <td class="nowrap">${esc(v.utm_campaign || '—')}</td>
+        <td class="text-right nowrap" style="color:var(--muted)">${hora}</td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('vendasTable').innerHTML = `
+      <table>
+        <thead><tr>
+          <th>Tipo</th><th>Produto</th><th class="text-right">Valor</th>
+          <th>Cliente</th><th>Pagamento</th>
+          <th>UTM Source</th><th>UTM Campaign</th><th class="text-right">Hora</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  } else {
+    document.getElementById('vendasTable').innerHTML = '<div class="empty">Nenhuma venda registrada hoje.</div>';
+  }
 }
 
 // ─── RECOMENDAÇÕES ──────────────────────────────────────────────────────────
