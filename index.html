@@ -467,6 +467,9 @@ async function loadData() {
   _abortCtrl = new AbortController();
   const signal = _abortCtrl.signal;
 
+  // Timeout de 25s para não ficar preso
+  const timeout = setTimeout(() => _abortCtrl.abort(), 25000);
+
   document.getElementById('lastUpdate').innerHTML = '<span class="dot-live"></span>Atualizando...';
   try {
     let url = API_URL;
@@ -478,13 +481,24 @@ async function loadData() {
       url += `?periodo=${currentPeriodo}`;
     }
     const resp = await fetch(url, { signal });
+    clearTimeout(timeout);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     DATA = await resp.json();
     renderAll();
     const now = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
     document.getElementById('lastUpdate').innerHTML = `<span class="dot-live"></span>Atualizado às ${now}`;
   } catch (e) {
-    if (e.name === 'AbortError') return; // ignorar requests canceladas
+    clearTimeout(timeout);
+    if (e.name === 'AbortError') {
+      // Se já tem dados anteriores, mostra eles; senão mostra timeout
+      if (DATA) {
+        const now = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+        document.getElementById('lastUpdate').innerHTML = `<span class="dot-live"></span>Timeout — dados de ${now}`;
+      } else {
+        document.getElementById('lastUpdate').textContent = 'Timeout — clique Atualizar para tentar novamente';
+      }
+      return;
+    }
     document.getElementById('lastUpdate').textContent = `Erro: ${e.message}`;
     console.error(e);
   }
