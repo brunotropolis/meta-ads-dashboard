@@ -221,6 +221,7 @@
       .metrics-row { grid-template-columns: repeat(2, 1fr); }
       .vendas-summary { grid-template-columns: repeat(2, 1fr); }
       .two-col { grid-template-columns: 1fr; }
+      #vendasCanais > div { grid-template-columns: 1fr !important; }
     }
     @media (max-width: 600px) {
       .finance-grid { grid-template-columns: 1fr; }
@@ -369,6 +370,7 @@
         <div id="vendasPorUtm"><div class="empty">Sem dados de UTM</div></div>
       </div>
     </div>
+    <div id="vendasCanais" style="margin-top:16px"></div>
     <div class="section">
       <div class="section-header">
         <div>
@@ -842,6 +844,9 @@ function renderVendas() {
     document.getElementById('vendasPorUtm').innerHTML = '<div class="empty">Sem dados de UTM</div>';
   }
 
+  // Vendas por canal (UTM classification)
+  renderVendasCanais();
+
   // Vendas table
   document.getElementById('vendasCount').textContent = `${vendasHoje.length} registro${vendasHoje.length !== 1 ? 's' : ''} hoje`;
   if (vendasHoje.length) {
@@ -873,6 +878,61 @@ function renderVendas() {
   } else {
     document.getElementById('vendasTable').innerHTML = '<div class="empty">Nenhuma venda registrada hoje.</div>';
   }
+}
+
+// ─── VENDAS POR CANAL (UTM classification) ─────────────────────────────────
+function renderVendasCanais() {
+  const canais = DATA.vendas_por_canal;
+  if (!canais) {
+    document.getElementById('vendasCanais').innerHTML = '';
+    return;
+  }
+
+  const configs = [
+    { key: 'organico',    title: 'ORGANICO',               icon: '🌱', fillClass: 'bar-fill-green', borderColor: '#2a5a3a', bgGrad: 'linear-gradient(135deg, #1a4a2a 0%, #1a3a22 100%)', titleColor: 'var(--green)' },
+    { key: 'trafego',     title: 'TRAFEGO',                 icon: '📢', fillClass: 'bar-fill-blue',  borderColor: '#2a3a5a', bgGrad: 'linear-gradient(135deg, #1a2a4a 0%, #1a2240 100%)', titleColor: 'var(--blue)' },
+    { key: 'recuperacao', title: 'RECUPERACAO DE VENDAS', icon: '🔄', fillClass: 'bar-fill-purple', borderColor: '#3d2b5a', bgGrad: 'linear-gradient(135deg, #2d1b4a 0%, #231540 100%)', titleColor: 'var(--purple)' },
+  ];
+
+  let html = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">';
+
+  for (const cfg of configs) {
+    const ch = canais[cfg.key] || { total: 0, valor: 0, items: [] };
+    const items = ch.items || [];
+
+    html += `<div class="section" style="margin-bottom:0">
+      <div class="section-header" style="background:${cfg.bgGrad};border-bottom:1px solid ${cfg.borderColor}">
+        <div>
+          <div class="section-title" style="color:${cfg.titleColor}">${cfg.icon} ${cfg.title}</div>
+          <div class="section-sub">${ch.total} venda${ch.total !== 1 ? 's' : ''} · R$ ${fmt(ch.valor)}</div>
+        </div>
+      </div>`;
+
+    if (items.length) {
+      const maxVal = Math.max(...items.map(i => i.valor), 0.01);
+      html += '<div class="bar-chart">';
+      for (const item of items) {
+        const pct = (item.valor / maxVal * 100).toFixed(1);
+        const label = item.campanha !== item.nome_campanha
+          ? `${esc(item.campanha)} > ${esc(item.nome_campanha)}`
+          : esc(item.campanha);
+        html += `
+        <div class="bar-item">
+          <div class="bar-label" title="${esc(item.campanha)} | ${esc(item.nome_campanha)} | ${esc(item.conteudo)}">${label}</div>
+          <div class="bar-bg"><div class="bar-fill ${cfg.fillClass}" style="width:${pct}%"></div></div>
+          <div class="bar-value">${item.count}x · R$ ${fmt(item.valor)}</div>
+        </div>`;
+      }
+      html += '</div>';
+    } else {
+      html += '<div class="empty">Nenhuma venda</div>';
+    }
+
+    html += '</div>';
+  }
+
+  html += '</div>';
+  document.getElementById('vendasCanais').innerHTML = html;
 }
 
 // ─── RECOMENDAÇÕES ──────────────────────────────────────────────────────────
