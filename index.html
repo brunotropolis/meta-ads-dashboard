@@ -952,7 +952,7 @@ function renderRecomendacoes() {
 
   if (!recs.length) {
     document.getElementById('recsContent').innerHTML =
-      '<div class="empty">Nenhuma recomendação disponível.<br>O AI Optimizer roda às 8h BRT.</div>';
+      '<div class="empty">Nenhuma recomendação disponível.<br>O AI Optimizer roda a cada hora (8h-22h BRT).</div>';
     return;
   }
 
@@ -966,10 +966,13 @@ function renderRecomendacoes() {
       ? `<button class="btn-lida" onclick="marcarLida(${r.row}, this)">✓</button>`
       : '';
     const dataFmt = r.data ? new Date(r.data).toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+    const tipoCampBadge = r.tipo_campanha
+      ? `<span style="font-size:10px;padding:1px 5px;border-radius:3px;background:rgba(255,255,255,0.08);color:var(--muted);margin-left:4px">${esc(r.tipo_campanha)}</span>`
+      : '';
     return `<tr>
       <td class="nowrap"><span class="tipo-badge ${tipoClass}">${r.tipo || ''}</span></td>
       <td><span class="conta-pill criativo-conta ${contaClass}">${r.conta}</span></td>
-      <td class="nowrap">${esc(r.campanha_nome)}</td>
+      <td class="nowrap">${esc(r.campanha_nome)}${tipoCampBadge}</td>
       <td>${esc(r.motivo)}</td>
       <td>${esc(r.acao_sugerida)}</td>
       <td class="text-center">${statusHtml}</td>
