@@ -812,25 +812,37 @@ function renderCriativos() {
   document.getElementById('criativosContent').innerHTML = `<div class="criativos-grid">${cards}</div>`;
 }
 
-// ─── POR HORA ────────────────────────────────────────────────────────────────
+// ─── POR HORA / POR DIA ──────────────────────────────────────────────────────
 function renderHora() {
-  const horas = DATA.gasto_por_hora || [];
-  if (!horas.length || horas.every(h => parseFloat(h.spend) === 0)) {
-    document.getElementById('horaContent').innerHTML = '<div class="empty">Sem dados por hora ainda hoje.</div>';
+  const items = DATA.gasto_por_hora || [];
+  if (!items.length || items.every(h => parseFloat(h.spend) === 0)) {
+    document.getElementById('horaContent').innerHTML = '<div class="empty">Sem dados de gasto ainda.</div>';
     return;
   }
 
-  const maxSpend = Math.max(...horas.map(h => parseFloat(h.spend || 0)), 0.01);
+  // Detectar formato: {hora: N} = por hora (single day), {data: "YYYY-MM-DD"} = por dia
+  const isDiario = items[0].data !== undefined && items[0].hora === undefined;
+  const maxSpend = Math.max(...items.map(h => parseFloat(h.spend || 0)), 0.01);
   const horaAtualBRT = new Date().getHours();
+  const hoje = new Date().toISOString().split('T')[0];
 
-  const bars = horas.map(h => {
+  const bars = items.map(h => {
     const spend = parseFloat(h.spend || 0);
     const conv  = h.conversoes || 0;
     const pct   = (spend / maxSpend * 100).toFixed(1);
-    const isAtual = h.hora === horaAtualBRT;
+    let label, isAtual;
+    if (isDiario) {
+      // Formato dia: mostrar DD/MM
+      const parts = (h.data || '').split('-');
+      label = parts.length === 3 ? `${parts[2]}/${parts[1]}` : h.data;
+      isAtual = h.data === hoje;
+    } else {
+      label = String(h.hora).padStart(2,'0') + 'h';
+      isAtual = h.hora === horaAtualBRT;
+    }
     return `
     <div class="hora-row${isAtual ? ' hora-atual' : ''}">
-      <div class="hora-label">${String(h.hora).padStart(2,'0')}h</div>
+      <div class="hora-label">${label}</div>
       <div class="hora-bar-bg">
         <div class="hora-bar-fill" style="width:${pct}%"></div>
       </div>
@@ -839,6 +851,8 @@ function renderHora() {
     </div>`;
   }).join('');
 
+  // Atualizar título da tab
+  const tabTitle = isDiario ? 'Gasto por Dia' : 'Gasto por Hora';
   document.getElementById('horaContent').innerHTML = `<div class="hora-bar-wrap">${bars}</div>`;
 }
 
