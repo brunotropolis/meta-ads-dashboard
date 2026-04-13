@@ -1363,12 +1363,8 @@ async function sendChatMessage(pergunta) {
   const timeout = setTimeout(() => ctrl.abort(), 30000);
 
   try {
-    const resp = await fetch('https://n8n-n8n.xktssy.easypanel.host/webhook/meta-ads-chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pergunta, periodo: currentPeriodo }),
-      signal: ctrl.signal
-    });
+    const chatUrl = API_URL + '?acao=chat&pergunta=' + encodeURIComponent(pergunta) + '&periodo=' + encodeURIComponent(currentPeriodo);
+    const resp = await fetch(chatUrl, { signal: ctrl.signal });
     clearTimeout(timeout);
 
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
