@@ -229,6 +229,44 @@
     .period-btn:hover { background: rgba(255,255,255,0.1); }
     .period-btn.active { background: var(--blue); border-color: var(--blue); color: white; }
 
+    /* ── Chat Assistente ── */
+    .chat-container { display: flex; flex-direction: column; height: 600px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .chat-messages::-webkit-scrollbar { width: 6px; }
+    .chat-messages::-webkit-scrollbar-track { background: transparent; }
+    .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .chat-welcome { text-align: center; color: var(--muted); padding: 40px 20px; font-size: 14px; line-height: 1.6; }
+    .chat-welcome-icon { font-size: 40px; margin-bottom: 12px; display: block; }
+    .chat-msg { display: flex; gap: 8px; max-width: 85%; animation: chatFadeIn .3s ease; }
+    .chat-msg-user { align-self: flex-end; flex-direction: row-reverse; }
+    .chat-msg-ai { align-self: flex-start; }
+    .chat-msg-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; margin-top: 2px; }
+    .chat-msg-user .chat-msg-icon { background: rgba(126,231,135,.15); }
+    .chat-msg-ai .chat-msg-icon { background: rgba(88,166,255,.15); }
+    .chat-msg-bubble { padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.55; word-break: break-word; }
+    .chat-msg-user .chat-msg-bubble { background: rgba(35,134,54,.25); border: 1px solid rgba(126,231,135,.2); border-bottom-right-radius: 4px; }
+    .chat-msg-ai .chat-msg-bubble { background: var(--card2); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+    .chat-msg-bubble strong { color: var(--green); font-weight: 700; }
+    .chat-msg-time { font-size: 10px; color: var(--muted); margin-top: 4px; }
+    .chat-msg-user .chat-msg-time { text-align: right; }
+    .chat-chips { display: flex; gap: 8px; padding: 12px 16px; flex-wrap: wrap; border-bottom: 1px solid var(--border); }
+    .chat-chip { background: rgba(88,166,255,.1); border: 1px solid rgba(88,166,255,.25); color: var(--blue); padding: 6px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; transition: all .15s; white-space: nowrap; }
+    .chat-chip:hover { background: rgba(88,166,255,.2); border-color: var(--blue); }
+    .chat-input-area { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border); background: var(--card); }
+    .chat-input { flex: 1; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 10px; font-size: 13px; font-family: inherit; resize: none; min-height: 42px; max-height: 120px; outline: none; transition: border-color .15s; }
+    .chat-input:focus { border-color: var(--blue); }
+    .chat-input::placeholder { color: var(--muted); }
+    .chat-send { background: var(--accent); border: none; color: #fff; width: 42px; height: 42px; border-radius: 10px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all .15s; flex-shrink: 0; }
+    .chat-send:hover { background: #2ea043; }
+    .chat-send:disabled { opacity: .4; cursor: not-allowed; }
+    .chat-loading { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--card2); border: 1px solid var(--border); border-radius: 12px; border-bottom-left-radius: 4px; font-size: 13px; color: var(--muted); }
+    .chat-loading-dots { display: flex; gap: 4px; }
+    .chat-loading-dots span { width: 6px; height: 6px; background: var(--muted); border-radius: 50%; animation: chatDots 1.4s infinite; }
+    .chat-loading-dots span:nth-child(2) { animation-delay: .2s; }
+    .chat-loading-dots span:nth-child(3) { animation-delay: .4s; }
+    @keyframes chatDots { 0%,80%,100%{opacity:.3;transform:scale(.8)} 40%{opacity:1;transform:scale(1)} }
+    @keyframes chatFadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
     /* ── Responsive ── */
     @media (max-width: 900px) {
       .finance-grid { grid-template-columns: repeat(2, 1fr); }
@@ -271,6 +309,7 @@
   <div class="tab" onclick="switchTab('hora')">⏰ Por Hora</div>
   <div class="tab" onclick="switchTab('vendas')" id="tabVendas">💰 Vendas</div>
   <div class="tab" onclick="switchTab('recomendacoes')" id="tabRec">🤖 Recomendações</div>
+  <div class="tab" onclick="switchTab('assistente')" id="tabAssistente">💬 Assistente</div>
 </div>
 
 <div class="main">
@@ -430,6 +469,24 @@
     </div>
   </div>
 
+  <!-- TAB: ASSISTENTE CHAT -->
+  <div class="tab-content" id="tab-assistente">
+    <div class="chat-container">
+      <div class="chat-chips" id="chatChips"></div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-welcome">
+          <span class="chat-welcome-icon">🤖</span>
+          Olá! Sou seu assistente de Meta Ads.<br>
+          Pergunte sobre campanhas, criativos, ROAS, ou peça recomendações.
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <textarea class="chat-input" id="chatInput" placeholder="Pergunte sobre suas campanhas..." rows="1" onkeydown="handleChatKey(event)"></textarea>
+        <button class="chat-send" id="chatSendBtn" onclick="sendChatFromInput()">→</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -524,7 +581,7 @@ async function populateData(btn) {
 // ─── SWITCH TAB ─────────────────────────────────────────────────────────────
 function switchTab(name) {
   activeTab = name;
-  const names = ['overview','campanhas','criativos','hora','vendas','recomendacoes'];
+  const names = ['overview','campanhas','criativos','hora','vendas','recomendacoes','assistente'];
   document.querySelectorAll('.tab').forEach((t, i) => {
     t.classList.toggle('active', names[i] === name);
   });
@@ -1199,6 +1256,143 @@ function esc(s) {
   if (!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
+
+// ─── CHAT ASSISTENTE ────────────────────────────────────────────────────────
+let chatHistory = [];
+let chatBusy = false;
+
+const CHAT_CHIPS = [
+  'Resumo de hoje',
+  'Qual criativo tá melhor?',
+  'Devo pausar alguma campanha?',
+  'Como tá o ROAS essa semana?',
+  'Top 5 campanhas por conversão',
+  'Análise de criativos últimos 7 dias'
+];
+
+function renderChatChips() {
+  const el = document.getElementById('chatChips');
+  el.innerHTML = CHAT_CHIPS.map(c =>
+    `<div class="chat-chip" onclick="sendChatMessage('${c.replace(/'/g, "\\'")}')">${c}</div>`
+  ).join('');
+}
+
+function handleChatKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendChatFromInput();
+  }
+  // Auto-resize textarea
+  setTimeout(() => {
+    const ta = e.target;
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
+  }, 0);
+}
+
+function sendChatFromInput() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text || chatBusy) return;
+  input.value = '';
+  input.style.height = 'auto';
+  sendChatMessage(text);
+}
+
+function addChatBubble(role, text) {
+  const msgArea = document.getElementById('chatMessages');
+  // Remove welcome message if present
+  const welcome = msgArea.querySelector('.chat-welcome');
+  if (welcome) welcome.remove();
+
+  const now = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  const icon = role === 'user' ? '👤' : '🤖';
+  const cls = role === 'user' ? 'chat-msg-user' : 'chat-msg-ai';
+
+  // Parse basic markdown: **bold** and newlines
+  let html = esc(text)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+
+  const bubble = document.createElement('div');
+  bubble.className = `chat-msg ${cls}`;
+  bubble.innerHTML = `
+    <div class="chat-msg-icon">${icon}</div>
+    <div>
+      <div class="chat-msg-bubble">${html}</div>
+      <div class="chat-msg-time">${now}</div>
+    </div>`;
+  msgArea.appendChild(bubble);
+  msgArea.scrollTop = msgArea.scrollHeight;
+}
+
+function showChatLoading() {
+  const msgArea = document.getElementById('chatMessages');
+  const loader = document.createElement('div');
+  loader.className = 'chat-msg chat-msg-ai';
+  loader.id = 'chatLoader';
+  loader.innerHTML = `
+    <div class="chat-msg-icon">🤖</div>
+    <div class="chat-loading">
+      Pensando<span class="chat-loading-dots"><span></span><span></span><span></span></span>
+    </div>`;
+  msgArea.appendChild(loader);
+  msgArea.scrollTop = msgArea.scrollHeight;
+}
+
+function removeChatLoading() {
+  const loader = document.getElementById('chatLoader');
+  if (loader) loader.remove();
+}
+
+async function sendChatMessage(pergunta) {
+  if (chatBusy || !pergunta.trim()) return;
+  chatBusy = true;
+  document.getElementById('chatSendBtn').disabled = true;
+
+  // Hide chips after first message
+  const chipsEl = document.getElementById('chatChips');
+  if (chatHistory.length === 0) chipsEl.style.display = 'none';
+
+  addChatBubble('user', pergunta);
+  chatHistory.push({ role: 'user', text: pergunta });
+
+  showChatLoading();
+
+  const ctrl = new AbortController();
+  const timeout = setTimeout(() => ctrl.abort(), 30000);
+
+  try {
+    const resp = await fetch('https://n8n-n8n.xktssy.easypanel.host/webhook/meta-ads-chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pergunta, periodo: currentPeriodo }),
+      signal: ctrl.signal
+    });
+    clearTimeout(timeout);
+
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    const resposta = data.resposta || data.response || data.text || JSON.stringify(data);
+
+    removeChatLoading();
+    addChatBubble('ai', resposta);
+    chatHistory.push({ role: 'ai', text: resposta });
+  } catch (e) {
+    clearTimeout(timeout);
+    removeChatLoading();
+    const msg = e.name === 'AbortError'
+      ? 'Timeout — o assistente demorou muito para responder. Tente novamente.'
+      : `Erro ao conectar com o assistente: ${e.message}`;
+    addChatBubble('ai', msg);
+  } finally {
+    chatBusy = false;
+    document.getElementById('chatSendBtn').disabled = false;
+  }
+}
+
+// Init chat chips
+renderChatChips();
 
 // ─── INIT ───────────────────────────────────────────────────────────────────
 loadData();
