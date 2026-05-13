@@ -638,12 +638,13 @@ function renderOverview() {
       <div class="fc-value">${roasProjeto > 0 ? roasProjeto.toFixed(2) + 'x' : (roasProjeto < 0 ? roasProjeto.toFixed(2) + 'x' : '—')}</div>
       <div class="fc-sub">Líquida ÷ Meta</div>
     </div>
+    ${currentPeriodo === 'mes' ? '' : `
     <div class="finance-card fc-yellow">
       <span class="fc-icon">🎯</span>
       <div class="fc-label">Campanhas Ativas</div>
       <div class="fc-value">${r.campanhas_ativas || 0}</div>
       <div class="fc-sub">${fmtN(r.impressoes)} impressões</div>
-    </div>
+    </div>`}
   `;
 
   // Reembolso indicator in overview
