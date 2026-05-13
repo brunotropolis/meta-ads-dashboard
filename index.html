@@ -440,9 +440,44 @@ function applyCustomPeriod() {
   loadData();
 }
 
+// ─── CACHE (localStorage, TTL 5 min) ────────────────────────────────────────
+const CACHE_TTL = 5 * 60 * 1000;
+
+function cacheKey() {
+  if (currentPeriodo === 'personalizado') {
+    const i = document.getElementById('dataInicio').value;
+    const f = document.getElementById('dataFim').value;
+    return `meta_dash_personalizado_${i}_${f}`;
+  }
+  return `meta_dash_${currentPeriodo}`;
+}
+
+function cacheLoad() {
+  try {
+    const raw = localStorage.getItem(cacheKey());
+    if (!raw) return null;
+    const { ts, data } = JSON.parse(raw);
+    if (Date.now() - ts > CACHE_TTL) return null;
+    return data;
+  } catch { return null; }
+}
+
+function cacheSave(data) {
+  try { localStorage.setItem(cacheKey(), JSON.stringify({ ts: Date.now(), data })); } catch {}
+}
+
 // ─── LOAD DATA ──────────────────────────────────────────────────────────────
 let _abortCtrl = null;
 async function loadData() {
+  // Render cache imediatamente se disponível
+  const cached = cacheLoad();
+  if (cached) {
+    DATA = cached;
+    renderAll();
+    const now = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    document.getElementById('lastUpdate').innerHTML = `<span class="dot-live"></span>Cache · Atualizando...`;
+  }
+
   // Cancela request anterior se ainda estiver pendente
   if (_abortCtrl) { try { _abortCtrl.abort(); } catch(e) {} }
   _abortCtrl = new AbortController();
@@ -451,7 +486,7 @@ async function loadData() {
   // Timeout de 25s para não ficar preso
   const timeout = setTimeout(() => _abortCtrl.abort(), 25000);
 
-  document.getElementById('lastUpdate').innerHTML = '<span class="dot-live"></span>Atualizando...';
+  if (!cached) document.getElementById('lastUpdate').innerHTML = '<span class="dot-live"></span>Carregando...';
   try {
     let url = API_URL;
     if (currentPeriodo === 'personalizado') {
@@ -465,13 +500,13 @@ async function loadData() {
     clearTimeout(timeout);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     DATA = await resp.json();
+    cacheSave(DATA);
     renderAll();
     const now = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
     document.getElementById('lastUpdate').innerHTML = `<span class="dot-live"></span>Atualizado às ${now}`;
   } catch (e) {
     clearTimeout(timeout);
     if (e.name === 'AbortError') {
-      // Se já tem dados anteriores, mostra eles; senão mostra timeout
       if (DATA) {
         const now = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
         document.getElementById('lastUpdate').innerHTML = `<span class="dot-live"></span>Timeout — dados de ${now}`;
