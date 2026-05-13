@@ -343,6 +343,19 @@
         <div class="loading"><div class="spinner"></div></div>
       </div>
     </div>
+    <!-- Métricas por UTM -->
+    <div class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Métricas por UTM</div>
+          <div class="section-sub">Distribuição de vendas no período por dimensão</div>
+        </div>
+      </div>
+      <div id="utmMetrics" style="padding:16px;display:grid;grid-template-columns:repeat(2,1fr);gap:20px">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
     <!-- Top campaigns mini table -->
     <div class="section">
       <div class="section-header">
@@ -692,8 +705,54 @@ function renderOverview() {
   // Conta breakdown
   renderContaBreakdown();
 
+  // UTM metrics
+  renderUtmMetrics();
+
   // Overview campaign table
   renderOverviewCampaigns();
+}
+
+// ─── UTM Metrics (4 horizontal bar charts) ──────────────────────────────────
+function renderUtmMetrics() {
+  const v = DATA.vendas || {};
+  const sections = [
+    { title: 'Source',   data: v.por_utm || [],          fill: 'bar-fill-green',  fmt: x => x.source || x.label },
+    { title: 'Campaign', data: v.por_utm_campaign || [], fill: 'bar-fill-blue',   fmt: x => x.label },
+    { title: 'Medium',   data: v.por_utm_medium || [],   fill: 'bar-fill-purple', fmt: x => x.label },
+    { title: 'Content',  data: v.por_utm_content || [],  fill: 'bar-fill-green',  fmt: x => x.label },
+  ];
+  const total = sections.reduce((s, sec) => s + sec.data.length, 0);
+  if (total === 0) {
+    document.getElementById('utmMetrics').innerHTML = '<div class="empty" style="grid-column:1/-1">Sem vendas com UTM no período.</div>';
+    return;
+  }
+
+  const html = sections.map(sec => {
+    const items = sec.data.slice(0, 8);
+    if (!items.length) return `
+      <div>
+        <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;font-weight:600">${sec.title}</div>
+        <div class="empty" style="padding:20px">Sem dados</div>
+      </div>`;
+    const maxVal = Math.max(...items.map(i => i.valor), 0.01);
+    const bars = items.map(i => {
+      const pct = (i.valor / maxVal * 100).toFixed(1);
+      const label = esc(sec.fmt(i)).substring(0, 28);
+      return `
+      <div class="bar-item" title="${esc(sec.fmt(i))}">
+        <div class="bar-label" style="width:130px">${label}</div>
+        <div class="bar-bg"><div class="bar-fill ${sec.fill}" style="width:${pct}%"></div></div>
+        <div class="bar-value" style="width:110px">${i.count}x · R$ ${fmt(i.valor)}</div>
+      </div>`;
+    }).join('');
+    return `
+      <div>
+        <div style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;font-weight:600">${sec.title} <span style="color:var(--text);font-weight:700">· ${sec.data.length}</span></div>
+        ${bars}
+      </div>`;
+  }).join('');
+
+  document.getElementById('utmMetrics').innerHTML = html;
 }
 
 // ─── Mini Chart (bar chart por hora usando canvas) ──────────────────────────
