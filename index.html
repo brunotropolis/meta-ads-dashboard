@@ -305,11 +305,7 @@
 <div class="tabs">
   <div class="tab active" onclick="switchTab('overview')">📊 Overview</div>
   <div class="tab" onclick="switchTab('campanhas')">📋 Campanhas</div>
-  <div class="tab" onclick="switchTab('criativos')">🎨 Criativos</div>
-  <div class="tab" onclick="switchTab('hora')">⏰ Por Hora</div>
   <div class="tab" onclick="switchTab('vendas')" id="tabVendas">💰 Vendas</div>
-  <div class="tab" onclick="switchTab('recomendacoes')" id="tabRec">🤖 Recomendações</div>
-  <div class="tab" onclick="switchTab('assistente')" id="tabAssistente">💬 Assistente</div>
 </div>
 
 <div class="main">
@@ -338,23 +334,13 @@
     </div>
     <!-- Metrics row 2 -->
     <div class="metrics-row" id="metricsRow"></div>
-    <!-- Chart + breakdown -->
-    <div class="two-col">
-      <div class="section">
-        <div class="section-header">
-          <div class="section-title">Gasto por Hora — Hoje</div>
-        </div>
-        <div id="miniChart">
-          <div class="loading"><div class="spinner"></div></div>
-        </div>
+    <!-- Conta breakdown -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">Performance por Conta</div>
       </div>
-      <div class="section">
-        <div class="section-header">
-          <div class="section-title">Performance por Conta</div>
-        </div>
-        <div id="contaBreakdown">
-          <div class="loading"><div class="spinner"></div></div>
-        </div>
+      <div id="contaBreakdown">
+        <div class="loading"><div class="spinner"></div></div>
       </div>
     </div>
     <!-- Top campaigns mini table -->
@@ -381,36 +367,6 @@
         </div>
       </div>
       <div class="table-wrap" id="campanhasTable">
-        <div class="loading"><div class="spinner"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB: CRIATIVOS -->
-  <div class="tab-content" id="tab-criativos">
-    <div class="section">
-      <div class="section-header">
-        <div>
-          <div class="section-title">Melhores Criativos (7 dias)</div>
-          <div class="section-sub">Ordenado por conversões</div>
-        </div>
-      </div>
-      <div id="criativosContent">
-        <div class="loading"><div class="spinner"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB: POR HORA -->
-  <div class="tab-content" id="tab-hora">
-    <div class="section">
-      <div class="section-header">
-        <div>
-          <div class="section-title">Gasto por Hora — Hoje</div>
-          <div class="section-sub">Acumulado de todas as campanhas (BRT)</div>
-        </div>
-      </div>
-      <div id="horaContent">
         <div class="loading"><div class="spinner"></div></div>
       </div>
     </div>
@@ -454,38 +410,6 @@
     </div>
   </div>
 
-  <!-- TAB: RECOMENDAÇÕES IA -->
-  <div class="tab-content" id="tab-recomendacoes">
-    <div class="section">
-      <div class="section-header">
-        <div>
-          <div class="section-title">Recomendações de IA</div>
-          <div class="section-sub" id="lastAiRun">Última análise: —</div>
-        </div>
-      </div>
-      <div id="recsContent">
-        <div class="loading"><div class="spinner"></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB: ASSISTENTE CHAT -->
-  <div class="tab-content" id="tab-assistente">
-    <div class="chat-container">
-      <div class="chat-chips" id="chatChips"></div>
-      <div class="chat-messages" id="chatMessages">
-        <div class="chat-welcome">
-          <span class="chat-welcome-icon">🤖</span>
-          Olá! Sou seu assistente de Meta Ads.<br>
-          Pergunte sobre campanhas, criativos, ROAS, ou peça recomendações.
-        </div>
-      </div>
-      <div class="chat-input-area">
-        <textarea class="chat-input" id="chatInput" placeholder="Pergunte sobre suas campanhas..." rows="1" onkeydown="handleChatKey(event)"></textarea>
-        <button class="chat-send" id="chatSendBtn" onclick="sendChatFromInput()">→</button>
-      </div>
-    </div>
-  </div>
 
 </div>
 
@@ -581,7 +505,7 @@ async function populateData(btn) {
 // ─── SWITCH TAB ─────────────────────────────────────────────────────────────
 function switchTab(name) {
   activeTab = name;
-  const names = ['overview','campanhas','criativos','hora','vendas','recomendacoes','assistente'];
+  const names = ['overview','campanhas','vendas'];
   document.querySelectorAll('.tab').forEach((t, i) => {
     t.classList.toggle('active', names[i] === name);
   });
@@ -604,10 +528,7 @@ function renderAll() {
   }
   renderOverview();
   renderCampanhas();
-  renderCriativos();
-  renderHora();
   renderVendas();
-  renderRecomendacoes();
 }
 
 // ─── OVERVIEW ───────────────────────────────────────────────────────────────
@@ -615,7 +536,8 @@ function renderOverview() {
   const r = DATA.resumo || {};
   const gHoje  = parseFloat(r.gasto_hoje || 0);
   const gOntem = parseFloat(r.gasto_ontem || 0);
-  const fatHoje = parseFloat(r.faturamento_hoje || 0);
+  const fatBruto = parseFloat(r.faturamento_hoje || 0);
+  const fatLiquido = parseFloat(r.faturamento_liquido || r.faturamento_hoje || 0);
   const fatOntem = parseFloat(r.faturamento_ontem || 0);
   const convVal = parseFloat(r.conversion_value || 0);
   const roasReal = parseFloat(r.roas_real || 0);
@@ -623,17 +545,17 @@ function renderOverview() {
   const totalVendas = parseInt(r.total_vendas_hoje || 0);
   const reembolsos = parseFloat(r.reembolsos_hoje || 0);
 
-  // Usa receita Greenn se disponível, senão pixel
-  const receita = fatHoje > 0 ? fatHoje : convVal;
-  const receitaLabel = fatHoje > 0 ? 'Receita Greenn' : 'Receita (Pixel)';
-  const receitaSub = fatHoje > 0
-    ? `${totalVendas} venda${totalVendas !== 1 ? 's' : ''} hoje`
+  // Usa receita Greenn líquida se disponível, senão pixel
+  const receita = fatLiquido > 0 ? fatLiquido : convVal;
+  const receitaLabel = fatBruto > 0 ? 'Receita Líquida' : 'Receita (Pixel)';
+  const receitaSub = fatBruto > 0
+    ? `Bruto: R$ ${fmt(fatBruto)}${reembolsos > 0 ? ` · Reimb: -R$ ${fmt(reembolsos)}` : ''}`
     : `${r.conversoes || 0} conv. pixel`;
 
   const lucro = receita - gHoje;
-  const roasExibir = fatHoje > 0 ? roasReal : roas;
-  const roasLabel = fatHoje > 0 ? 'ROAS Real' : 'ROAS Pixel';
-  const roasSub = fatHoje > 0 ? 'Greenn / Meta Ads' : 'Return on Ad Spend';
+  const roasExibir = fatBruto > 0 ? roasReal : roas;
+  const roasLabel = fatBruto > 0 ? 'ROAS Real' : 'ROAS Pixel';
+  const roasSub = fatBruto > 0 ? 'Líquido / Meta Ads' : 'Return on Ad Spend';
 
   // Delta gasto vs ontem
   const delta = gOntem > 0 ? ((gHoje - gOntem) / gOntem * 100).toFixed(1) : null;
@@ -723,9 +645,6 @@ function renderOverview() {
       <div class="metric-sub">R$ ${fmt(convVal)} receita</div>
     </div>
   `;
-
-  // Mini chart (gasto por hora)
-  renderMiniChart();
 
   // Conta breakdown
   renderContaBreakdown();
@@ -941,14 +860,16 @@ function renderVendas() {
   const vendasHoje = v.hoje || [];
   const porProduto = v.por_produto || [];
   const porUtm = v.por_utm || [];
-  const fatHoje = parseFloat(r.faturamento_hoje || 0);
+  const fatBruto = parseFloat(r.faturamento_hoje || 0);
+  const fatLiquido = parseFloat(r.faturamento_liquido || r.faturamento_hoje || 0);
+  const fatHoje = fatLiquido; // alias — sempre usa líquido
   const fatOntem = parseFloat(r.faturamento_ontem || 0);
   const reembolsos = parseFloat(r.reembolsos_hoje || 0);
   const totalVendas = parseInt(r.total_vendas_hoje || 0);
   const totalReembolsos = parseInt(r.total_reembolsos_hoje || 0);
   const gHoje = parseFloat(r.gasto_hoje || 0);
   const roasReal = parseFloat(r.roas_real || 0);
-  const ticketMedio = totalVendas > 0 ? (fatHoje / totalVendas) : 0;
+  const ticketMedio = totalVendas > 0 ? (fatBruto / totalVendas) : 0;
 
   // Tab badge
   const tabVendas = document.getElementById('tabVendas');
@@ -961,9 +882,9 @@ function renderVendas() {
     <div class="vendas-summary">
       <div class="finance-card fc-green">
         <span class="fc-icon">💰</span>
-        <div class="fc-label">Faturamento Hoje</div>
-        <div class="fc-value">R$ ${fmt(fatHoje)}</div>
-        <div class="fc-sub">Ontem: R$ ${fmt(fatOntem)}</div>
+        <div class="fc-label">Receita Líquida</div>
+        <div class="fc-value">R$ ${fmt(fatLiquido)}</div>
+        <div class="fc-sub">Bruto: R$ ${fmt(fatBruto)}${reembolsos > 0 ? ` · Reimb: -R$ ${fmt(reembolsos)}` : ''}</div>
       </div>
       <div class="finance-card fc-purple">
         <span class="fc-icon">🛒</span>
@@ -977,11 +898,11 @@ function renderVendas() {
         <div class="fc-value">${roasReal > 0 ? roasReal + 'x' : '—'}</div>
         <div class="fc-sub">Greenn ÷ Meta Ads</div>
       </div>
-      <div class="finance-card ${fatHoje - gHoje >= 0 ? 'fc-green' : 'fc-red'}">
+      <div class="finance-card ${fatLiquido - gHoje >= 0 ? 'fc-green' : 'fc-red'}">
         <span class="fc-icon">📈</span>
         <div class="fc-label">Lucro Líquido</div>
-        <div class="fc-value">${fatHoje - gHoje >= 0 ? '' : '-'}R$ ${fmt(Math.abs(fatHoje - gHoje - reembolsos))}</div>
-        <div class="fc-sub">Faturamento - Ads - Reembolsos</div>
+        <div class="fc-value">${fatLiquido - gHoje >= 0 ? '' : '-'}R$ ${fmt(Math.abs(fatLiquido - gHoje))}</div>
+        <div class="fc-sub">Receita líquida - Ads</div>
       </div>
     </div>
   `;
