@@ -599,7 +599,7 @@ function renderOverview() {
     : '';
 
   // Delta faturamento vs ontem
-  const deltaFat = fatOntem > 0 ? ((fatHoje - fatOntem) / fatOntem * 100).toFixed(1) : null;
+  const deltaFat = fatOntem > 0 ? ((fatLiquido - fatOntem) / fatOntem * 100).toFixed(1) : null;
   const deltaFatHtml = deltaFat !== null
     ? `<div class="fc-sub" style="color:${parseFloat(deltaFat)>=0?'var(--green)':'var(--red)'}">${parseFloat(deltaFat)>=0?'▲':'▼'} ${Math.abs(deltaFat)}% vs ontem</div>`
     : '';
