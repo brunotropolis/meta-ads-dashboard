@@ -601,10 +601,10 @@ function renderOverview() {
 
   const receita = fatLiquido; // usado em outros lugares (deltaFat)
 
-  // ROAS de Mídia = bruto / meta (sem descontar nada)
-  // ROAS do Projeto = líquida / meta (o que sobra ÷ investido)
+  // ROAS de Mídia = bruto ÷ meta (retorno bruto sobre ads)
+  // ROAS do Projeto = (bruto − reembolsos) ÷ meta (retorno líquido de reembolsos sobre ads)
   const roasMidia = gHoje > 0 && fatBruto > 0 ? (fatBruto / gHoje) : 0;
-  const roasProjeto = gHoje > 0 ? (receitaFinal / gHoje) : 0;
+  const roasProjeto = gHoje > 0 && fatLiquido > 0 ? (fatLiquido / gHoje) : 0;
 
   // Delta gasto vs ontem
   const delta = gOntem > 0 ? ((gHoje - gOntem) / gOntem * 100).toFixed(1) : null;
@@ -649,7 +649,7 @@ function renderOverview() {
       <span class="fc-icon">🎯</span>
       <div class="fc-label">ROAS do Projeto</div>
       <div class="fc-value">${roasProjeto > 0 ? roasProjeto.toFixed(2) + 'x' : (roasProjeto < 0 ? roasProjeto.toFixed(2) + 'x' : '—')}</div>
-      <div class="fc-sub">Líquida ÷ Meta</div>
+      <div class="fc-sub">(Bruto − Reimb) ÷ Meta</div>
     </div>
     ${currentPeriodo === 'mes' ? '' : `
     <div class="finance-card fc-yellow">
@@ -982,7 +982,7 @@ function renderVendas() {
   // Summary cards
   const receitaFinalV = fatLiquido - gHoje;
   const roasMidiaV = gHoje > 0 && fatBruto > 0 ? (fatBruto / gHoje) : 0;
-  const roasProjetoV = gHoje > 0 ? (receitaFinalV / gHoje) : 0;
+  const roasProjetoV = gHoje > 0 && fatLiquido > 0 ? (fatLiquido / gHoje) : 0;
   document.getElementById('vendasSummary').innerHTML = `
     <div class="vendas-summary">
       <div class="finance-card fc-blue">
@@ -1019,7 +1019,7 @@ function renderVendas() {
         <span class="fc-icon">🎯</span>
         <div class="fc-label">ROAS do Projeto</div>
         <div class="fc-value" style="color:var(--purple)">${roasProjetoV !== 0 ? roasProjetoV.toFixed(2) + 'x' : '—'}</div>
-        <div class="fc-sub">Líquida ÷ Meta</div>
+        <div class="fc-sub">(Bruto − Reimb) ÷ Meta</div>
       </div>
     </div>
   `;
