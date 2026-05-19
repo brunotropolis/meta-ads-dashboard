@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plano Estratégico Meta Ads — Dream Baby 2026</title>
+<style>
+  :root {
+    --bg: #000000;
+    --bg-elevated: #0e0e0e;
+    --bg-card: #161616;
+    --bg-hover: #1f1f1f;
+    --border: #2a2a2a;
+    --border-strong: #3d3d3d;
+    --yellow: #facc15;
+    --yellow-bright: #fde047;
+    --yellow-dim: #ca8a04;
+    --white: #ffffff;
+    --text: #f4f4f5;
+    --text-dim: #a1a1aa;
+    --text-faded: #71717a;
+    --green: #4ade80;
+    --orange: #fb923c;
+    --red: #f87171;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
+
+  header {
+    background:
+      radial-gradient(circle at 20% 30%, rgba(250, 204, 21, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(250, 204, 21, 0.05) 0%, transparent 50%),
+      var(--bg-elevated);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 56px 32px;
+    border-radius: 24px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--yellow), var(--yellow-bright), var(--yellow));
+  }
+  header h1 {
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    font-weight: 900;
+    margin-bottom: 14px;
+    color: var(--white);
+    letter-spacing: -0.02em;
+  }
+  header h1 .accent { color: var(--yellow); }
+  header p { font-size: 1.08rem; color: var(--text-dim); max-width: 720px; line-height: 1.6; }
+  header .meta { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; }
+  header .meta span {
+    background: rgba(250, 204, 21, 0.1);
+    border: 1px solid rgba(250, 204, 21, 0.3);
+    color: var(--yellow);
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .toc {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px 26px;
+    margin-bottom: 32px;
+  }
+  .toc h3 {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--yellow);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 14px;
+  }
+  .toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+  .toc li a {
+    display: inline-block;
+    padding: 9px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .toc li a:hover {
+    background: var(--yellow);
+    border-color: var(--yellow);
+    color: var(--bg);
+    transform: translateY(-1px);
+  }
+
+  section {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px;
+    margin-bottom: 24px;
+  }
+  section h2 {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--white);
+    margin-bottom: 26px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    letter-spacing: -0.01em;
+  }
+  section h2 .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px; height: 42px;
+    background: var(--yellow);
+    color: var(--bg);
+    border-radius: 12px;
+    font-size: 1.15rem;
+    font-weight: 800;
+  }
+  section h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--yellow);
+    margin-top: 28px;
+    margin-bottom: 14px;
+  }
+  section p { margin-bottom: 14px; color: var(--text); }
+  section ul, section ol { margin: 14px 0 18px 24px; color: var(--text); }
+  section li { margin-bottom: 8px; }
+  section strong { color: var(--yellow-bright); font-weight: 600; }
+  section em { color: var(--text-dim); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 22px 0;
+  }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    transition: all 0.2s;
+  }
+  .card:hover { border-color: var(--yellow); transform: translateY(-2px); }
+  .card.highlight {
+    border-color: var(--yellow);
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(250, 204, 21, 0.06) 100%);
+  }
+  .card .label {
+    font-size: 0.75rem;
+    color: var(--text-faded);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .card .value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+  .card .value.yellow { color: var(--yellow); }
+  .card .sub { font-size: 0.85rem; color: var(--text-dim); }
+
+  .funnel-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 26px;
+    margin: 24px 0;
+  }
+  .funnel-step {
+    position: relative;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 26px;
+    margin-bottom: 12px;
+    border-left: 5px solid var(--yellow);
+    transition: all 0.2s;
+  }
+  .funnel-step:hover { border-color: var(--border-strong); border-left-color: var(--yellow-bright); }
+  .funnel-step.empty {
+    border-style: dashed;
+    border-color: var(--border);
+    border-left: 5px dashed var(--text-faded);
+    background: transparent;
+    opacity: 0.85;
+  }
+  .funnel-step h4 { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+  .funnel-step h4 .name { font-size: 1.1rem; font-weight: 700; color: var(--white); }
+  .funnel-step h4 .status { font-size: 0.72rem; padding: 5px 12px; border-radius: 999px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .funnel-step h4 .status.active { background: rgba(74, 222, 128, 0.15); color: var(--green); border: 1px solid rgba(74, 222, 128, 0.3); }
+  .funnel-step h4 .status.paused { background: rgba(248, 113, 113, 0.12); color: var(--red); border: 1px solid rgba(248, 113, 113, 0.3); }
+  .funnel-step h4 .status.proposto { background: rgba(250, 204, 21, 0.12); color: var(--yellow); border: 1px solid rgba(250, 204, 21, 0.3); }
+  .funnel-step p { color: var(--text-dim); font-size: 0.95rem; margin: 8px 0; }
+  .funnel-step .metrics { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 12px; font-size: 0.9rem; color: var(--text-dim); }
+  .funnel-step .metrics span strong { color: var(--yellow); font-weight: 700; }
+  .funnel-arrow { text-align: center; color: var(--text-faded); font-size: 1.5rem; margin: 6px 0; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0;
+    font-size: 0.93rem;
+  }
+  table thead {
+    background: var(--bg-card);
+    border-bottom: 2px solid var(--yellow);
+  }
+  table th {
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 700;
+    color: var(--yellow);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  table td {
+    padding: 14px 16px;
+    border-top: 1px solid var(--border);
+    color: var(--text);
+  }
+  table tr:hover { background: var(--bg-card); }
+  table td strong { color: var(--white); font-weight: 700; }
+  .badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .badge.green { background: rgba(74, 222, 128, 0.15); color: var(--green); }
+  .badge.yellow { background: rgba(250, 204, 21, 0.15); color: var(--yellow); }
+  .badge.red { background: rgba(248, 113, 113, 0.15); color: var(--red); }
+  .badge.orange { background: rgba(251, 146, 60, 0.15); color: var(--orange); }
+
+  .callout {
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(250, 204, 21, 0.04) 100%);
+    border: 1px solid rgba(250, 204, 21, 0.25);
+    border-left: 5px solid var(--yellow);
+    border-radius: 14px;
+    padding: 22px 26px;
+    margin: 22px 0;
+  }
+  .callout.warning { border-left-color: var(--orange); border-color: rgba(251, 146, 60, 0.25); }
+  .callout.success { border-left-color: var(--green); border-color: rgba(74, 222, 128, 0.25); }
+  .callout strong { color: var(--yellow-bright); }
+  .callout p { margin: 0; color: var(--text); line-height: 1.65; }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin: 22px 0;
+  }
+  .content-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    transition: all 0.2s;
+  }
+  .content-card:hover { border-color: var(--yellow); transform: translateY(-2px); }
+  .content-card .num-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px; height: 38px;
+    background: var(--yellow);
+    color: var(--bg);
+    border-radius: 50%;
+    font-weight: 800;
+    font-size: 1rem;
+    margin-bottom: 14px;
+  }
+  .content-card h5 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+  .content-card p { font-style: italic; color: var(--text-dim); font-size: 0.92rem; line-height: 1.55; }
+
+  footer {
+    text-align: center;
+    padding: 36px 16px;
+    color: var(--text-faded);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border);
+    margin-top: 24px;
+  }
+  footer code {
+    background: var(--bg-card);
+    color: var(--yellow);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    border: 1px solid var(--border);
+  }
+
+  ::selection { background: var(--yellow); color: var(--bg); }
+
+  @media (max-width: 640px) {
+    section { padding: 24px 20px; }
+    header { padding: 36px 24px; }
+    .funnel-step { padding: 18px 20px; }
+    table { font-size: 0.84rem; }
+    table th, table td { padding: 10px 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>Plano Estratégico <span class="accent">Meta Ads 2026</span></h1>
+  <p>Conta Dream Baby — virada de tráfego frio para corredor polonês de aquecimento. Estrutura, métricas e próximos passos discutidos com a equipe.</p>
+  <div class="meta">
+    <span>📅 Atualizado em 19/Mai/2026</span>
+    <span>👤 Gestor: Bruno Sampaio</span>
+    <span>🎯 Conta: Dream Baby DB</span>
+  </div>
+</header>
+
+<div class="toc">
+  <h3>Navegação</h3>
+  <ul>
+    <li><a href="#cenario">1. Cenário Atual</a></li>
+    <li><a href="#objetivo">2. O Que Queremos</a></li>
+    <li><a href="#funil">3. Funil Atual</a></li>
+    <li><a href="#sugestoes">4. Sugestões</a></li>
+    <li><a href="#gestante">5. Trilho Gestante</a></li>
+    <li><a href="#metricas">6. Métricas e Benchmarks</a></li>
+    <li><a href="#conteudo">7. Conteúdo Pra Day</a></li>
+    <li><a href="#proximos">8. Próximos Passos</a></li>
+  </ul>
+</div>
+
+<section id="cenario">
+  <h2><span class="num">1</span> Cenário Atual</h2>
+  <p>Desde abril/2026 a conta Dream Baby está sob nova gestão, com mudança de filosofia: <strong>menos venda direta no frio, mais aquecimento de público</strong>.</p>
+
+  <h3>Números dos últimos ~50 dias (01/abr a 19/mai)</h3>
+  <div class="grid">
+    <div class="card highlight">
+      <div class="label">Investimento</div>
+      <div class="value yellow">R$ 12.350</div>
+      <div class="sub">35 campanhas com gasto</div>
+    </div>
+    <div class="card highlight">
+      <div class="label">Receita Greenn</div>
+      <div class="value yellow">R$ 37.110</div>
+      <div class="sub">155 vendas totais</div>
+    </div>
+    <div class="card highlight">
+      <div class="label">ROAS Real Estimado</div>
+      <div class="value yellow">~3,0×</div>
+      <div class="sub">contra 1,5× só de atribuição Meta</div>
+    </div>
+    <div class="card">
+      <div class="label">Reembolsos</div>
+      <div class="value">9%</div>
+      <div class="sub">14 vendas, R$ 3.715</div>
+    </div>
+  </div>
+
+  <h3>O que aprendemos olhando os dados</h3>
+  <ul>
+    <li><strong>Vender direto no frio gera mais reembolso</strong> — o público compra por impulso e arrepende. Diminuir essa porta de entrada é a virada.</li>
+    <li><strong>Manual RN (R$ 570) e Consulta da Day (R$ 397)</strong> não vendem bem em ad direto — CPA fica acima de R$ 300. Mas vendem MUITO bem via link da bio e Manychat depois que o público é aquecido.</li>
+    <li><strong>O que está funcionando hoje em ads:</strong> criativos imagéticos com ângulo de DOR (MÃE CANSADA, 5 DIAS AVISO, MATHIAS). ROAS 2,9-3,3.</li>
+    <li><strong>O que NÃO está funcionando:</strong> ad direto pra consulta, criativos antigos com frequência baixa (público está esquecendo).</li>
+    <li><strong>Tracking foi consertado em 01/maio</strong> — antes disso, vendas chegavam sem UTM (não dava pra saber origem). Agora 97% das vendas vêm taggeadas.</li>
+  </ul>
+
+  <div class="callout">
+    <p><strong>Insight central:</strong> nossas 97 "vendas misteriosas" não eram fantasmas — eram quem foi aquecido pelas campanhas, foi pro perfil da Day e comprou via link da bio. O dinheiro da Meta não fica só na atribuição direta da Meta — ele rega o orgânico.</p>
+  </div>
+</section>
+
+<section id="objetivo">
+  <h2><span class="num">2</span> O Que Queremos</h2>
+
+  <h3>Objetivo geral</h3>
+  <p>Construir um <strong>sistema de aquecimento previsível</strong> que reduza reembolso, aumente ticket médio (puxando Manual RN e Consulta) e crie audiências quentes que se autoalimentam.</p>
+
+  <h3>Princípios estratégicos acordados</h3>
+  <div class="grid">
+    <div class="card highlight">
+      <div class="label">Foco em Aquecimento</div>
+      <div class="value yellow">70%</div>
+      <div class="sub">do budget vai pra topo + meio (descoberta + nutrição)</div>
+    </div>
+    <div class="card highlight">
+      <div class="label">Venda Direta</div>
+      <div class="value yellow">30%</div>
+      <div class="sub">só pra quem já consumiu conteúdo da Day</div>
+    </div>
+    <div class="card highlight">
+      <div class="label">Variedade de Criativo</div>
+      <div class="value yellow">5-10</div>
+      <div class="sub">por audiência, rotacionando</div>
+    </div>
+    <div class="card highlight">
+      <div class="label">Frequência Saudável</div>
+      <div class="value yellow">3-4×</div>
+      <div class="sub">por semana por pessoa, sem cansar</div>
+    </div>
+  </div>
+
+  <h3>Decisões importantes</h3>
+  <ul>
+    <li><strong>ABO &gt; CBO na maior parte do tempo:</strong> queremos controle de quanto cada criativo recebe, não delegar tudo ao algoritmo. CBO só em campanha de venda já validada (ex: MATHIAS).</li>
+    <li><strong>Lookalike sai, Advantage+ entra:</strong> a Meta removeu Lookalike do Ads Manager em fev/2026 e o algoritmo novo (Andromeda) lê o criativo diretamente — escolhe o público a partir do que o anúncio fala.</li>
+    <li><strong>Não tentar vender Consulta/Manual RN direto:</strong> manter essas vendas via aquecimento + Stories da Day + bio.</li>
+    <li><strong>"Aparecer mais" = variedade, não martelo:</strong> o mesmo criativo 2-3× por pessoa, mas vários criativos diferentes na mesma semana.</li>
+  </ul>
+</section>
+
+<section id="funil">
+  <h2><span class="num">3</span> Funil Atual (validado em 19/mai)</h2>
+  <p>O corredor polonês já está montado. Falta refinar o fim do funil e adicionar o trilho de gestantes.</p>
+
+  <div class="funnel-box">
+    <div class="funnel-step">
+      <h4>
+        <span class="name">🌱 TOPO — Campanha Engajamento</span>
+        <span class="status active">Ativa</span>
+      </h4>
+      <p>Descoberta de público amplo — quem nunca viu nada da gente. Otimizado pra engajamento (curtir, comentar, salvar).</p>
+      <div class="metrics">
+        <span>💰 <strong>R$ 842</strong> em 50d</span>
+        <span>👁️ <strong>125k pessoas</strong> únicas</span>
+        <span>📈 <strong>CTR 6,81%</strong></span>
+        <span>⏰ Freq <strong>1,54×</strong></span>
+      </div>
+    </div>
+    <div class="funnel-arrow">↓</div>
+    <div class="funnel-step">
+      <h4>
+        <span class="name">🔥 MEIO — POLO Funil Sono (6 vídeos)</span>
+        <span class="status active">Ativa</span>
+      </h4>
+      <p>Quem engajou na fase de topo recebe 6 vídeos sobre dores específicas. Cada vídeo é 1 ângulo (associação negativa, autonomia, hora em hora, não quer dormir, sinais, só dorme no colo). Não mostra o mesmo vídeo 2× pra mesma pessoa.</p>
+      <div class="metrics">
+        <span>💰 <strong>R$ 1.044</strong> em 50d</span>
+        <span>👁️ <strong>162k pessoas</strong> únicas</span>
+        <span>💾 <strong>171 saves</strong></span>
+        <span>❤️ <strong>5.279 reações</strong></span>
+      </div>
+    </div>
+    <div class="funnel-arrow">↓</div>
+    <div class="funnel-step">
+      <h4>
+        <span class="name">🎯 FIM — POLO Funil Consulta</span>
+        <span class="status paused">Pausada</span>
+      </h4>
+      <p>Quem viu 50%+ do meio recebia oferta de Consulta da Day. <strong>3 criativos rodaram, não converteram</strong> — decisão de pausar até reformular a oferta.</p>
+      <div class="metrics">
+        <span>💰 R$ 116 (sub-escalada)</span>
+        <span>❌ 0 vendas atribuídas</span>
+      </div>
+    </div>
+    <div class="funnel-arrow">↓</div>
+    <div class="funnel-step">
+      <h4>
+        <span class="name">💵 VENDA — RMKT + CBO Advantage+ (MATHIAS, DB 109)</span>
+        <span class="status active">Ativa</span>
+      </h4>
+      <p>Quem já consumiu conteúdo entra aqui pra ver oferta do método Dream Baby. Criativos vencedores: MATHIAS (ROAS 2,9), MÃE CANSADA (3,3), DB 109 (2,4).</p>
+      <div class="metrics">
+        <span>💰 <strong>R$ 4.557</strong> em 50d</span>
+        <span>🛒 <strong>49 vendas</strong></span>
+        <span>📊 ROAS médio <strong>2,4×</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout success">
+    <p><strong>O que está bom:</strong> a estrutura sequencial existe e funciona. CTR alto no topo (6,81%) mostra que a Day captura atenção bem. Frequência baixa em todas as etapas mostra que tem espaço pra escalar sem cansar.</p>
+  </div>
+</section>
+
+<section id="sugestoes">
+  <h2><span class="num">4</span> Sugestões em Análise</h2>
+
+  <h3>4.1 — Reativar Fim do Funil trocando a oferta</h3>
+  <p>Hipótese: a Consulta (R$ 397, agendamento) é compromisso alto demais pra quem acabou de ver vídeos de DOR. Esse público está pronto pra comprar um CURSO (autoaplicável, começa quando quiser), não pra agendar conversa.</p>
+
+  <table>
+    <thead>
+      <tr><th>Antes (não converteu)</th><th>Proposta nova</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>3 criativos pra Consulta R$ 397</td>
+        <td>3-4 criativos pra Dream Baby R$ 247</td>
+      </tr>
+      <tr>
+        <td>4 ad sets de R$ 30/dia</td>
+        <td>1 ad set único com R$ 100/dia</td>
+      </tr>
+      <tr>
+        <td>Audiência: PageView 180D + POLOTOTAL</td>
+        <td>Audiência: POLOTOTAL 50%VIEWS (54k pessoas)</td>
+      </tr>
+      <tr>
+        <td>Criativos: 3 vídeos de Q&A da Day</td>
+        <td>Criativos: MATHIAS + MÃE CANSADA + 5 DIAS AVISO + VSL Fofoca (já testados)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Consulta fica onde já converte:</strong> link da bio, Stories da Day, Manychat. Não forçar via ad.</p>
+
+  <h3>4.2 — RMKT: adicionar ad set, não substituir</h3>
+  <p>A campanha de remarketing atual está com CPA subindo. Suspeita: o público <em>"Envolvimento IG 30D"</em> já tá saturado (pessoa já viu N vezes).</p>
+  <p><strong>Plano:</strong></p>
+  <ul>
+    <li>NÃO pausar a ad set atual (preserva R$ 2.285 de aprendizado da Meta + 19 compras de histórico)</li>
+    <li>Adicionar uma NOVA ad set dentro da mesma campanha</li>
+    <li>Público novo: POLOTOTAL - 50%VIEWS (54k pessoas mais qualificadas, já viram conteúdo de dor)</li>
+    <li>Excluir o público antigo pra não brigar consigo mesmo</li>
+    <li>Mesmo criativo MATHIAS + 1 variação</li>
+    <li>Orçamento: R$ 50/dia, rodar 7-10 dias</li>
+    <li>Se bater CPA melhor, gradualmente migrar budget (não corta abrupto)</li>
+  </ul>
+
+  <div class="callout warning">
+    <p><strong>Por que não pausar e duplicar:</strong> pausar mata o histórico de aprendizado da campanha — a Meta perde o sinal de quem converteu. Recriar entra em learning phase de novo (7-14 dias até estabilizar). Adicionar uma ad set nova preserva o motor atual e testa o novo em paralelo.</p>
+  </div>
+
+  <h3>4.3 — Audiência POLOTOTAL é ativo subutilizado</h3>
+  <p>54 mil pessoas que assistiram conteúdo de dor da Day. <strong>8% da base total</strong> da conta. Hoje só o FIM POLO usa ela — e está pausado.</p>
+  <p>Plano: alimentar o RMKT novo (4.2) com ela e o FIM POLO reformulado (4.1).</p>
+</section>
+
+<section id="gestante">
+  <h2><span class="num">5</span> Trilho Gestante (a montar)</h2>
+  <p>Esse é o pulo do gato pra Manual do Recém-Nascido vender melhor. Hoje o trilho não existe — vamos criar do zero, com vídeos novos da Day.</p>
+
+  <div class="funnel-box">
+    <div class="funnel-step empty">
+      <h4>
+        <span class="name">🌱 TOPO — Engajamento Gestante</span>
+        <span class="status proposto">Proposto</span>
+      </h4>
+      <p>Vídeos da Day falando direto pra gestante. Andromeda (algoritmo Meta) lê o criativo e encontra automaticamente as gestantes — sem precisar segmentar por interesse.</p>
+    </div>
+    <div class="funnel-arrow">↓</div>
+    <div class="funnel-step empty">
+      <h4>
+        <span class="name">🔥 MEIO — POLO Gestante (6 vídeos)</span>
+        <span class="status proposto">Proposto</span>
+      </h4>
+      <p>Mesma estrutura do POLO atual de sono — 6 vídeos, 1 ângulo cada, exclui quem já viu, alimenta audiência quente.</p>
+    </div>
+    <div class="funnel-arrow">↓</div>
+    <div class="funnel-step empty">
+      <h4>
+        <span class="name">💵 FIM — Oferta Manual do Recém-Nascido</span>
+        <span class="status proposto">Proposto</span>
+      </h4>
+      <p>Ticket R$ 570 alinhado com gestante que precisa do manual ANTES do bebê chegar. Audiência: quem viu 50%+ do POLO gestante.</p>
+    </div>
+  </div>
+</section>
+
+<section id="metricas">
+  <h2><span class="num">6</span> Métricas e Benchmarks</h2>
+  <p>Cada etapa do funil tem métricas DIFERENTES pra acompanhar. Não dá pra olhar ROAS no topo — o topo não vende. Olha engajamento.</p>
+
+  <h3>TOPO — Engajamento (descoberta)</h3>
+  <table>
+    <thead><tr><th>Métrica</th><th>Atual</th><th>Mínimo aceitável</th><th>Ideal</th><th>Alerta se</th></tr></thead>
+    <tbody>
+      <tr><td>CPM (custo por mil)</td><td>R$ 4,39</td><td>R$ 6</td><td><strong>&lt; R$ 5</strong></td><td><span class="badge red">&gt; R$ 8</span></td></tr>
+      <tr><td>CTR (taxa de clique)</td><td>6,81%</td><td>2%</td><td><strong>&gt; 4%</strong></td><td><span class="badge red">&lt; 1,5%</span></td></tr>
+      <tr><td>Custo por video view</td><td>R$ 0,005</td><td>R$ 0,02</td><td><strong>&lt; R$ 0,01</strong></td><td><span class="badge red">&gt; R$ 0,03</span></td></tr>
+      <tr><td>Custo por save</td><td>R$ 6,14</td><td>R$ 15</td><td><strong>&lt; R$ 8</strong></td><td><span class="badge red">&gt; R$ 20</span></td></tr>
+      <tr><td>Custo por seguidor novo</td><td>—</td><td>R$ 3</td><td><strong>&lt; R$ 1,50</strong></td><td><span class="badge red">&gt; R$ 5</span></td></tr>
+      <tr><td>Frequência</td><td>1,54</td><td>2</td><td><strong>2,5-3,5</strong></td><td><span class="badge red">&gt; 4,5</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>MEIO — POLO (aquecimento)</h3>
+  <table>
+    <thead><tr><th>Métrica</th><th>Atual</th><th>Mínimo</th><th>Ideal</th><th>Alerta se</th></tr></thead>
+    <tbody>
+      <tr><td>CPM</td><td>R$ 22-30</td><td>R$ 35</td><td><strong>&lt; R$ 25</strong></td><td><span class="badge red">&gt; R$ 40</span></td></tr>
+      <tr><td>CTR</td><td>0,55-1,38%</td><td>0,8%</td><td><strong>&gt; 1,2%</strong></td><td><span class="badge red">&lt; 0,5%</span></td></tr>
+      <tr><td>Custo por ThruPlay 75%</td><td>(calcular)</td><td>R$ 0,15</td><td><strong>&lt; R$ 0,08</strong></td><td><span class="badge red">&gt; R$ 0,20</span></td></tr>
+      <tr><td>% que vai pro FIM</td><td>(medir)</td><td>5%</td><td><strong>&gt; 8%</strong></td><td><span class="badge red">&lt; 3%</span></td></tr>
+      <tr><td>Frequência</td><td>1,14-1,32</td><td>2</td><td><strong>2-3</strong></td><td><span class="badge red">&gt; 4</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>VENDA — RMKT + CBO Advantage+ (Purchase)</h3>
+  <table>
+    <thead><tr><th>Métrica</th><th>Atual</th><th>Mínimo</th><th>Ideal</th><th>Alerta se</th></tr></thead>
+    <tbody>
+      <tr><td>CPM</td><td>R$ 26-52</td><td>R$ 50</td><td><strong>&lt; R$ 35</strong></td><td><span class="badge red">&gt; R$ 60</span></td></tr>
+      <tr><td>CTR</td><td>1,15-2,32%</td><td>1,3%</td><td><strong>&gt; 1,8%</strong></td><td><span class="badge red">&lt; 1%</span></td></tr>
+      <tr><td>CPC</td><td>R$ 1,13-2,25</td><td>R$ 2,50</td><td><strong>&lt; R$ 1,80</strong></td><td><span class="badge red">&gt; R$ 3</span></td></tr>
+      <tr><td>CPA (custo por venda)</td><td>R$ 81-372</td><td>R$ 180</td><td><strong>&lt; R$ 120</strong></td><td><span class="badge red">&gt; R$ 250</span></td></tr>
+      <tr><td>ROAS Meta</td><td>0,75-2,89</td><td>1,5</td><td><strong>&gt; 2,5</strong></td><td><span class="badge red">&lt; 1,2 (3 dias)</span></td></tr>
+      <tr><td>ROAS Real (Greenn)</td><td>~3,0</td><td>2,5</td><td><strong>&gt; 3,5</strong></td><td><span class="badge red">&lt; 2</span></td></tr>
+      <tr><td>Taxa de reembolso</td><td>9%</td><td>12%</td><td><strong>&lt; 8%</strong></td><td><span class="badge red">&gt; 15%</span></td></tr>
+      <tr><td>Frequência</td><td>1,22-1,31</td><td>3</td><td><strong>3-4</strong></td><td><span class="badge red">&gt; 5,5</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Semáforo de decisão pro dashboard</h3>
+  <div class="grid">
+    <div class="card">
+      <div class="label" style="color: var(--green);">🟢 Verde</div>
+      <div class="value" style="font-size:1.25rem;">Tudo dentro do ideal</div>
+      <div class="sub">Manter rodando. Se ROAS &gt; ideal por 5+ dias, considerar scale +20%.</div>
+    </div>
+    <div class="card">
+      <div class="label" style="color: var(--yellow);">🟡 Amarelo</div>
+      <div class="value" style="font-size:1.25rem;">1 métrica no limite</div>
+      <div class="sub">Observar 3 dias. Revisar criativo ou audiência.</div>
+    </div>
+    <div class="card">
+      <div class="label" style="color: var(--orange);">🟠 Laranja</div>
+      <div class="value" style="font-size:1.25rem;">2+ métricas no limite OU 1 em alerta</div>
+      <div class="sub">Investigar: criativo gasto, audiência saturada, oferta errada.</div>
+    </div>
+    <div class="card">
+      <div class="label" style="color: var(--red);">🔴 Vermelho</div>
+      <div class="value" style="font-size:1.25rem;">2+ métricas em alerta</div>
+      <div class="sub">Sugerir pause — decisão humana sempre.</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <p><strong>O sistema NÃO pausa sozinho.</strong> Ele mostra semáforo e sugere ação. Pausar ou escalar é decisão humana — mas guiada por dados.</p>
+  </div>
+</section>
+
+<section id="conteudo">
+  <h2><span class="num">7</span> Conteúdo Pra Day Gravar</h2>
+  <p>6 vídeos de 30-60 segundos, formato vertical (9:16), pra alimentar o trilho de gestantes. Cada um com 1 ângulo específico, hook forte nos primeiros 3 segundos.</p>
+
+  <div class="content-grid">
+    <div class="content-card">
+      <div class="num-circle">1</div>
+      <h5>Preparação prática</h5>
+      <p>"5 coisas que você precisa decidir ANTES do bebê chegar pra noite não virar caos"</p>
+    </div>
+    <div class="content-card">
+      <div class="num-circle">2</div>
+      <h5>Mito do choro</h5>
+      <p>"Bebê recém-nascido CHORANDO de noite é normal? Sim e não. Te explico em 60s."</p>
+    </div>
+    <div class="content-card">
+      <div class="num-circle">3</div>
+      <h5>Sono REM do RN</h5>
+      <p>"Por que o recém-nascido acorda de 2 em 2 horas — e o que dá pra fazer SIM"</p>
+    </div>
+    <div class="content-card">
+      <div class="num-circle">4</div>
+      <h5>Erro #1 da gestante</h5>
+      <p>"O maior erro que vejo gestantes preparando pro sono do bebê"</p>
+    </div>
+    <div class="content-card">
+      <div class="num-circle">5</div>
+      <h5>Quarto, berço, co-leito</h5>
+      <p>"Onde o bebê deve dormir nos primeiros meses? Mito vs ciência."</p>
+    </div>
+    <div class="content-card">
+      <div class="num-circle">6</div>
+      <h5>Promessa do método</h5>
+      <p>"Se eu pudesse falar UMA coisa pra gestante sobre sono, seria essa."</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <p><strong>Diretrizes técnicas:</strong> formato vertical (9:16), 30-60 segundos, legendas obrigatórias, hook nos primeiros 3 segundos, sem call-to-action de compra (só "saiba mais" / "salva esse vídeo"). Salvar na pasta <em>Drive &gt; CORREDOR POLONÊS &gt; GESTANTE</em> (a criar).</p>
+  </div>
+</section>
+
+<section id="proximos">
+  <h2><span class="num">8</span> Próximos Passos</h2>
+  <table>
+    <thead><tr><th>#</th><th>Item</th><th>Status</th><th>Depende de</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Aprovar sugestão FIM POLO (Consulta → DB)</td><td><span class="badge yellow">Aguarda Bruno</span></td><td>—</td></tr>
+      <tr><td>2</td><td>Aprovar sugestão RMKT (add ad set vs pausar)</td><td><span class="badge yellow">Aguarda Bruno</span></td><td>—</td></tr>
+      <tr><td>3</td><td>Day gravar 6 vídeos de gestante</td><td><span class="badge orange">Brief enviado</span></td><td>Agenda da Day</td></tr>
+      <tr><td>4</td><td>Reativar IG Insights (custo por seguidor)</td><td><span class="badge yellow">Pendente</span></td><td>Token unificado</td></tr>
+      <tr><td>5</td><td>Manychat API key</td><td><span class="badge yellow">Aguarda Bruno</span></td><td>—</td></tr>
+      <tr><td>6</td><td>Greenn export histórico</td><td><span class="badge yellow">Em processo</span></td><td>Export do Bruno</td></tr>
+      <tr><td>7</td><td>Dashboard expandido (Engagement + UTM + Funil)</td><td><span class="badge orange">Próximo sprint</span></td><td>Itens 1-3</td></tr>
+      <tr><td>8</td><td>Alertas no WhatsApp via dashboard</td><td><span class="badge orange">Backlog</span></td><td>Dashboard pronto</td></tr>
+      <tr><td>9</td><td>Trilho gestante (3 campanhas novas)</td><td><span class="badge orange">Backlog</span></td><td>Item 3 (vídeos)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  Plano vivo — última atualização 19/Mai/2026 · Conta DREAM BABY · Documento companheiro: <code>CLAUDE-estrategias-meta-ads-26.md</code>
+</footer>
+
+</div>
+</body>
+</html>
