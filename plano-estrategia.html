@@ -317,6 +317,79 @@
 
   ::selection { background: var(--yellow); color: var(--bg); }
 
+  .checklist-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin: 24px 0;
+  }
+  .checklist-box h3 {
+    color: var(--yellow);
+    font-size: 1.05rem;
+    margin-top: 28px;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .checklist-box h3:first-child { margin-top: 0; }
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+    margin: 4px 0;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .check-item:hover { border-color: var(--yellow-dim); background: var(--bg-hover); }
+  .check-item input[type="checkbox"] {
+    appearance: none;
+    width: 22px; height: 22px;
+    flex-shrink: 0;
+    border: 2px solid var(--text-faded);
+    border-radius: 6px;
+    background: var(--bg);
+    cursor: pointer;
+    position: relative;
+    margin-top: 2px;
+    transition: all 0.15s;
+  }
+  .check-item input[type="checkbox"]:hover { border-color: var(--yellow); }
+  .check-item input[type="checkbox"]:checked {
+    background: var(--yellow);
+    border-color: var(--yellow);
+  }
+  .check-item input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -52%);
+    color: var(--bg);
+    font-weight: 900;
+    font-size: 15px;
+  }
+  .check-item span {
+    color: var(--text);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .check-item input[type="checkbox"]:checked + span {
+    color: var(--text-faded);
+    text-decoration: line-through;
+  }
+  .check-item code {
+    background: var(--bg);
+    color: var(--yellow);
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 0.85em;
+    border: 1px solid var(--border);
+  }
+
   @media (max-width: 640px) {
     section { padding: 24px 20px; }
     header { padding: 36px 24px; }
@@ -349,7 +422,8 @@
     <li><a href="#gestante">5. Trilho Gestante</a></li>
     <li><a href="#metricas">6. Métricas e Benchmarks</a></li>
     <li><a href="#conteudo">7. Conteúdo Pra Day</a></li>
-    <li><a href="#proximos">8. Próximos Passos</a></li>
+    <li><a href="#proximos">8. Plano de Execução</a></li>
+    <li><a href="#checklist">9. ✅ Checklist</a></li>
   </ul>
 </div>
 
@@ -699,21 +773,150 @@
 </section>
 
 <section id="proximos">
-  <h2><span class="num">8</span> Próximos Passos</h2>
-  <table>
-    <thead><tr><th>#</th><th>Item</th><th>Status</th><th>Depende de</th></tr></thead>
-    <tbody>
-      <tr><td>1</td><td>Aprovar sugestão FIM POLO (Consulta → DB)</td><td><span class="badge yellow">Aguarda Bruno</span></td><td>—</td></tr>
-      <tr><td>2</td><td>Aprovar sugestão RMKT (add ad set vs pausar)</td><td><span class="badge yellow">Aguarda Bruno</span></td><td>—</td></tr>
-      <tr><td>3</td><td>Day gravar 6 vídeos de gestante</td><td><span class="badge orange">Brief enviado</span></td><td>Agenda da Day</td></tr>
-      <tr><td>4</td><td>Reativar IG Insights (custo por seguidor)</td><td><span class="badge yellow">Pendente</span></td><td>Token unificado</td></tr>
-      <tr><td>5</td><td>Manychat API key</td><td><span class="badge yellow">Aguarda Bruno</span></td><td>—</td></tr>
-      <tr><td>6</td><td>Greenn export histórico</td><td><span class="badge yellow">Em processo</span></td><td>Export do Bruno</td></tr>
-      <tr><td>7</td><td>Dashboard expandido (Engagement + UTM + Funil)</td><td><span class="badge orange">Próximo sprint</span></td><td>Itens 1-3</td></tr>
-      <tr><td>8</td><td>Alertas no WhatsApp via dashboard</td><td><span class="badge orange">Backlog</span></td><td>Dashboard pronto</td></tr>
-      <tr><td>9</td><td>Trilho gestante (3 campanhas novas)</td><td><span class="badge orange">Backlog</span></td><td>Item 3 (vídeos)</td></tr>
-    </tbody>
-  </table>
+  <h2><span class="num">8</span> Plano de Execução Faseado</h2>
+  <p>Sequência decidida: <strong>histórico ANTES do chat</strong>. Razão: agente sem memória estruturada sugere coisas já testadas e briga com decisões anteriores. Investir em rastreabilidade primeiro paga em qualidade depois.</p>
+
+  <h3>📅 Fase 1 — Amanhã 20/Mai, 9h (quick wins)</h3>
+  <p>Mexer só no que já está no ar — sem depender de novos vídeos. Execução via Graph API (Claude executa, Bruno acompanha).</p>
+
+  <div class="funnel-box">
+    <div class="funnel-step">
+      <h4><span class="name">🎯 9:00 — RMKT: duplicar adset com POLOTOTAL</span></h4>
+      <p>Pegar campanha RMKT ativa (ROAS 2,01) e adicionar adset nova com público mais qualificado. NÃO substitui — adiciona em paralelo pra preservar aprendizado.</p>
+      <div class="metrics">
+        <span>📊 Audience: <strong>POLOTOTAL 50%VIEWS</strong> (54k)</span>
+        <span>💰 Budget: <strong>R$ 50/dia</strong></span>
+        <span>🎨 Criativo: <strong>MATHIAS + variação</strong></span>
+      </div>
+    </div>
+    <div class="funnel-arrow">↓</div>
+    <div class="funnel-step">
+      <h4><span class="name">🎯 9:20 — FIM POLO: nova campanha com Dream Baby</span></h4>
+      <p>Duplicar campanha de FIM trocando oferta de Consulta (R$ 397, não converteu) por Dream Baby (R$ 247, alinhado com conteúdo de dor).</p>
+      <div class="metrics">
+        <span>📊 Audience: <strong>POLOTOTAL 50%VIEWS</strong></span>
+        <span>💰 Budget: <strong>R$ 100/dia</strong></span>
+        <span>🎨 4 criativos rotacionando</span>
+      </div>
+    </div>
+    <div class="funnel-arrow">↓</div>
+    <div class="funnel-step">
+      <h4><span class="name">🎯 9:40 — Pausar FIM POLO antiga + registrar mudanças</span></h4>
+      <p>Confirmar pause da campanha antiga (Consulta) e registrar as 2 mudanças no histórico de testes (Fase 2). Essas viram as primeiras entradas.</p>
+    </div>
+  </div>
+
+  <h3>📅 Fase 2 — Esta semana: Histórico de Testes</h3>
+  <p>Construir memória estruturada de toda mudança feita na conta.</p>
+  <ul>
+    <li>Aba <code>Testes</code> nova na planilha Meta Ads</li>
+    <li>Colunas: data, campanha, tipo, hipótese, métrica alvo, prazo, resultado, decisão</li>
+    <li>Timeline visual no dashboard</li>
+    <li>Mudanças de amanhã viram primeiras 2 entradas</li>
+    <li>Toda ação futura via Graph API gera entrada automática</li>
+  </ul>
+
+  <h3>📅 Fase 3 — Semana 2: Chat read-only no dashboard</h3>
+  <ul>
+    <li>Widget de chat no dashboard</li>
+    <li>Agente carrega: este documento + dados ao vivo + histórico de testes</li>
+    <li><strong>Sem tools de execução ainda</strong> — só análise, sugestão, consulta</li>
+    <li>Bruno usa 1 semana pra calibrar respostas</li>
+  </ul>
+
+  <h3>📅 Fase 4 — Semana 3: Chat com tools</h3>
+  <ul>
+    <li>Agente ganha capacidade de pausar/duplicar/ajustar via Graph API</li>
+    <li>Toda execução é registrada no histórico</li>
+    <li>Confirmação via WhatsApp antes de executar</li>
+  </ul>
+
+  <h3>📅 Fase 5 — Semana 4: Trilho gestante completo</h3>
+  <ul>
+    <li>Depende dos 6 vídeos da Day (brief na seção 7)</li>
+    <li>3 campanhas novas: TOPO + MEIO + FIM gestante</li>
+    <li>Oferta final: Manual do Recém-Nascido (R$ 570)</li>
+  </ul>
+
+  <h3>📅 Fase 6 — Em paralelo: Alertas WhatsApp</h3>
+  <ul>
+    <li>Quando campanha entra em 🔴 vermelho → alerta no WhatsApp pessoal</li>
+    <li>Inclui campanha, métrica, sugestão, botão executar</li>
+  </ul>
+</section>
+
+<section id="checklist">
+  <h2><span class="num">9</span> Checklist de Execução</h2>
+  <p>Marque conforme for executando. <strong>Estado salvo no navegador</strong> (localStorage) — abra de qualquer lugar mantendo o progresso.</p>
+
+  <div style="background: var(--bg-card); border: 1px solid var(--yellow); border-radius: 12px; padding: 16px 20px; margin: 20px 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <strong style="color: var(--yellow); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">Progresso geral</strong>
+      <span id="progress-text" style="color: var(--text-dim); font-size: 0.9rem;">0 de 0 concluídos (0%)</span>
+    </div>
+    <div style="background: var(--bg); border-radius: 999px; height: 10px; overflow: hidden;">
+      <div id="progress-bar" style="background: linear-gradient(90deg, var(--yellow-dim), var(--yellow), var(--yellow-bright)); height: 100%; width: 0%; transition: width 0.3s;"></div>
+    </div>
+  </div>
+
+  <div class="checklist-box">
+    <h3>🔥 Amanhã 20/Mai — 9h</h3>
+    <label class="check-item"><input type="checkbox" data-key="amanha-1"><span>Verificar conta DREAM BABY-DB ativa e sem flags antes de começar</span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-2"><span>Duplicar adset vencedora dentro de <code>[ABO][IG30] RMKT</code></span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-3"><span>Configurar audiência POLOTOTAL 50%VIEWS + excludes na nova adset</span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-4"><span>Setar budget R$ 50/dia e ativar adset RMKT POLOTOTAL</span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-5"><span>Criar campanha <code>[DRM] [ABO] [POLO] FIM FUNIL DB - 20/05</code></span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-6"><span>Configurar 1 ad set com R$ 100/dia, audience POLOTOTAL</span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-7"><span>Subir 4 criativos: MATHIAS + MÃE CANSADA + 5 DIAS AVISO + VSL Fofoca</span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-8"><span>Ativar campanha FIM POLO DB</span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-9"><span>Confirmar pause definitivo da FIM POLO antiga (Consulta)</span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-10"><span>Registrar 2 mudanças no histórico (planilha temporária ou anotação)</span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-11"><span>Bruno envia brief gestante pra Day</span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-12"><span>Bruno cola Manychat API key</span></label>
+
+    <h3>📊 Esta semana — Fase 2 (Histórico)</h3>
+    <label class="check-item"><input type="checkbox" data-key="hist-1"><span>Criar aba <code>Testes</code> na planilha Meta Ads</span></label>
+    <label class="check-item"><input type="checkbox" data-key="hist-2"><span>Definir schema das colunas + popular com 2 mudanças de amanhã</span></label>
+    <label class="check-item"><input type="checkbox" data-key="hist-3"><span>Adicionar componente Timeline visual no dashboard</span></label>
+    <label class="check-item"><input type="checkbox" data-key="hist-4"><span>Configurar registro automático: toda ação via Graph API → aba Testes</span></label>
+    <label class="check-item"><input type="checkbox" data-key="hist-5"><span>Validar com Bruno o formato/visualização do histórico</span></label>
+
+    <h3>💬 Semana 2 — Fase 3 (Chat read-only)</h3>
+    <label class="check-item"><input type="checkbox" data-key="chat-1"><span>Criar workflow n8n <code>/chat-meta-ads</code></span></label>
+    <label class="check-item"><input type="checkbox" data-key="chat-2"><span>Carregar contexto: CLAUDE.md + dados ao vivo + histórico</span></label>
+    <label class="check-item"><input type="checkbox" data-key="chat-3"><span>Implementar widget de chat no dashboard</span></label>
+    <label class="check-item"><input type="checkbox" data-key="chat-4"><span>Salvar conversas em aba <code>Conversas</code> da planilha</span></label>
+    <label class="check-item"><input type="checkbox" data-key="chat-5"><span>Bruno testa 1 semana e valida respostas</span></label>
+
+    <h3>🛠️ Semana 3 — Fase 4 (Chat com tools)</h3>
+    <label class="check-item"><input type="checkbox" data-key="tools-1"><span>Implementar tool <code>pausar_campanha</code></span></label>
+    <label class="check-item"><input type="checkbox" data-key="tools-2"><span>Implementar tool <code>duplicar_adset</code></span></label>
+    <label class="check-item"><input type="checkbox" data-key="tools-3"><span>Implementar tool <code>ajustar_budget</code></span></label>
+    <label class="check-item"><input type="checkbox" data-key="tools-4"><span>Implementar tool <code>criar_audiencia</code></span></label>
+    <label class="check-item"><input type="checkbox" data-key="tools-5"><span>Confirmação WhatsApp antes de cada execução</span></label>
+    <label class="check-item"><input type="checkbox" data-key="tools-6"><span>Toda execução gera entrada no histórico automaticamente</span></label>
+
+    <h3>👶 Semana 4 — Fase 5 (Trilho gestante)</h3>
+    <label class="check-item"><input type="checkbox" data-key="gest-1"><span>Day entrega 6 vídeos gestante (pasta CORREDOR POLONÊS / GESTANTE)</span></label>
+    <label class="check-item"><input type="checkbox" data-key="gest-2"><span>Criar campanha TOPO ENGAJAMENTO GESTANTE</span></label>
+    <label class="check-item"><input type="checkbox" data-key="gest-3"><span>Criar campanha MEIO POLO GESTANTE (6 ad sets espelho do sono)</span></label>
+    <label class="check-item"><input type="checkbox" data-key="gest-4"><span>Criar campanha FIM oferta Manual RN</span></label>
+    <label class="check-item"><input type="checkbox" data-key="gest-5"><span>Criar custom audiences POLO-GESTANTE-50%VIEWS</span></label>
+
+    <h3>📱 Fase 6 — Alertas WhatsApp (paralelo)</h3>
+    <label class="check-item"><input type="checkbox" data-key="alert-1"><span>Definir endpoint do dashboard que gera o alerta</span></label>
+    <label class="check-item"><input type="checkbox" data-key="alert-2"><span>Configurar disparo WhatsApp para Bruno (5541984302127)</span></label>
+    <label class="check-item"><input type="checkbox" data-key="alert-3"><span>Implementar botões de ação no alerta</span></label>
+
+    <h3>🔧 Blockers (sem prazo definido)</h3>
+    <label class="check-item"><input type="checkbox" data-key="block-1"><span>Regerar token unificado IG com <code>pages_read_engagement</code></span></label>
+    <label class="check-item"><input type="checkbox" data-key="block-2"><span>Contatar suporte Meta sobre 4 contas DESABILITADAS</span></label>
+    <label class="check-item"><input type="checkbox" data-key="block-3"><span>Greenn export histórico pré-08/abr</span></label>
+  </div>
+
+  <div class="callout">
+    <p><strong>Estado do checklist é salvo no seu navegador.</strong> Marca/desmarca à vontade — quando abrir em outro dispositivo, recomeça vazio. Pra reset total, abra DevTools (F12) → Application → Local Storage → Clear.</p>
+  </div>
 </section>
 
 <footer>
@@ -721,5 +924,32 @@
 </footer>
 
 </div>
+
+<script>
+  // Persistência do checklist no localStorage
+  (function() {
+    const KEY = 'meta-ads-checklist-v1';
+    const saved = JSON.parse(localStorage.getItem(KEY) || '{}');
+    document.querySelectorAll('.check-item input[type="checkbox"]').forEach(cb => {
+      const key = cb.dataset.key;
+      if (saved[key]) cb.checked = true;
+      cb.addEventListener('change', () => {
+        saved[key] = cb.checked;
+        localStorage.setItem(KEY, JSON.stringify(saved));
+        updateProgress();
+      });
+    });
+    function updateProgress() {
+      const all = document.querySelectorAll('.check-item input[type="checkbox"]');
+      const done = document.querySelectorAll('.check-item input[type="checkbox"]:checked');
+      const pct = all.length ? Math.round(done.length / all.length * 100) : 0;
+      const bar = document.getElementById('progress-bar');
+      const txt = document.getElementById('progress-text');
+      if (bar) bar.style.width = pct + '%';
+      if (txt) txt.textContent = `${done.length} de ${all.length} concluídos (${pct}%)`;
+    }
+    updateProgress();
+  })();
+</script>
 </body>
 </html>
