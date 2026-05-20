@@ -860,19 +860,20 @@
   </div>
 
   <div class="checklist-box">
-    <h3>🔥 Amanhã 20/Mai — 9h</h3>
-    <label class="check-item"><input type="checkbox" data-key="amanha-1"><span>Verificar conta DREAM BABY-DB ativa e sem flags antes de começar</span></label>
-    <label class="check-item"><input type="checkbox" data-key="amanha-2"><span>Duplicar adset vencedora dentro de <code>[ABO][IG30] RMKT</code></span></label>
-    <label class="check-item"><input type="checkbox" data-key="amanha-3"><span>Configurar audiência POLOTOTAL 50%VIEWS + excludes na nova adset</span></label>
-    <label class="check-item"><input type="checkbox" data-key="amanha-4"><span>Setar budget R$ 50/dia e ativar adset RMKT POLOTOTAL</span></label>
-    <label class="check-item"><input type="checkbox" data-key="amanha-5"><span>Criar campanha <code>[DRM] [ABO] [POLO] FIM FUNIL DB - 20/05</code></span></label>
-    <label class="check-item"><input type="checkbox" data-key="amanha-6"><span>Configurar 1 ad set com R$ 100/dia, audience POLOTOTAL</span></label>
-    <label class="check-item"><input type="checkbox" data-key="amanha-7"><span>Subir 4 criativos: MATHIAS + MÃE CANSADA + 5 DIAS AVISO + VSL Fofoca</span></label>
-    <label class="check-item"><input type="checkbox" data-key="amanha-8"><span>Ativar campanha FIM POLO DB</span></label>
-    <label class="check-item"><input type="checkbox" data-key="amanha-9"><span>Confirmar pause definitivo da FIM POLO antiga (Consulta)</span></label>
-    <label class="check-item"><input type="checkbox" data-key="amanha-10"><span>Registrar 2 mudanças no histórico (planilha temporária ou anotação)</span></label>
-    <label class="check-item"><input type="checkbox" data-key="amanha-11"><span>Bruno envia brief gestante pra Day</span></label>
-    <label class="check-item"><input type="checkbox" data-key="amanha-12"><span>Bruno cola Manychat API key</span></label>
+    <h3>🔥 Fase 1 — 20/Mai (EXECUTADO ✅)</h3>
+    <label class="check-item"><input type="checkbox" data-key="amanha-1" checked><span>Verificar conta DREAM BABY-DB ativa e sem flags antes de começar</span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-2" checked><span>Duplicar adset vencedora dentro de <code>[ABO][IG30] RMKT</code> → <code>120245603272350158</code></span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-3" checked><span>Configurar audiência POLOTOTAL 50%VIEWS + excludes na nova adset</span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-4" checked><span>Setar budget R$ 50/dia e ativar adset RMKT POLOTOTAL</span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-5" checked><span>Criar campanha <code>[DRM] [ABO] [POLO] FIM DB - 20/05</code> → <code>120245606203660158</code></span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-6" checked><span>Configurar 1 ad set com R$ 100/dia, audience POLOTOTAL → <code>120245606522330158</code></span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-7" checked><span>Subir 4 criativos: MATHIAS + MÃE CANSADA + 5 DIAS AVISO + VSL Fofoca</span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-8" checked><span>Ativar campanha FIM POLO DB</span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-9" checked><span>Confirmar pause definitivo da FIM POLO CONSULTA antiga</span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-bonus" checked><span>🎯 BÔNUS: Descoberto campo <code>regional_regulation_identities</code> que destrava criação de adsets via API</span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-10"><span>Registrar mudanças no histórico (aba Testes — Fase 2)</span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-11"><span><s>Bruno envia brief gestante pra Day</s> (pulado — só após Manychat)</span></label>
+    <label class="check-item"><input type="checkbox" data-key="amanha-12"><span>Bruno cola Manychat API key (Settings → API → Generate, plano Pro)</span></label>
 
     <h3>📊 Esta semana — Fase 2 (Histórico)</h3>
     <label class="check-item"><input type="checkbox" data-key="hist-1"><span>Criar aba <code>Testes</code> na planilha Meta Ads</span></label>
@@ -932,13 +933,17 @@
     const saved = JSON.parse(localStorage.getItem(KEY) || '{}');
     document.querySelectorAll('.check-item input[type="checkbox"]').forEach(cb => {
       const key = cb.dataset.key;
-      if (saved[key]) cb.checked = true;
+      // localStorage tem prioridade — mas se a key não está em saved, mantém o checked do HTML
+      if (key in saved) cb.checked = saved[key];
+      // Se HTML default é checked e ainda não foi salvo, sincroniza
+      if (cb.checked && !(key in saved)) { saved[key] = true; }
       cb.addEventListener('change', () => {
         saved[key] = cb.checked;
         localStorage.setItem(KEY, JSON.stringify(saved));
         updateProgress();
       });
     });
+    localStorage.setItem(KEY, JSON.stringify(saved));
     function updateProgress() {
       const all = document.querySelectorAll('.check-item input[type="checkbox"]');
       const done = document.querySelectorAll('.check-item input[type="checkbox"]:checked');
