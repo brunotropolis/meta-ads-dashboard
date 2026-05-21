@@ -996,8 +996,33 @@ function cacheLoad() {
 }
 
 function cacheSave(data) {
-  try { localStorage.setItem(cacheKey(), JSON.stringify({ ts: Date.now(), data })); } catch {}
+  try {
+    // Deriva a chave do PRÓPRIO data.periodo (não da variável global currentPeriodo)
+    // Evita race condition: se usuário trocar de período antes da resposta chegar,
+    // o data vem com período antigo e era salvo na chave nova (corrompendo cache).
+    const p = data && data.periodo;
+    if (!p || !p.tipo) return;
+    let key;
+    if (p.tipo === 'personalizado') {
+      key = `meta_dash_personalizado_${p.inicio}_${p.fim}`;
+    } else {
+      key = `meta_dash_${p.tipo}`;
+    }
+    localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
+  } catch {}
 }
+
+// Limpa caches potencialmente corrompidos no boot (uma vez por sessão)
+(function _invalidateStaleCachesOnce() {
+  try {
+    const FLAG = 'meta_dash_cache_v2';
+    if (localStorage.getItem(FLAG)) return;
+    Object.keys(localStorage)
+      .filter(k => k.startsWith('meta_dash_') && k !== FLAG)
+      .forEach(k => localStorage.removeItem(k));
+    localStorage.setItem(FLAG, '1');
+  } catch {}
+})();
 
 // ─── LOAD DATA ──────────────────────────────────────────────────────────────
 let _abortCtrl = null;
