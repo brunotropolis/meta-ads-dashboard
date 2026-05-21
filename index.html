@@ -306,6 +306,7 @@
   <div class="tab active" onclick="switchTab('overview')">📊 Overview</div>
   <div class="tab" onclick="switchTab('campanhas')">📋 Campanhas</div>
   <div class="tab" onclick="switchTab('vendas')" id="tabVendas">💰 Vendas</div>
+  <div class="tab" onclick="switchTab('analise')">🔍 Análise & Baseline</div>
 </div>
 
 <div class="main">
@@ -423,6 +424,10 @@
     </div>
   </div>
 
+  <!-- TAB: ANÁLISE & BASELINE -->
+  <div class="tab-content" id="tab-analise">
+    <iframe src="baseline.html" style="width:100%;height:calc(100vh - 200px);min-height:700px;border:0;border-radius:12px;background:#000;display:block" loading="lazy" title="Baseline & Monitoramento"></iframe>
+  </div>
 
 </div>
 
