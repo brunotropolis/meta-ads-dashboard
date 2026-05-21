@@ -551,6 +551,70 @@
     .star { color: var(--yellow); }
     .alert { color: var(--red); }
 
+    /* Demografia / Placement cards horizontais */
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .demo-card {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      transition: all .2s;
+    }
+    .demo-card:hover { transform: translateY(-2px); border-color: var(--border-hover); }
+    .demo-card.demo-green  { border-left-color: var(--green); background: linear-gradient(135deg, rgba(74,222,128,0.08) 0%, rgba(28,35,51,0.5) 80%); }
+    .demo-card.demo-blue   { border-left-color: var(--blue); background: linear-gradient(135deg, rgba(96,165,250,0.08) 0%, rgba(28,35,51,0.5) 80%); }
+    .demo-card.demo-yellow { border-left-color: var(--yellow); background: linear-gradient(135deg, rgba(251,191,36,0.08) 0%, rgba(28,35,51,0.5) 80%); }
+    .demo-card.demo-red    { border-left-color: var(--red); background: linear-gradient(135deg, rgba(248,113,113,0.08) 0%, rgba(28,35,51,0.5) 80%); }
+    .demo-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .demo-age {
+      font-size: 14px; font-weight: 700; color: var(--text);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .demo-gen { font-size: 18px; color: var(--purple); }
+    .demo-roas { margin-bottom: 10px; }
+    .demo-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 12px;
+      font-size: 12px;
+    }
+    .demo-stats > div { display: flex; justify-content: space-between; align-items: baseline; }
+    .demo-label { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .5px; }
+    .demo-val { color: var(--text); font-weight: 700; font-size: 12px; }
+    .demo-status {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    /* Help inline */
+    .help-inline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px; height: 14px;
+      margin-left: 4px;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      color: var(--muted);
+      font-size: 9px;
+      cursor: help;
+      font-weight: 700;
+    }
+    .help-inline:hover { background: var(--purple); color: white; border-color: var(--purple); }
+
     /* Easter egg footer */
     .easter-footer {
       text-align: center;
@@ -773,8 +837,19 @@
       <div class="section-header">
         <div>
           <div class="section-title glow">📐 Benchmarks Estatísticos</div>
-          <div class="section-sub">Distribuição das campanhas com gasto &gt; R$ 50 no período. Mediana = "normal" da casa.</div>
+          <div class="section-sub">Distribuição das campanhas com gasto &gt; R$ 50 no período. Mediana = o "normal" da casa.</div>
         </div>
+      </div>
+      <div style="padding: 12px 20px; font-size: 11px; color: var(--muted); background: rgba(167,139,250,0.04); border-bottom: 1px solid var(--border); line-height: 1.6">
+        <strong style="color: var(--purple)">Como ler isso:</strong>
+        <span title="50% das campanhas têm valor entre P25 e P75. É a 'zona normal' da casa — onde a maioria fica.">
+          <strong style="color: var(--text)">P25–P75</strong> = a zona normal (50% das campanhas estão aí)
+        </span> ·
+        <span title="Min e Max absolutos. Inclui campanhas excelentes e desastrosas.">
+          <strong style="color: var(--text)">Range</strong> = extremos absolutos (a melhor e a pior)
+        </span>
+        <br>
+        <span style="opacity:.7">Ex: se CPM mediana = R$ 19, P25–P75 = R$ 12–28, Range = R$ 4–60 — significa que 50% das campanhas custam entre 12 e 28 (zona normal), mas teve uma que rolou a R$ 4 e outra a R$ 60 (extremos).</span>
       </div>
       <div class="table-wrap" id="analiseBenchmarks">
         <div class="loading"><div class="spinner"></div></div>
@@ -821,30 +896,29 @@
       </div>
     </div>
 
-    <!-- Placement + Demografia (dinâmico via breakdowns API) -->
-    <div class="two-col">
-      <div class="section">
-        <div class="section-header">
-          <div>
-            <div class="section-title glow">📡 Placement</div>
-            <div class="section-sub">Onde o dinheiro tá rendendo melhor</div>
-          </div>
-        </div>
-        <div class="table-wrap" id="analisePlacement">
-          <div class="loading"><div class="spinner"></div></div>
+    <!-- Demografia (full width, cards horizontais) -->
+    <div class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title glow">👥 Idade × Gênero</div>
+          <div class="section-sub">Demografia que converte (e a que não converte)</div>
         </div>
       </div>
+      <div id="analiseDemografia" style="padding: 16px;">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
 
-      <div class="section">
-        <div class="section-header">
-          <div>
-            <div class="section-title glow">👥 Idade × Gênero</div>
-            <div class="section-sub">Demografia que converte (e a que não converte)</div>
-          </div>
+    <!-- Placement -->
+    <div class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title glow">📡 Placement</div>
+          <div class="section-sub">Onde o dinheiro tá rendendo melhor</div>
         </div>
-        <div class="table-wrap" id="analiseDemografia">
-          <div class="loading"><div class="spinner"></div></div>
-        </div>
+      </div>
+      <div id="analisePlacement" style="padding: 16px;">
+        <div class="loading"><div class="spinner"></div></div>
       </div>
     </div>
 
@@ -1045,51 +1119,64 @@ function renderBreakdowns(d) {
     return `<span class="roas-pill ${c}">${v.toFixed(2)}x</span>`;
   }
 
-  // Placement
-  const plcRows = (d.placements || []).slice(0, 10).map(p => `
-    <tr>
-      <td><strong>${p.plataforma}</strong></td>
-      <td>${p.posicao.replace(/_/g, ' ')}</td>
-      <td class="text-right">${brl(p.spend)}</td>
-      <td class="text-right">${brl(p.cpm)}</td>
-      <td class="text-right">${pct(p.ctr)}</td>
-      <td class="text-right">${p.compras}</td>
-      <td class="text-right">${roasPill(p.roas)}</td>
-    </tr>
-  `).join('');
-  document.getElementById('analisePlacement').innerHTML = `
-    <table>
-      <thead><tr><th>Plataforma</th><th>Posição</th><th class="text-right">Spend</th><th class="text-right">CPM</th><th class="text-right">CTR</th><th class="text-right">Comp</th><th class="text-right">ROAS</th></tr></thead>
-      <tbody>${plcRows || '<tr><td colspan="7" class="text-center" style="color:var(--muted);padding:24px">Sem dados</td></tr>'}</tbody>
-    </table>
-  `;
-
-  // Demografia (com badges de status pra subutilizado/sangrando)
-  const demRows = (d.demografia || []).map(x => {
+  // Demografia em CARDS horizontais (sem scroll lateral)
+  const demCards = (d.demografia || []).map(x => {
     const sp = x.spend, roas = x.roas;
-    let status = '';
-    if (sp > 1000 && roas < 1.3) status = '<span class="roas-pill red">sangrando</span>';
-    else if (sp < 300 && roas > 2.2) status = '<span class="roas-pill green">⭐ sub-investido</span>';
-    else if (sp > 0 && x.compras === 0) status = '<span class="roas-pill yellow">sem converter</span>';
+    let status = '', cls = '';
+    if (sp > 1000 && roas < 1.3) { status = '🔴 sangrando'; cls = 'demo-red'; }
+    else if (sp < 300 && roas > 2.2) { status = '⭐ sub-investido'; cls = 'demo-green'; }
+    else if (sp > 0 && x.compras === 0) { status = '⏳ sem converter'; cls = 'demo-yellow'; }
+    else if (roas >= 1.5) { cls = 'demo-blue'; }
+    const genIcon = x.genero === 'female' ? '♀' : (x.genero === 'male' ? '♂' : '◇');
     return `
-      <tr>
-        <td><strong>${x.idade}</strong></td>
-        <td>${x.genero}</td>
-        <td class="text-right">${brl(sp)}</td>
-        <td class="text-right">${brl(x.cpm)}</td>
-        <td class="text-right">${pct(x.ctr)}</td>
-        <td class="text-right">${x.compras}</td>
-        <td class="text-right">${roasPill(roas)}</td>
-        <td>${status}</td>
-      </tr>
+      <div class="demo-card ${cls}">
+        <div class="demo-header">
+          <span class="demo-age">${x.idade}</span>
+          <span class="demo-gen">${genIcon}</span>
+        </div>
+        <div class="demo-roas">${roasPill(roas)}</div>
+        <div class="demo-stats">
+          <div><span class="demo-label">Spend</span><span class="demo-val">${brl(sp)}</span></div>
+          <div><span class="demo-label">CPM</span><span class="demo-val">${brl(x.cpm)}</span></div>
+          <div><span class="demo-label">CTR</span><span class="demo-val">${pct(x.ctr)}</span></div>
+          <div><span class="demo-label">Comp</span><span class="demo-val">${x.compras}</span></div>
+        </div>
+        ${status ? `<div class="demo-status">${status}</div>` : ''}
+      </div>
     `;
   }).join('');
-  document.getElementById('analiseDemografia').innerHTML = `
-    <table>
-      <thead><tr><th>Idade</th><th>Gen</th><th class="text-right">Spend</th><th class="text-right">CPM</th><th class="text-right">CTR</th><th class="text-right">Comp</th><th class="text-right">ROAS</th><th>Status</th></tr></thead>
-      <tbody>${demRows || '<tr><td colspan="8" class="text-center" style="color:var(--muted);padding:24px">Sem dados</td></tr>'}</tbody>
-    </table>
-  `;
+  document.getElementById('analiseDemografia').innerHTML = demCards
+    ? `<div class="demo-grid">${demCards}</div>`
+    : `<div class="empty">Sem dados demográficos</div>`;
+
+  // Placement em CARDS horizontais também
+  const plcCards = (d.placements || []).slice(0, 12).map(p => {
+    const sp = p.spend, roas = p.roas;
+    let cls = '';
+    if (roas >= 1.8) cls = 'demo-green';
+    else if (roas >= 1.0) cls = 'demo-blue';
+    else if (roas > 0) cls = 'demo-yellow';
+    else cls = 'demo-red';
+    const platIcon = p.plataforma === 'instagram' ? '📸' : (p.plataforma === 'facebook' ? '📘' : (p.plataforma === 'threads' ? '🧵' : '📡'));
+    const posLabel = p.posicao.replace(/instagram_|facebook_|_/g, ' ').trim();
+    return `
+      <div class="demo-card ${cls}">
+        <div class="demo-header">
+          <span class="demo-age">${platIcon} ${posLabel}</span>
+        </div>
+        <div class="demo-roas">${roasPill(roas)}</div>
+        <div class="demo-stats">
+          <div><span class="demo-label">Spend</span><span class="demo-val">${brl(sp)}</span></div>
+          <div><span class="demo-label">CPM</span><span class="demo-val">${brl(p.cpm)}</span></div>
+          <div><span class="demo-label">CTR</span><span class="demo-val">${pct(p.ctr)}</span></div>
+          <div><span class="demo-label">Comp</span><span class="demo-val">${p.compras}</span></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('analisePlacement').innerHTML = plcCards
+    ? `<div class="demo-grid">${plcCards}</div>`
+    : `<div class="empty">Sem dados de placement</div>`;
 
   // Pausadas
   const fmt = (n, d=0) => Number(n||0).toLocaleString('pt-BR', {minimumFractionDigits: d, maximumFractionDigits: d});
