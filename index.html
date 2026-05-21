@@ -122,21 +122,35 @@
       z-index: 99;
     }
     .tab {
-      padding: 13px 18px; cursor: pointer; color: var(--muted);
-      font-size: 13px; font-weight: 600;
-      border-bottom: 2px solid transparent;
+      padding: 16px 24px; cursor: pointer; color: var(--muted);
+      font-size: 14px; font-weight: 600;
+      border-bottom: 3px solid transparent;
       transition: all .2s; white-space: nowrap;
       position: relative;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .tab .tab-icon {
+      font-size: 18px;
+      filter: grayscale(40%);
+      transition: all .25s;
     }
     .tab:hover { color: var(--text); }
+    .tab:hover .tab-icon {
+      filter: grayscale(0%) drop-shadow(0 0 8px currentColor);
+      transform: scale(1.1);
+    }
     .tab.active {
-      color: var(--purple);
-      border-bottom-color: var(--purple);
+      color: var(--text);
+      border-bottom-color: transparent;
+    }
+    .tab.active .tab-icon {
+      filter: grayscale(0%) drop-shadow(0 0 10px var(--purple-glow));
+      transform: scale(1.15);
     }
     .tab.active::after {
-      content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px;
-      background: var(--grad-vibrant); border-radius: 2px;
-      box-shadow: 0 0 10px var(--purple-glow);
+      content: ''; position: absolute; bottom: -3px; left: 12px; right: 12px; height: 3px;
+      background: var(--grad-vibrant); border-radius: 3px;
+      box-shadow: 0 0 14px var(--purple-glow), 0 0 4px var(--pink-glow);
     }
     .tab-badge {
       background: var(--grad-purple); color: #fff;
@@ -326,19 +340,102 @@
       margin-bottom: 16px;
     }
 
-    /* ── Period selector ── */
+    /* ── Period selector — pills modernos ── */
+    #periodSelector {
+      gap: 6px !important;
+      padding: 12px 16px !important;
+      background: var(--card) !important;
+      backdrop-filter: blur(20px) saturate(160%);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid var(--border);
+      border-radius: 14px !important;
+      margin-bottom: 18px !important;
+    }
+    #periodSelector > span:first-child {
+      font-size: 12px !important;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+      color: var(--purple) !important;
+      margin-right: 6px;
+    }
     .period-btn {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: var(--text);
-      padding: 4px 12px;
-      border-radius: 4px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 18px;
+      border-radius: 999px;
       cursor: pointer;
       font-size: 13px;
-      transition: all 0.2s;
+      font-weight: 600;
+      transition: all 0.25s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
-    .period-btn:hover { background: rgba(255,255,255,0.1); }
-    .period-btn.active { background: var(--blue); border-color: var(--blue); color: white; }
+    .period-btn:hover {
+      background: rgba(167,139,250,0.1);
+      border-color: var(--border-hover);
+      color: var(--text);
+      transform: translateY(-1px);
+    }
+    .period-btn.active {
+      background: var(--grad-purple);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 4px 14px var(--purple-glow);
+    }
+    .period-btn.active:hover {
+      background: var(--grad-pink);
+      box-shadow: 0 4px 16px var(--pink-glow);
+    }
+
+    /* Date inputs estilizados */
+    #customDates {
+      background: rgba(99,102,241,0.06);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 12px;
+      gap: 10px !important;
+    }
+    #customDates input[type="date"] {
+      background: var(--card-solid) !important;
+      color: var(--text) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 8px !important;
+      padding: 7px 12px !important;
+      font-size: 13px !important;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      color-scheme: dark;
+    }
+    #customDates input[type="date"]:hover {
+      border-color: var(--purple) !important;
+      background: rgba(167,139,250,0.08) !important;
+    }
+    #customDates input[type="date"]:focus {
+      outline: none;
+      border-color: var(--purple) !important;
+      box-shadow: 0 0 0 3px rgba(167,139,250,0.2);
+    }
+    #customDates input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.7) sepia(1) saturate(5) hue-rotate(220deg);
+      cursor: pointer;
+      opacity: 0.8;
+    }
+    #customDates input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+    #customDates > span { color: var(--purple) !important; font-weight: 800; font-size: 16px !important; }
+    #periodLabel {
+      font-size: 12px !important;
+      font-weight: 600;
+      color: var(--text) !important;
+      padding: 4px 12px;
+      background: rgba(167,139,250,0.1);
+      border: 1px solid rgba(167,139,250,0.25);
+      border-radius: 999px;
+    }
 
     /* ── Chat Assistente ── */
     .chat-container { display: flex; flex-direction: column; height: 600px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
@@ -484,46 +581,44 @@
 
 <div class="header">
   <div class="header-left">
-    <span style="font-size:26px;filter:drop-shadow(0 0 12px var(--purple-glow))" title="May the ROAS be with you ✨">⚡</span>
+    <span style="font-size:28px;filter:drop-shadow(0 0 14px var(--purple-glow))" title="May the ROAS be with you ✨">⚡</span>
     <div>
       <h1>Meta Ads Command Center</h1>
       <div class="header-subtitle">
-        <span class="badge-account badge-mrn">MRN</span>&nbsp;
-        <span class="badge-account badge-db">Dream Baby</span>
-        <span class="tagline">&nbsp;· que a força do ROAS esteja com você</span>
+        <span class="tagline">⚔️ que a força do ROAS esteja com você</span>
       </div>
     </div>
   </div>
   <div class="header-right">
     <span class="last-update" id="lastUpdate">Carregando...</span>
-    <button class="btn btn-sm" onclick="populateData(this)" title="Busca dados frescos da Meta API e salva na planilha">⚡ Sync Meta</button>
-    <button class="btn btn-green" onclick="loadData()">↻ Atualizar</button>
+    <button class="btn btn-sm" onclick="populateData(this)" title="Força refresh dos dados da Meta API → atualiza a planilha (use quando os números estiverem desatualizados). Demora ~8s.">🛸 Sync Meta</button>
+    <button class="btn btn-green" onclick="loadData()" title="Recarrega o dashboard com os dados que já estão na planilha (instantâneo). Auto-refresh a cada 10 min.">↻ Atualizar</button>
   </div>
 </div>
 
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('overview')">📊 Overview</div>
-  <div class="tab" onclick="switchTab('campanhas')">📋 Campanhas</div>
-  <div class="tab" onclick="switchTab('vendas')" id="tabVendas">💰 Vendas</div>
-  <div class="tab" onclick="switchTab('analise')">🔍 Análise & Baseline</div>
+  <div class="tab active" onclick="switchTab('overview')"><span class="tab-icon">🎮</span> Overview</div>
+  <div class="tab" onclick="switchTab('campanhas')"><span class="tab-icon">🚀</span> Campanhas</div>
+  <div class="tab" onclick="switchTab('vendas')" id="tabVendas"><span class="tab-icon">💎</span> Vendas</div>
+  <div class="tab" onclick="switchTab('analise')"><span class="tab-icon">🔮</span> Análise & Baseline</div>
 </div>
 
 <div class="main">
 
   <!-- Period Selector -->
-  <div id="periodSelector" style="display:flex;align-items:center;gap:8px;padding:8px 16px;margin-bottom:12px;background:rgba(255,255,255,0.03);border-radius:8px;flex-wrap:wrap">
-    <span style="color:var(--muted);font-size:13px;margin-right:4px">Periodo:</span>
-    <button class="period-btn active" onclick="setPeriodo('hoje')">Hoje</button>
-    <button class="period-btn" onclick="setPeriodo('semana')">Semana</button>
-    <button class="period-btn" onclick="setPeriodo('mes')">Mes</button>
-    <button class="period-btn" onclick="setPeriodo('personalizado')">Personalizado</button>
-    <div id="customDates" style="display:none;gap:6px;align-items:center">
-      <input type="date" id="dataInicio" style="background:var(--bg);color:var(--text);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:4px 8px;font-size:13px">
-      <span style="color:var(--muted)">→</span>
-      <input type="date" id="dataFim" style="background:var(--bg);color:var(--text);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:4px 8px;font-size:13px">
-      <button class="period-btn" onclick="applyCustomPeriod()">Aplicar</button>
+  <div id="periodSelector" style="display:flex;align-items:center;flex-wrap:wrap">
+    <span>⏱ Período</span>
+    <button class="period-btn active" onclick="setPeriodo('hoje')">🌟 Hoje</button>
+    <button class="period-btn" onclick="setPeriodo('semana')">📆 Semana</button>
+    <button class="period-btn" onclick="setPeriodo('mes')">🗓 Mês</button>
+    <button class="period-btn" onclick="setPeriodo('personalizado')">🎯 Personalizado</button>
+    <div id="customDates" style="display:none;align-items:center">
+      <input type="date" id="dataInicio">
+      <span>→</span>
+      <input type="date" id="dataFim">
+      <button class="period-btn active" onclick="applyCustomPeriod()" style="padding:7px 16px">Aplicar</button>
     </div>
-    <span id="periodLabel" style="color:var(--muted);font-size:12px;margin-left:auto"></span>
+    <span id="periodLabel" style="margin-left:auto"></span>
   </div>
 
   <!-- TAB: OVERVIEW -->
