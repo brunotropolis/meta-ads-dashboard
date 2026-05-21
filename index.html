@@ -2316,5 +2316,286 @@ function esc(s) {
 loadData();
 setInterval(loadData, 10 * 60 * 1000);
 </script>
+
+<!-- ===================== AUSTIN POWERS CHAT WIDGET ===================== -->
+<style>
+  #ap-fab {
+    position: fixed; right: 24px; bottom: 24px; z-index: 9998;
+    width: 64px; height: 64px; border-radius: 50%;
+    border: 2px solid #fff;
+    background: radial-gradient(circle at 30% 30%, #fb923c 0%, #ec4899 45%, #8b5cf6 100%);
+    box-shadow: 0 8px 24px rgba(236,72,153,0.45), 0 0 0 4px rgba(251,146,60,0.18);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-family: Georgia, serif; font-style: italic; font-weight: bold; color: #fff;
+    font-size: 22px; letter-spacing: -1px;
+    transition: transform .2s ease, box-shadow .2s ease;
+    animation: ap-pulse 2.4s ease-in-out infinite;
+  }
+  #ap-fab:hover { transform: scale(1.08) rotate(-4deg); }
+  #ap-fab .ap-dot { position:absolute; top:6px; right:6px; width:12px; height:12px;
+    border-radius:50%; background:#4ade80; border:2px solid #fff; box-shadow:0 0 8px #4ade80; }
+  @keyframes ap-pulse {
+    0%,100% { box-shadow: 0 8px 24px rgba(236,72,153,0.45), 0 0 0 4px rgba(251,146,60,0.18); }
+    50%     { box-shadow: 0 8px 24px rgba(236,72,153,0.7),  0 0 0 10px rgba(251,146,60,0.05); }
+  }
+
+  #ap-drawer {
+    position: fixed; right: 24px; bottom: 100px; z-index: 9999;
+    width: 420px; max-width: calc(100vw - 48px);
+    height: 70vh; max-height: 720px; min-height: 480px;
+    border-radius: 18px; overflow: hidden;
+    background: linear-gradient(180deg, #1a0f2e 0%, #15102b 50%, #1a0f2e 100%);
+    border: 1px solid rgba(251,146,60,0.35);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(167,139,250,0.15);
+    display: none; flex-direction: column;
+    color: #f0f1f7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    transform: translateY(20px) scale(0.96); opacity: 0;
+    transition: transform .25s cubic-bezier(.2,.8,.3,1.2), opacity .2s ease;
+  }
+  #ap-drawer.ap-open { display: flex; transform: translateY(0) scale(1); opacity: 1; }
+
+  #ap-header {
+    background: linear-gradient(95deg, #fb923c 0%, #ec4899 50%, #8b5cf6 100%);
+    padding: 14px 16px; display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+  }
+  #ap-header .ap-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: repeating-conic-gradient(#1a0f2e 0 18deg, #fff 18deg 20deg);
+    border: 2px solid #fff; display:flex; align-items:center; justify-content:center;
+    font-family: Georgia, serif; font-weight: bold; font-style: italic; font-size: 18px; color:#1a0f2e;
+    box-shadow: inset 0 0 0 2px #fb923c;
+  }
+  #ap-header .ap-title { flex:1; line-height:1.2; }
+  #ap-header .ap-title b { font-family: Georgia, serif; font-style: italic; font-size: 16px; }
+  #ap-header .ap-title small { display:block; opacity:.85; font-size:11px; letter-spacing:.5px; text-transform:uppercase; }
+  #ap-close {
+    background: rgba(0,0,0,0.25); border: none; color: #fff; width: 28px; height: 28px;
+    border-radius: 50%; cursor: pointer; font-size: 18px; line-height: 1;
+  }
+  #ap-close:hover { background: rgba(0,0,0,0.45); }
+
+  #ap-messages {
+    flex: 1; overflow-y: auto; padding: 16px 14px; display:flex; flex-direction:column; gap:10px;
+    background-image:
+      radial-gradient(at 0% 0%, rgba(251,146,60,0.06) 0px, transparent 40%),
+      radial-gradient(at 100% 100%, rgba(139,92,246,0.10) 0px, transparent 50%);
+  }
+  #ap-messages::-webkit-scrollbar { width: 8px; }
+  #ap-messages::-webkit-scrollbar-thumb { background: rgba(167,139,250,0.3); border-radius: 4px; }
+
+  .ap-msg { max-width: 88%; padding: 9px 13px; border-radius: 14px; font-size: 13.5px; line-height: 1.5; word-wrap: break-word; }
+  .ap-msg.user {
+    align-self: flex-end; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+  .ap-msg.bot {
+    align-self: flex-start; background: rgba(28,35,51,0.85);
+    border: 1px solid rgba(251,146,60,0.25); border-bottom-left-radius: 4px;
+  }
+  .ap-msg.bot h1, .ap-msg.bot h2, .ap-msg.bot h3 { color: #fb923c; margin: 6px 0 4px; font-size: 14px; font-weight: 700; }
+  .ap-msg.bot strong { color: #f472b6; }
+  .ap-msg.bot em { color: #a78bfa; font-style: italic; }
+  .ap-msg.bot code { background: rgba(0,0,0,0.4); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+  .ap-msg.bot ul, .ap-msg.bot ol { margin: 4px 0 4px 18px; }
+  .ap-msg.bot p { margin: 4px 0; }
+
+  .ap-typing { display: inline-flex; gap: 4px; align-items: center; }
+  .ap-typing span { width:6px; height:6px; border-radius:50%; background:#fb923c; animation: ap-bounce 1.2s infinite; }
+  .ap-typing span:nth-child(2){ animation-delay:.15s } .ap-typing span:nth-child(3){ animation-delay:.3s }
+  @keyframes ap-bounce { 0%,80%,100%{transform:translateY(0); opacity:.4} 40%{transform:translateY(-6px); opacity:1} }
+
+  .ap-actions { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(251,146,60,0.35); }
+  .ap-action-btn {
+    background: linear-gradient(135deg, rgba(251,146,60,0.15), rgba(236,72,153,0.15));
+    border: 1px solid rgba(251,146,60,0.4); color: #fbbf24; padding: 7px 10px;
+    border-radius: 8px; font-size: 12px; cursor: pointer; text-align: left;
+    transition: all .15s;
+  }
+  .ap-action-btn:hover { background: linear-gradient(135deg, rgba(251,146,60,0.3), rgba(236,72,153,0.3)); color:#fff; }
+  .ap-action-btn .ap-action-tipo { font-weight: 700; color: #fb923c; margin-right: 6px; text-transform: uppercase; font-size: 10px; letter-spacing:.5px; }
+
+  #ap-input-wrap {
+    border-top: 1px solid rgba(167,139,250,0.2); padding: 10px; display: flex; gap: 8px;
+    background: rgba(10,11,21,0.6);
+  }
+  #ap-input {
+    flex: 1; background: rgba(28,35,51,0.7); border: 1px solid rgba(167,139,250,0.25);
+    color: #f0f1f7; padding: 10px 12px; border-radius: 10px; font-size: 13px; resize: none;
+    font-family: inherit; min-height: 38px; max-height: 100px;
+  }
+  #ap-input:focus { outline: none; border-color: #fb923c; box-shadow: 0 0 0 3px rgba(251,146,60,0.15); }
+  #ap-send {
+    background: linear-gradient(135deg, #fb923c 0%, #ec4899 100%); border: none; color: #fff;
+    padding: 0 16px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 13px;
+    transition: transform .1s, box-shadow .15s;
+  }
+  #ap-send:hover { transform: scale(1.04); box-shadow: 0 4px 14px rgba(236,72,153,0.4); }
+  #ap-send:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  #ap-footer { padding: 6px 12px; background: rgba(0,0,0,0.3); font-size: 10px; color: #9ca3b8;
+    text-align: center; letter-spacing: .3px; border-top: 1px solid rgba(167,139,250,0.1); }
+</style>
+
+<button id="ap-fab" title="Austin Powers — Chat de Meta Ads">AP<span class="ap-dot"></span></button>
+
+<div id="ap-drawer" role="dialog" aria-label="Austin Powers Chat">
+  <div id="ap-header">
+    <div class="ap-avatar">AP</div>
+    <div class="ap-title">
+      <b>Austin Powers</b>
+      <small>International Man of Meta Ads</small>
+    </div>
+    <button id="ap-close" aria-label="Fechar">×</button>
+  </div>
+  <div id="ap-messages"></div>
+  <div id="ap-input-wrap">
+    <textarea id="ap-input" placeholder="Pergunta pro Austin... (Enter envia, Shift+Enter quebra linha)" rows="1"></textarea>
+    <button id="ap-send">▶</button>
+  </div>
+  <div id="ap-footer">Yeah baby — read-only · sugestões precisam de aprovação</div>
+</div>
+
+<script>
+(function(){
+  const AUSTIN_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/austin-powers';
+  const SESSION_KEY = 'austin-session-id';
+  const HISTORY_KEY = 'austin-history-v1';
+
+  // session_id persistente por browser
+  let sessionId = localStorage.getItem(SESSION_KEY);
+  if (!sessionId) {
+    sessionId = 'ap-' + Date.now() + '-' + Math.random().toString(36).slice(2,8);
+    localStorage.setItem(SESSION_KEY, sessionId);
+  }
+
+  const fab = document.getElementById('ap-fab');
+  const drawer = document.getElementById('ap-drawer');
+  const closeBtn = document.getElementById('ap-close');
+  const msgsEl = document.getElementById('ap-messages');
+  const input = document.getElementById('ap-input');
+  const sendBtn = document.getElementById('ap-send');
+  let isLoading = false;
+
+  function openDrawer(){
+    drawer.classList.add('ap-open');
+    setTimeout(() => input.focus(), 200);
+    if (!msgsEl.dataset.welcomed) {
+      const hist = loadHistory();
+      if (hist.length === 0) {
+        addBot("Yeah baby, yeah! 🕺 Sou o Austin, seu espião de Meta Ads. Pergunta o que quiser — ROAS, criativos, públicos, alocação de verba. Eu olho a planilha em tempo real e te dou minha leitura. *Oh, behave!*");
+      } else {
+        hist.forEach(m => m.role === 'user' ? addUser(m.content, true) : addBot(m.content, m.actions||[], true));
+      }
+      msgsEl.dataset.welcomed = '1';
+      scrollBottom();
+    }
+  }
+  function closeDrawer(){ drawer.classList.remove('ap-open'); }
+  fab.addEventListener('click', () => drawer.classList.contains('ap-open') ? closeDrawer() : openDrawer());
+  closeBtn.addEventListener('click', closeDrawer);
+
+  function loadHistory(){ try { return JSON.parse(localStorage.getItem(HISTORY_KEY)||'[]'); } catch(e){ return []; } }
+  function saveHistory(msg){ const h = loadHistory(); h.push(msg); if (h.length > 50) h.shift(); localStorage.setItem(HISTORY_KEY, JSON.stringify(h)); }
+
+  function scrollBottom(){ msgsEl.scrollTop = msgsEl.scrollHeight; }
+
+  function addUser(text, skipSave){
+    const el = document.createElement('div'); el.className = 'ap-msg user'; el.textContent = text;
+    msgsEl.appendChild(el); scrollBottom();
+    if (!skipSave) saveHistory({role:'user', content:text});
+  }
+  function addBot(text, actions, skipSave){
+    const el = document.createElement('div'); el.className = 'ap-msg bot';
+    el.innerHTML = renderMarkdown(text);
+    if (actions && actions.length) {
+      const wrap = document.createElement('div'); wrap.className = 'ap-actions';
+      const label = document.createElement('div'); label.style.cssText='font-size:10px;color:#fb923c;font-weight:700;text-transform:uppercase;letter-spacing:.5px;';
+      label.textContent = '🎯 Ações sugeridas — aprovar?';
+      wrap.appendChild(label);
+      actions.forEach(a => {
+        const btn = document.createElement('button'); btn.className = 'ap-action-btn';
+        btn.innerHTML = `<span class="ap-action-tipo">${esc(a.tipo||'?')}</span> ${esc(a.alvo||'')} ${a.valor?`→ <b>${esc(String(a.valor))}</b>`:''}<div style="opacity:.75;margin-top:3px;font-size:11px;">${esc(a.motivo||'')}</div>`;
+        btn.title = 'Execução vem em sprint posterior';
+        btn.addEventListener('click', () => alert('Aprovação de ações será implementada no próximo sprint. Ação: ' + JSON.stringify(a)));
+        wrap.appendChild(btn);
+      });
+      el.appendChild(wrap);
+    }
+    msgsEl.appendChild(el); scrollBottom();
+    if (!skipSave) saveHistory({role:'bot', content:text, actions: actions||[]});
+  }
+  function addTyping(){
+    const el = document.createElement('div'); el.className = 'ap-msg bot ap-typing-msg';
+    el.innerHTML = '<div class="ap-typing"><span></span><span></span><span></span></div>';
+    msgsEl.appendChild(el); scrollBottom(); return el;
+  }
+
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  // Markdown bem simples: headings, bold, italic, inline code, listas, parágrafos
+  function renderMarkdown(text){
+    let t = esc(text);
+    t = t.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+    t = t.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+    t = t.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+    t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    t = t.replace(/(^|[^\*])\*([^\*\n]+)\*/g, '$1<em>$2</em>');
+    t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
+    // lists
+    t = t.replace(/(^|\n)((?:- .+\n?)+)/g, (m,p,block) => {
+      const items = block.trim().split(/\n/).map(l => '<li>'+l.replace(/^- /,'')+'</li>').join('');
+      return p + '<ul>' + items + '</ul>';
+    });
+    // paragraphs: blank line separates
+    const parts = t.split(/\n\n+/).map(p => {
+      if (/^<(h1|h2|h3|ul|ol|p)/.test(p.trim())) return p;
+      return '<p>' + p.replace(/\n/g,'<br>') + '</p>';
+    });
+    return parts.join('');
+  }
+
+  async function send(){
+    if (isLoading) return;
+    const text = input.value.trim();
+    if (!text) return;
+    addUser(text);
+    input.value = ''; input.style.height = 'auto';
+    isLoading = true; sendBtn.disabled = true;
+    const typingEl = addTyping();
+    try {
+      const ctrl = new AbortController();
+      const timeout = setTimeout(() => ctrl.abort(), 90000);
+      const res = await fetch(AUSTIN_URL, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ session_id: sessionId, message: text }),
+        signal: ctrl.signal,
+      });
+      clearTimeout(timeout);
+      const data = await res.json();
+      typingEl.remove();
+      const reply = data.reply || 'Oh, behave! Resposta vazia.';
+      addBot(reply, data.suggested_actions || []);
+    } catch(e) {
+      typingEl.remove();
+      addBot('⚠️ *Groovy bummer!* Erro na conexão com o agente: `' + esc(e.message) + '`. Tenta de novo, baby.');
+    } finally {
+      isLoading = false; sendBtn.disabled = false; input.focus();
+    }
+  }
+
+  sendBtn.addEventListener('click', send);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+  });
+  input.addEventListener('input', () => {
+    input.style.height = 'auto';
+    input.style.height = Math.min(100, input.scrollHeight) + 'px';
+  });
+})();
+</script>
+<!-- ===================== /AUSTIN POWERS CHAT WIDGET ===================== -->
+
 </body>
 </html>
