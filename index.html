@@ -961,6 +961,7 @@ function setPeriodo(periodo) {
 
   if (periodo !== 'personalizado') {
     loadData();
+    if (activeTab === 'analise') loadBreakdowns();
   }
 }
 
@@ -969,6 +970,7 @@ function applyCustomPeriod() {
   const fim = document.getElementById('dataFim').value;
   if (!inicio || !fim) { alert('Selecione as datas'); return; }
   loadData();
+  if (activeTab === 'analise') loadBreakdowns();
 }
 
 // ─── CACHE (localStorage, TTL 5 min) ────────────────────────────────────────
@@ -1085,22 +1087,44 @@ function switchTab(name) {
 
 // ─── BREAKDOWNS (placement, demografia, pausadas) ───────────────────────────
 const BREAKDOWNS_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/meta-dashboard-breakdowns';
-let _breakdownsData = null;
-let _breakdownsLoaded = false;
+const _breakdownsCache = {}; // por chave de período
+
+function _breakdownsKey() {
+  if (currentPeriodo === 'personalizado') {
+    const di = document.getElementById('dataInicio').value || '';
+    const df = document.getElementById('dataFim').value || '';
+    return `personalizado|${di}|${df}`;
+  }
+  return currentPeriodo;
+}
+
+function _breakdownsUrl() {
+  const params = new URLSearchParams({ periodo: currentPeriodo });
+  if (currentPeriodo === 'personalizado') {
+    params.set('data_inicio', document.getElementById('dataInicio').value || '');
+    params.set('data_fim', document.getElementById('dataFim').value || '');
+  }
+  return `${BREAKDOWNS_URL}?${params.toString()}`;
+}
 
 async function loadBreakdowns() {
-  if (_breakdownsLoaded && _breakdownsData) {
-    renderBreakdowns(_breakdownsData);
+  const key = _breakdownsKey();
+  // Cache client-side por período (memória)
+  if (_breakdownsCache[key]) {
+    renderBreakdowns(_breakdownsCache[key]);
     return;
   }
+  // Mostra loading enquanto puxa
+  document.getElementById('analisePlacement').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  document.getElementById('analiseDemografia').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  document.getElementById('analisePausadas').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
   try {
-    const resp = await fetch(`${BREAKDOWNS_URL}?periodo=mes`);
+    const resp = await fetch(_breakdownsUrl());
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     let d = await resp.json();
-    if (Array.isArray(d)) d = d[0]; // desembrulha array
-    if (d && d.cacheHit) d = d; // cache hit já vem desembrulhado também
-    _breakdownsData = d;
-    _breakdownsLoaded = true;
+    if (Array.isArray(d)) d = d[0];
+    _breakdownsCache[key] = d;
     renderBreakdowns(d);
   } catch (e) {
     console.error('breakdowns err:', e);
