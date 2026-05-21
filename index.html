@@ -922,6 +922,25 @@
       </div>
     </div>
 
+    <!-- Performance de Vídeo (Hook + Hold Rate) -->
+    <div class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title glow">📹 Performance de Vídeo</div>
+          <div class="section-sub">Hook Rate = % que assistiu pelo menos 2s do vídeo · Hold Rate = dos que pegaram 2s, quantos foram até 25%</div>
+        </div>
+      </div>
+      <div style="padding: 12px 20px; font-size: 11px; color: var(--muted); background: rgba(167,139,250,0.04); border-bottom: 1px solid var(--border); line-height: 1.6">
+        <strong style="color: var(--purple)">Benchmarks da indústria:</strong>
+        Hook saudável <strong style="color:var(--green)">≥ 25%</strong> · Hold saudável <strong style="color:var(--green)">≥ 40%</strong>
+        · Hook <strong style="color:var(--red)">&lt; 15%</strong> = scroll-stop ruim, refazer criativo
+        · Hold <strong style="color:var(--red)">&lt; 25%</strong> = prendeu mas não segurou, refazer conteúdo
+      </div>
+      <div id="analiseVideo" style="padding: 16px">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
     <!-- Pausadas valiosas -->
     <div class="section">
       <div class="section-header">
@@ -1227,8 +1246,95 @@ function renderBreakdowns(d) {
     ? `<div class="demo-grid">${plcCards}</div>`
     : `<div class="empty">Sem dados de placement</div>`;
 
-  // Pausadas
+  // Performance de Vídeo
   const fmt = (n, d=0) => Number(n||0).toLocaleString('pt-BR', {minimumFractionDigits: d, maximumFractionDigits: d});
+  const v = d.video || {};
+  const videoTop = v.top || [];
+  const videoBottom = v.bottom || [];
+  function hookPill(r) {
+    const c = r >= 25 ? 'green' : (r >= 15 ? 'yellow' : 'red');
+    return `<span class="roas-pill ${c}">${r.toFixed(1)}%</span>`;
+  }
+  function holdPill(r) {
+    const c = r >= 40 ? 'green' : (r >= 25 ? 'yellow' : 'red');
+    return `<span class="roas-pill ${c}">${r.toFixed(1)}%</span>`;
+  }
+
+  let videoHtml = `
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-bottom: 18px;">
+      <div class="card highlight">
+        <div class="label">Vídeos analisados</div>
+        <div class="value yellow">${v.total_ads || 0}</div>
+        <div class="sub">ads com tração no período</div>
+      </div>
+      <div class="card highlight">
+        <div class="label">Hook MEDIANA da casa</div>
+        <div class="value yellow">${(v.hook_median||0).toFixed(1)}%</div>
+        <div class="sub">${(v.hook_median||0) >= 25 ? 'saudável' : 'abaixo do ideal'}</div>
+      </div>
+      <div class="card highlight">
+        <div class="label">Hold MEDIANA da casa</div>
+        <div class="value yellow">${(v.hold_median||0).toFixed(1)}%</div>
+        <div class="sub">${(v.hold_median||0) >= 40 ? 'saudável' : 'abaixo do ideal'}</div>
+      </div>
+    </div>
+  `;
+
+  if (videoTop.length) {
+    videoHtml += `
+      <h3 style="color: var(--green); margin: 14px 0 10px; font-size: 13px;">🏆 TOP — Criativos que prendem (manter / escalar)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Criativo</th><th>AdSet</th><th class="text-right">Imps</th><th class="text-right">Hook</th><th class="text-right">Hold</th><th class="text-right">Completion</th></tr></thead>
+          <tbody>${videoTop.slice(0, 10).map(a => `
+            <tr>
+              <td><strong>${(a.ad_name||'').substring(0,40)}</strong></td>
+              <td><span style="color:var(--muted);font-size:11px">${(a.adset_name||'').substring(0,28)}</span></td>
+              <td class="text-right">${fmt(a.impressions)}</td>
+              <td class="text-right">${hookPill(a.hook_rate)}</td>
+              <td class="text-right">${holdPill(a.hold_rate)}</td>
+              <td class="text-right">${(a.completion_rate||0).toFixed(1)}%</td>
+            </tr>
+          `).join('')}</tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  if (videoBottom.length) {
+    videoHtml += `
+      <h3 style="color: var(--red); margin: 18px 0 10px; font-size: 13px;">🩸 BOTTOM — Criativos que NÃO prendem (refazer)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Criativo</th><th>AdSet</th><th class="text-right">Imps</th><th class="text-right">Hook</th><th class="text-right">Hold</th><th class="text-right">Diagnóstico</th></tr></thead>
+          <tbody>${videoBottom.slice(0, 5).map(a => {
+            let diag = '';
+            if (a.hook_rate < 15) diag = '<span class="badge red">Scroll-stop ruim</span> — refazer thumb/hook';
+            else if (a.hold_rate < 25) diag = '<span class="badge yellow">Não segura</span> — refazer conteúdo';
+            else diag = '<span class="badge yellow">Bottom relativo</span> — comparar ângulo';
+            return `
+              <tr>
+                <td><strong>${(a.ad_name||'').substring(0,40)}</strong></td>
+                <td><span style="color:var(--muted);font-size:11px">${(a.adset_name||'').substring(0,28)}</span></td>
+                <td class="text-right">${fmt(a.impressions)}</td>
+                <td class="text-right">${hookPill(a.hook_rate)}</td>
+                <td class="text-right">${holdPill(a.hold_rate)}</td>
+                <td>${diag}</td>
+              </tr>
+            `;
+          }).join('')}</tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  if (!videoTop.length && !videoBottom.length) {
+    videoHtml += `<div class="empty">Sem dados de vídeo no período. Vídeos precisam de pelo menos 100 impressões + 50 plays + 5 visualizações de 2s pra entrar na análise.</div>`;
+  }
+
+  document.getElementById('analiseVideo').innerHTML = videoHtml;
+
+  // Pausadas
   const paRows = (d.pausadas || []).map(p => `
     <tr>
       <td><strong>${(p.nome||'').replace('[DRM]','').trim()}</strong></td>
