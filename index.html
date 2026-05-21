@@ -2341,8 +2341,8 @@ setInterval(loadData, 10 * 60 * 1000);
 
   #ap-drawer {
     position: fixed; right: 24px; bottom: 100px; z-index: 9999;
-    width: 420px; max-width: calc(100vw - 48px);
-    height: 70vh; max-height: 720px; min-height: 480px;
+    width: 620px; max-width: calc(100vw - 48px);
+    height: 85vh; max-height: 900px; min-height: 560px;
     border-radius: 18px; overflow: hidden;
     background: linear-gradient(180deg, #1a0f2e 0%, #15102b 50%, #1a0f2e 100%);
     border: 1px solid rgba(251,146,60,0.35);
@@ -2421,9 +2421,14 @@ setInterval(loadData, 10 * 60 * 1000);
   }
   #ap-input {
     flex: 1; background: rgba(28,35,51,0.7); border: 1px solid rgba(167,139,250,0.25);
-    color: #f0f1f7; padding: 10px 12px; border-radius: 10px; font-size: 13px; resize: none;
-    font-family: inherit; min-height: 38px; max-height: 100px;
+    color: #f0f1f7; padding: 10px 12px; border-radius: 10px; font-size: 13.5px; resize: none;
+    font-family: inherit; min-height: 42px; max-height: 140px;
+    overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(167,139,250,0.4) transparent;
   }
+  #ap-input::-webkit-scrollbar { width: 6px; }
+  #ap-input::-webkit-scrollbar-button { display: none; height: 0; width: 0; }
+  #ap-input::-webkit-scrollbar-thumb { background: rgba(167,139,250,0.4); border-radius: 3px; }
+  #ap-input::-webkit-scrollbar-track { background: transparent; }
   #ap-input:focus { outline: none; border-color: #fb923c; box-shadow: 0 0 0 3px rgba(251,146,60,0.15); }
   #ap-send {
     background: linear-gradient(135deg, #fb923c 0%, #ec4899 100%); border: none; color: #fff;
@@ -2591,7 +2596,7 @@ setInterval(loadData, 10 * 60 * 1000);
   });
   input.addEventListener('input', () => {
     input.style.height = 'auto';
-    input.style.height = Math.min(100, input.scrollHeight) + 'px';
+    input.style.height = Math.min(140, input.scrollHeight) + 'px';
   });
 })();
 </script>
