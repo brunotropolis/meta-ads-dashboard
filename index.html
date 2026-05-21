@@ -1132,43 +1132,61 @@ function renderAll() {
 
 // ─── ANÁLISE & BASELINE ─────────────────────────────────────────────────────
 function renderAnalise() {
-  if (!DATA) return;
+  if (!DATA) {
+    console.warn('renderAnalise: DATA ainda não carregou');
+    return;
+  }
+  console.log('renderAnalise rodando. DATA keys:', Object.keys(DATA));
+
   const r = DATA.resumo || {};
   const camps = DATA.campanhas || [];
-  const vendas = (DATA.vendas && DATA.vendas.hoje) || [];
+  const vendasHoje = (DATA.vendas && DATA.vendas.hoje) || [];
 
   const fmt = (n, d=0) => Number(n||0).toLocaleString('pt-BR', {minimumFractionDigits: d, maximumFractionDigits: d});
   const brl = (n) => 'R$ ' + Number(n||0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
   const pct = (n) => Number(n||0).toFixed(2) + '%';
 
   // 1) KPI Cards
-  const spendTotal = r.gasto_hoje || 0;
-  const conv = r.conversoes || 0;
+  // No endpoint: gasto_hoje = spend do período, conversoes = compras Meta, conversion_value = receita atribuída
+  const spendTotal = +r.gasto_hoje || 0;
+  const conv = +r.conversoes || 0;
+  const receitaMeta = +r.conversion_value || 0;
   const cpa = conv > 0 ? spendTotal / conv : 0;
-  const roasMeta = r.roas || 0;
-  const roasReal = r.roas_real || 0;
-  const cpmMed = (camps.filter(c => +c.cpm > 0).map(c => +c.cpm).sort((a,b) => a-b)[Math.floor(camps.filter(c=>+c.cpm>0).length/2)]) || 0;
-  const cpcMed = (camps.filter(c => +c.cpc > 0).map(c => +c.cpc).sort((a,b) => a-b)[Math.floor(camps.filter(c=>+c.cpc>0).length/2)]) || 0;
-  const ctrMed = (camps.filter(c => +c.ctr > 0).map(c => +c.ctr).sort((a,b) => a-b)[Math.floor(camps.filter(c=>+c.ctr>0).length/2)]) || 0;
+  const roasMeta = +r.roas || 0;
+  const roasReal = +r.roas_real || 0;
+  const totalImps = +r.impressoes || 0;
+  const totalCliques = +r.cliques || 0;
+
+  // Mediana das métricas por campanha (excluindo zeros)
+  function mediana(values) {
+    const v = values.filter(x => x > 0).sort((a,b) => a-b);
+    if (!v.length) return 0;
+    return v[Math.floor(v.length/2)];
+  }
+  const cpmMed = mediana(camps.map(c => +c.cpm));
+  const cpcMed = mediana(camps.map(c => +c.cpc));
+  const ctrMed = mediana(camps.map(c => +c.ctr));
+
+  const campsComGasto = camps.filter(c => +c.spend > 0).length;
 
   document.getElementById('analiseKpis').innerHTML = `
     <div class="finance-card fc-purple">
       <div class="fc-icon">💸</div>
       <div class="fc-label">Spend Período</div>
       <div class="fc-value">${brl(spendTotal)}</div>
-      <div class="fc-sub">${camps.filter(c=>+c.spend>0).length} campanhas com gasto</div>
+      <div class="fc-sub">${campsComGasto} campanha${campsComGasto !== 1 ? 's' : ''} com gasto</div>
     </div>
     <div class="finance-card fc-pink">
       <div class="fc-icon">🛒</div>
       <div class="fc-label">Compras Meta</div>
       <div class="fc-value">${fmt(conv)}</div>
-      <div class="fc-sub">CPA ${cpa>0 ? brl(cpa) : '—'}</div>
+      <div class="fc-sub">${cpa > 0 ? 'CPA ' + brl(cpa) : 'aguardando primeira compra'}</div>
     </div>
     <div class="finance-card fc-cyan">
       <div class="fc-icon">📊</div>
       <div class="fc-label">ROAS Meta</div>
       <div class="fc-value">${roasMeta.toFixed(2)}x</div>
-      <div class="fc-sub">${brl(r.conversion_value || 0)} receita atribuída</div>
+      <div class="fc-sub">${brl(receitaMeta)} receita atribuída</div>
     </div>
     <div class="finance-card fc-green">
       <div class="fc-icon">⚡</div>
@@ -1190,35 +1208,28 @@ function renderAnalise() {
     </div>
   `;
 
-  // 2) Funil — usa breakdown do resumo se disponível, ou estima
-  const lpv = r.landing_page_view || 0;
-  const atc = r.add_to_cart || 0;
-  const ic = r.initiate_checkout || 0;
-  const purchase = conv;
-  // se não vier breakdown granular, calcula só o essencial
-  const taxaLpvAtc = lpv > 0 ? (100 * atc / lpv).toFixed(1) : '—';
-  const taxaAtcIc = atc > 0 ? (100 * ic / atc).toFixed(1) : '—';
-  const taxaIcPurch = ic > 0 ? (100 * purchase / ic).toFixed(1) : '—';
+  // 2) Funil simplificado — Impressões → Cliques → Compras
+  // (LPV/ATC/IC não vem no resumo do endpoint atual)
+  const ctrGeral = totalImps > 0 ? (100 * totalCliques / totalImps).toFixed(2) : 0;
+  const taxaClickPurch = totalCliques > 0 ? (100 * conv / totalCliques).toFixed(2) : 0;
   document.getElementById('analiseFunil').innerHTML = `
     <div class="funil-step">
-      <div class="step-label">1 · Landing Page View</div>
-      <div class="step-value">${fmt(lpv)} LPV</div>
-      <div class="step-meta">${lpv > 0 ? `CPLPV <strong>${brl(spendTotal/lpv)}</strong>` : 'Dados não disponíveis pra esse período'}</div>
+      <div class="step-label">1 · Impressões</div>
+      <div class="step-value">${fmt(totalImps)} imps</div>
+      <div class="step-meta">CPM <strong>${brl(+r.cpm || (totalImps > 0 ? spendTotal*1000/totalImps : 0))}</strong></div>
     </div>
     <div class="funil-step">
-      <div class="step-label">2 · Add to Cart</div>
-      <div class="step-value">${fmt(atc)} ATC</div>
-      <div class="step-meta">Taxa LPV→ATC <strong>${taxaLpvAtc}${taxaLpvAtc !== '—' ? '%' : ''}</strong></div>
-    </div>
-    <div class="funil-step">
-      <div class="step-label">3 · Initiate Checkout</div>
-      <div class="step-value">${fmt(ic)} IC</div>
-      <div class="step-meta">Taxa ATC→IC <strong>${taxaAtcIc}${taxaAtcIc !== '—' ? '%' : ''}</strong> ${atc > 0 && atc/Math.max(ic,1) > 3 ? '· <span class="alert">(gargalo)</span>' : ''}</div>
+      <div class="step-label">2 · Cliques</div>
+      <div class="step-value">${fmt(totalCliques)} clicks</div>
+      <div class="step-meta">CTR <strong>${ctrGeral}%</strong> · CPC <strong>${brl(+r.cpc || 0)}</strong></div>
     </div>
     <div class="funil-step" style="border-left-color: var(--green)">
-      <div class="step-label" style="color: var(--green)">4 · Purchase 🎉</div>
-      <div class="step-value">${fmt(purchase)} compras</div>
-      <div class="step-meta">CPA <strong>${cpa>0 ? brl(cpa) : '—'}</strong> · ROAS <strong>${roasMeta.toFixed(2)}x</strong></div>
+      <div class="step-label" style="color: var(--green)">3 · Compras 🎉</div>
+      <div class="step-value">${fmt(conv)} compras</div>
+      <div class="step-meta">Taxa Click→Purchase <strong>${taxaClickPurch}%</strong> · CPA <strong>${cpa>0 ? brl(cpa) : '—'}</strong> · ROAS <strong>${roasMeta.toFixed(2)}x</strong></div>
+    </div>
+    <div style="padding: 10px 0; color: var(--muted); font-size: 11px; text-align: center; font-style: italic;">
+      ⓘ Funil simplificado. ATC/IC/LPV granular: <em>Sprint CAPI 2026</em>
     </div>
   `;
 
@@ -1236,9 +1247,9 @@ function renderAnalise() {
     };
   }
   const metrics = [
-    {field: 'cpm', label: 'CPM', unit: 'R$', isPct: false},
-    {field: 'cpc', label: 'CPC', unit: 'R$', isPct: false},
-    {field: 'ctr', label: 'CTR', unit: '%', isPct: true},
+    {field: 'cpm', label: 'CPM', isPct: false},
+    {field: 'cpc', label: 'CPC', isPct: false},
+    {field: 'ctr', label: 'CTR', isPct: true},
   ];
   let benchRows = '';
   for (const m of metrics) {
@@ -1250,32 +1261,43 @@ function renderAnalise() {
   document.getElementById('analiseBenchmarks').innerHTML = `
     <table>
       <thead><tr><th>Métrica</th><th class="text-right">Mediana</th><th class="text-right">Média</th><th class="text-right">P25 – P75</th><th class="text-right">Range</th></tr></thead>
-      <tbody>${benchRows || '<tr><td colspan="5" class="text-center" style="color:var(--muted);padding:24px">Sem campanhas qualificadas (spend &gt; R$ 50) no período</td></tr>'}</tbody>
+      <tbody>${benchRows || `<tr><td colspan="5" class="text-center" style="color:var(--muted);padding:24px">Sem campanhas qualificadas (spend &gt; R$ 50) neste período.<br><span style="font-size:11px">Tente "Mês" pra ver mais dados.</span></td></tr>`}</tbody>
     </table>
   `;
 
   // 4) Top + Bottom criativos do endpoint
-  const cris = DATA.criativos_top || [];
+  // No endpoint o campo é "criativos" (não "criativos_top")
+  const cris = DATA.criativos || DATA.criativos_top || [];
   function roasPill(v) {
     const c = v >= 2.5 ? 'green' : (v >= 1.5 ? 'yellow' : 'red');
     return `<span class="roas-pill ${c}">${v.toFixed(2)}x</span>`;
   }
-  const topCri = [...cris].filter(c => +c.spend > 20 && +c.roas > 0).sort((a,b) => +b.roas - +a.roas).slice(0, 10);
-  const botCri = [...cris].filter(c => +c.spend > 20).sort((a,b) => +a.roas - +b.roas).slice(0, 5);
+  // Recalcula ROAS por criativo se não tiver
+  const crisCalc = cris.map(c => {
+    const sp = +c.spend || 0;
+    const rv = +c.conversion_value || 0;
+    return {...c, _roas: sp > 0 ? rv/sp : 0};
+  });
+  const topCri = [...crisCalc].filter(c => +c.spend > 20 && c._roas > 0).sort((a,b) => b._roas - a._roas).slice(0, 10);
+  const botCri = [...crisCalc].filter(c => +c.spend > 20).sort((a,b) => a._roas - b._roas).slice(0, 5);
 
   function critRow(c) {
     return `<tr>
-      <td><strong>${(c.ad_name||'').substring(0,42)}</strong><br><span style="color:var(--muted);font-size:11px">${(c.adset_name||'').substring(0,32)}</span></td>
+      <td><strong>${(c.ad_name||c.nome||'').substring(0,42)}</strong><br><span style="color:var(--muted);font-size:11px">${(c.adset_name||c.campaign_name||'').substring(0,32)}</span></td>
       <td class="text-right">${brl(+c.spend)}</td>
       <td class="text-right">${pct(+c.ctr)}</td>
-      <td class="text-right">${roasPill(+c.roas)}</td>
-      <td class="text-right">${fmt(+c.conversions)}</td>
+      <td class="text-right">${roasPill(c._roas)}</td>
+      <td class="text-right">${fmt(+c.conversions||0)}</td>
     </tr>`;
   }
+  const semCriativos = cris.length === 0
+    ? `<tr><td colspan="5" class="text-center" style="color:var(--muted);padding:24px">Aba "Criativos" da planilha está vazia. <br><span style="font-size:11px">Use <strong>🛸 Sync Meta</strong> no topo pra forçar coleta da Meta API.</span></td></tr>`
+    : `<tr><td colspan="5" class="text-center" style="color:var(--muted);padding:24px">Sem criativos com gasto &gt; R$ 20 neste período. <em style="opacity:.6">"Use the Force, Bruno."</em></td></tr>`;
+
   document.getElementById('analiseCriativosTop').innerHTML = `
     <table>
       <thead><tr><th>Criativo</th><th class="text-right">Spend</th><th class="text-right">CTR</th><th class="text-right">ROAS</th><th class="text-right">Compras</th></tr></thead>
-      <tbody>${topCri.length ? topCri.map(critRow).join('') : '<tr><td colspan="5" class="text-center" style="color:var(--muted);padding:24px">Sem criativos com gasto significativo. <em style="opacity:.6">"Use the Force, Bruno."</em></td></tr>'}</tbody>
+      <tbody>${topCri.length ? topCri.map(critRow).join('') : semCriativos}</tbody>
     </table>
   `;
   document.getElementById('analiseCriativosBottom').innerHTML = `
@@ -1284,6 +1306,9 @@ function renderAnalise() {
       <tbody>${botCri.length ? botCri.map(critRow).join('') : '<tr><td colspan="5" class="text-center" style="color:var(--muted);padding:24px">Tudo verde por enquanto 🎉</td></tr>'}</tbody>
     </table>
   `;
+
+  // Vendas alias pra usar abaixo
+  const vendas = vendasHoje;
 
   // 5) Refund monitoring
   const refunds = vendas.filter(v => (v.tipo||'').toUpperCase() === 'REEMBOLSO');
