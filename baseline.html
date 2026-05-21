@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baseline & Monitoramento — Meta Ads DRM</title>
+<style>
+  :root {
+    --bg: #000;
+    --bg-elevated: #0e0e0e;
+    --bg-card: #161616;
+    --border: #2a2a2a;
+    --border-strong: #3d3d3d;
+    --yellow: #facc15;
+    --yellow-bright: #fde047;
+    --yellow-dim: #ca8a04;
+    --white: #fff;
+    --text: #f4f4f5;
+    --text-dim: #a1a1aa;
+    --text-faded: #71717a;
+    --green: #4ade80;
+    --orange: #fb923c;
+    --red: #f87171;
+    --blue: #60a5fa;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+  header {
+    background:
+      radial-gradient(circle at 30% 30%, rgba(250, 204, 21, 0.08) 0%, transparent 50%),
+      var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px 32px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--yellow), var(--yellow-bright), var(--yellow));
+  }
+  header h1 {
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  header h1 .accent { color: var(--yellow); }
+  header p { color: var(--text-dim); max-width: 700px; }
+  header .meta {
+    margin-top: 18px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  header .meta span {
+    background: rgba(250, 204, 21, 0.1);
+    border: 1px solid rgba(250, 204, 21, 0.3);
+    color: var(--yellow);
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+  section {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  section h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--white);
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    letter-spacing: -0.01em;
+  }
+  section h2 .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    background: var(--yellow);
+    color: var(--bg);
+    border-radius: 9px;
+    font-size: 0.95rem;
+    font-weight: 800;
+  }
+  section h3 {
+    color: var(--yellow);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-top: 22px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    transition: all 0.2s;
+  }
+  .card:hover { border-color: var(--yellow); transform: translateY(-2px); }
+  .card.highlight {
+    border-color: var(--yellow);
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(250, 204, 21, 0.06) 100%);
+  }
+  .card.warn { border-color: rgba(251, 146, 60, 0.4); }
+  .card.bad { border-color: rgba(248, 113, 113, 0.4); }
+  .card.good { border-color: rgba(74, 222, 128, 0.4); }
+  .card .label {
+    font-size: 0.72rem;
+    color: var(--text-faded);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .card .value {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 4px;
+    letter-spacing: -0.02em;
+  }
+  .card .value.yellow { color: var(--yellow); }
+  .card .value.green { color: var(--green); }
+  .card .value.orange { color: var(--orange); }
+  .card .value.red { color: var(--red); }
+  .card .sub {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 0.9rem;
+  }
+  table thead {
+    background: var(--bg-card);
+    border-bottom: 2px solid var(--yellow);
+  }
+  table th {
+    padding: 11px 14px;
+    text-align: left;
+    font-weight: 700;
+    color: var(--yellow);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  table th.num, table td.num { text-align: right; }
+  table td {
+    padding: 11px 14px;
+    border-top: 1px solid var(--border);
+    color: var(--text);
+  }
+  table tr:hover { background: var(--bg-card); }
+  table td strong { color: var(--white); font-weight: 700; }
+  .badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .badge.green { background: rgba(74, 222, 128, 0.15); color: var(--green); }
+  .badge.yellow { background: rgba(250, 204, 21, 0.15); color: var(--yellow); }
+  .badge.orange { background: rgba(251, 146, 60, 0.15); color: var(--orange); }
+  .badge.red { background: rgba(248, 113, 113, 0.15); color: var(--red); }
+  .badge.blue { background: rgba(96, 165, 250, 0.15); color: var(--blue); }
+  .callout {
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(250, 204, 21, 0.04) 100%);
+    border: 1px solid rgba(250, 204, 21, 0.25);
+    border-left: 5px solid var(--yellow);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin: 18px 0;
+  }
+  .callout.warn { border-left-color: var(--orange); border-color: rgba(251, 146, 60, 0.25); }
+  .callout strong { color: var(--yellow-bright); }
+  .callout p { margin: 0; color: var(--text); line-height: 1.65; }
+  .footer-info {
+    text-align: center;
+    padding: 30px 14px;
+    color: var(--text-faded);
+    font-size: 0.82rem;
+    border-top: 1px solid var(--border);
+    margin-top: 24px;
+  }
+  .footer-info code {
+    background: var(--bg-card);
+    color: var(--yellow);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    border: 1px solid var(--border);
+  }
+  .funnel-step {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--yellow);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 8px 0;
+  }
+  .funnel-step .num { color: var(--yellow); font-weight: 800; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; }
+  .funnel-step .stage { color: var(--white); font-weight: 700; font-size: 1.05rem; margin: 4px 0; }
+  .funnel-step .metrics { color: var(--text-dim); font-size: 0.85rem; }
+  .funnel-step .metrics strong { color: var(--yellow); }
+  ::selection { background: var(--yellow); color: var(--bg); }
+  a { color: var(--yellow); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 24px; }
+  nav.tabs a {
+    padding: 10px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  nav.tabs a:hover, nav.tabs a.active {
+    background: var(--yellow);
+    border-color: var(--yellow);
+    color: var(--bg);
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>Baseline & Monitoramento <span class="accent">DRM</span></h1>
+  <p>Snapshot das métricas de referência da conta Dream Baby. Padrão de comparação pra decisões de scale/pause. Atualizado periodicamente.</p>
+  <div class="meta">
+    <span>📅 Snapshot: 01 a 21 de Maio/2026</span>
+    <span>🎯 Conta: DREAM BABY - DB</span>
+    <span>📊 Período: 21 dias</span>
+  </div>
+</header>
+
+<nav class="tabs">
+  <a href="#geral">📊 Visão geral</a>
+  <a href="#etapas">🪜 Por etapa de funil</a>
+  <a href="#benchmarks">📐 Benchmarks</a>
+  <a href="#criativos">🎨 Criativos</a>
+  <a href="#publico">👥 Público</a>
+  <a href="#refund">💸 Refund</a>
+  <a href="#pausadas">⏸️ Pausadas valiosas</a>
+  <a href="plano-estrategia.html">← Plano completo</a>
+</nav>
+
+<section id="geral">
+  <h2><span class="num">1</span> Visão Geral — Conta Inteira</h2>
+  <div class="grid">
+    <div class="card highlight">
+      <div class="label">Investimento</div>
+      <div class="value yellow">R$ 7.178</div>
+      <div class="sub">21 dias — Maio/2026</div>
+    </div>
+    <div class="card">
+      <div class="label">Impressões</div>
+      <div class="value">1,01 M</div>
+      <div class="sub">Reach único: 535k</div>
+    </div>
+    <div class="card">
+      <div class="label">CPM agregado</div>
+      <div class="value">R$ 7,12</div>
+      <div class="sub">CTR 1,88% · CPC R$ 0,38</div>
+    </div>
+    <div class="card highlight">
+      <div class="label">Compras Meta</div>
+      <div class="value yellow">43</div>
+      <div class="sub">CPA R$ 167 · ROAS 1,40x</div>
+    </div>
+    <div class="card">
+      <div class="label">Receita Meta</div>
+      <div class="value">R$ 10.059</div>
+      <div class="sub">Atribuição direta Meta</div>
+    </div>
+    <div class="card">
+      <div class="label">Frequência média</div>
+      <div class="value">1,89</div>
+      <div class="sub">Saudável (alvo 2-3,5)</div>
+    </div>
+  </div>
+
+  <h3>Funil de conversão</h3>
+  <div class="funnel-step">
+    <div class="num">1. Landing Page View</div>
+    <div class="stage">1.060 LPV</div>
+    <div class="metrics">CPLPV <strong>R$ 6,77</strong></div>
+  </div>
+  <div class="funnel-step">
+    <div class="num">2. Add to Cart</div>
+    <div class="stage">138 ATC</div>
+    <div class="metrics">Taxa LPV→ATC <strong>13%</strong> · CPATC R$ 52</div>
+  </div>
+  <div class="funnel-step">
+    <div class="num">3. Initiate Checkout</div>
+    <div class="stage">42 IC</div>
+    <div class="metrics">Taxa ATC→IC <strong>30%</strong> (gargalo)</div>
+  </div>
+  <div class="funnel-step">
+    <div class="num">4. Add Payment Info</div>
+    <div class="stage">27 API</div>
+    <div class="metrics">Taxa IC→API <strong>64%</strong></div>
+  </div>
+  <div class="funnel-step">
+    <div class="num">5. Purchase</div>
+    <div class="stage">43 compras</div>
+    <div class="metrics">CPA <strong>R$ 167</strong> · ROAS <strong>1,40x</strong></div>
+  </div>
+</section>
+
+<section id="etapas">
+  <h2><span class="num">2</span> Padrão por Etapa de Funil</h2>
+  <p style="color: var(--text-dim); margin-bottom: 16px;">Convenção DRM proposta. Cada etapa tem objetivo + métricas-chave diferentes — não comparar ROAS entre etapas.</p>
+
+  <table>
+    <thead>
+      <tr><th>Prefixo</th><th>Etapa</th><th>Objetivo Meta</th><th>Métricas que importam</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="badge blue">[T1]</span></td>
+        <td><strong>Topo</strong> — descoberta fria</td>
+        <td>ENGAGEMENT / AWARENESS</td>
+        <td>Reach, CPM, Video Views, <em>Custo/Follower</em></td>
+      </tr>
+      <tr>
+        <td><span class="badge blue">[T2]</span></td>
+        <td><strong>Topo-Meio</strong> — aquecimento</td>
+        <td>ENGAGEMENT (THRUPLAY)</td>
+        <td>ThruPlay 75%, Save, Reaction, Reach</td>
+      </tr>
+      <tr>
+        <td><span class="badge yellow">[M1]</span></td>
+        <td><strong>Meio</strong> — consideração</td>
+        <td>TRAFFIC</td>
+        <td>LPV, CPC, Bounce rate</td>
+      </tr>
+      <tr>
+        <td><span class="badge orange">[F1]</span></td>
+        <td><strong>Fim</strong> — oferta</td>
+        <td>SALES (conversion)</td>
+        <td>CPA, ROAS, Conversion rate</td>
+      </tr>
+      <tr>
+        <td><span class="badge green">[V1]</span></td>
+        <td><strong>Venda direta</strong> — RMKT / AD+</td>
+        <td>SALES (conversion)</td>
+        <td>CPA, ROAS, Frequência</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <p><strong>Por que importa:</strong> hoje quando ranqueio criativos por ROAS, posts de topo (post 2, post 3) aparecem como "ROAS 0" e parecem sangrando. Mas eles estão atraindo base — o "lucro" deles é Reach e Engajamento, não compra. Padronizar etapa permite avaliar cada um pelo que importa.</p>
+  </div>
+</section>
+
+<section id="benchmarks">
+  <h2><span class="num">3</span> Benchmarks — Distribuição estatística (Maio)</h2>
+  <p style="color: var(--text-dim);">Baseado em 10 campanhas qualificadas (spend &gt; R$ 50). Mediana é o que usar como "normal", P25-P75 é a faixa esperada.</p>
+
+  <table>
+    <thead>
+      <tr><th>Métrica</th><th class="num">Mediana</th><th class="num">Média</th><th class="num">P25-P75</th><th class="num">Range (min-max)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>CPM</strong></td><td class="num">R$ 19,61</td><td class="num">R$ 18,54</td><td class="num">R$ 2,86 - 35,68</td><td class="num">R$ 0,85 - 40,58</td></tr>
+      <tr><td><strong>CPC</strong></td><td class="num">R$ 1,24</td><td class="num">R$ 1,11</td><td class="num">R$ 0,13 - 1,78</td><td class="num">R$ 0,07 - 2,28</td></tr>
+      <tr><td><strong>CTR</strong></td><td class="num">1,58 %</td><td class="num">1,92 %</td><td class="num">0,92 - 2,13 %</td><td class="num">0,66 - 6,18 %</td></tr>
+      <tr><td><strong>Frequência</strong></td><td class="num">1,53 x</td><td class="num">1,94 x</td><td class="num">1,29 - 2,21 x</td><td class="num">1,19 - 4,34 x</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <p><strong>Observação importante:</strong> CPM da conta (R$ 7,12) é muito menor que mediana campanha (R$ 19,61) porque as campanhas de engajamento puxam pra baixo (CPM ~R$ 3). <strong>Pra venda real, use R$ 19 como CPM esperado.</strong></p>
+  </div>
+
+  <h3>Custo por seguidor</h3>
+  <div class="callout">
+    <p><strong>Pendente:</strong> métrica de custo por seguidor depende de IG Insights API, que está bloqueada hoje pelo token social (falta permissão <code>pages_read_engagement</code>). Será adicionada quando o token unificado for gerado.</p>
+  </div>
+</section>
+
+<section id="criativos">
+  <h2><span class="num">4</span> Criativos — Top &amp; Bottom (Maio)</h2>
+  <p style="color: var(--text-dim);">Top performers por ROAS (apenas criativos com spend &gt; R$ 20).</p>
+
+  <h3>🏆 Top 10 ROAS</h3>
+  <table>
+    <thead>
+      <tr><th>Criativo</th><th>AdSet</th><th class="num">Spend</th><th class="num">CTR</th><th class="num">CPC</th><th class="num">ROAS</th><th class="num">CPA</th><th class="num">Compras</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>MÃE CANSADA</strong></td><td>MÃE CANSADA</td><td class="num">R$ 475</td><td class="num">1,56%</td><td class="num">R$ 2,16</td><td class="num"><span class="badge green">2,71x</span></td><td class="num">R$ 79</td><td class="num">6</td></tr>
+      <tr><td><strong>ANUNCIO 1 - MATHIAS</strong></td><td>PÁGINA ATUAL 26</td><td class="num">R$ 1.198</td><td class="num">2,13%</td><td class="num">R$ 1,72</td><td class="num"><span class="badge green">2,60x</span></td><td class="num">R$ 92</td><td class="num">13</td></tr>
+      <tr><td><strong>ANUNCIO 1 - DB 109</strong></td><td>PÁGINA ATUAL 26</td><td class="num">R$ 1.040</td><td class="num">1,64%</td><td class="num">R$ 2,17</td><td class="num"><span class="badge green">2,49x</span></td><td class="num">R$ 87</td><td class="num">12</td></tr>
+      <tr><td><strong>5 DIAS AVISO</strong></td><td>5 DIAS AVISO v2</td><td class="num">R$ 429</td><td class="num">1,95%</td><td class="num">R$ 2,25</td><td class="num"><span class="badge green">2,35x</span></td><td class="num">R$ 107</td><td class="num">4</td></tr>
+      <tr><td>DANI 004</td><td>DANI 004</td><td class="num">R$ 357</td><td class="num">1,62%</td><td class="num">R$ 3,19</td><td class="num"><span class="badge yellow">2,11x</span></td><td class="num">R$ 119</td><td class="num">3</td></tr>
+      <tr><td>DB034A3</td><td>DB034A3</td><td class="num">R$ 125</td><td class="num">1,56%</td><td class="num">R$ 2,41</td><td class="num"><span class="badge yellow">1,89x</span></td><td class="num">R$ 125</td><td class="num">1</td></tr>
+      <tr><td>DANI 003</td><td>DANI 003</td><td class="num">R$ 133</td><td class="num">1,43%</td><td class="num">R$ 3,69</td><td class="num"><span class="badge yellow">1,79x</span></td><td class="num">R$ 133</td><td class="num">1</td></tr>
+      <tr><td>DANI 001</td><td>DANI 001</td><td class="num">R$ 350</td><td class="num">2,26%</td><td class="num">R$ 1,86</td><td class="num"><span class="badge yellow">1,70x</span></td><td class="num">R$ 175</td><td class="num">2</td></tr>
+    </tbody>
+  </table>
+
+  <h3>🩸 Bottom 5 — sangrando dinheiro em VENDA</h3>
+  <div class="callout warn">
+    <p><strong>Atenção interpretativa:</strong> alguns destes são posts de TOPO ([T1]) que NÃO devem ser avaliados por ROAS. A lista abaixo mostra ads que rodaram em campanhas de venda E não converteram OU posts em campanhas eng que receberam muito budget sem propósito claro.</p>
+  </div>
+  <table>
+    <thead>
+      <tr><th>Criativo</th><th>AdSet</th><th class="num">Spend</th><th class="num">CTR</th><th class="num">CPC</th><th>Diagnóstico</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>post 3</td><td>post 3</td><td class="num">R$ 547</td><td class="num">5,63%</td><td class="num">R$ 0,07</td><td><span class="badge blue">É TOPO</span> — boost de post sem propósito de venda. Confirma valor pra Reach (alcance massivo barato), mas merece avaliar Reach/CPM</td></tr>
+      <tr><td>post 2</td><td>post 2</td><td class="num">R$ 165</td><td class="num">8,21%</td><td class="num">R$ 0,06</td><td><span class="badge blue">É TOPO</span> — idem</td></tr>
+      <tr><td>ANUNCIO 3 - BENICIO</td><td>PÁGINA ATUAL 26</td><td class="num">R$ 152</td><td class="num">2,49%</td><td class="num">R$ 0,98</td><td><span class="badge orange">Atrai click, não vende</span> — copy/oferta não fecha</td></tr>
+      <tr><td>POLO1 Associação negativa</td><td>POLO1</td><td class="num">R$ 119</td><td class="num">0,57%</td><td class="num">R$ 0,61</td><td><span class="badge blue">É AQUECIMENTO ([T2])</span> — esperado não converter direto</td></tr>
+      <tr><td>POLO2 Autonomia</td><td>POLO2</td><td class="num">R$ 161</td><td class="num">0,92%</td><td class="num">R$ 0,30</td><td><span class="badge blue">É AQUECIMENTO ([T2])</span> — esperado não converter direto</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="publico">
+  <h2><span class="num">5</span> Público & Placement</h2>
+
+  <h3>Placement</h3>
+  <table>
+    <thead><tr><th>Plataforma</th><th>Posição</th><th class="num">Spend</th><th class="num">CPM</th><th class="num">CTR</th><th class="num">Compras</th><th class="num">ROAS</th></tr></thead>
+    <tbody>
+      <tr><td>instagram</td><td>feed</td><td class="num">R$ 3.031</td><td class="num">R$ 16,76</td><td class="num">0,97%</td><td class="num">21</td><td class="num"><span class="badge yellow">1,57x</span></td></tr>
+      <tr><td><strong>instagram</strong></td><td><strong>stories</strong></td><td class="num">R$ 2.256</td><td class="num">R$ 10,85</td><td class="num">3,39%</td><td class="num">18</td><td class="num"><span class="badge green">1,92x ⭐</span></td></tr>
+      <tr><td>instagram</td><td>reels</td><td class="num">R$ 1.380</td><td class="num">R$ 3,13</td><td class="num">1,06%</td><td class="num">4</td><td class="num"><span class="badge red">0,69x 🚨</span></td></tr>
+      <tr><td>facebook</td><td>reels</td><td class="num">R$ 219</td><td class="num">R$ 2,02</td><td class="num">3,44%</td><td class="num">0</td><td class="num"><span class="badge red">0,00x</span></td></tr>
+      <tr><td>facebook</td><td>feed</td><td class="num">R$ 198</td><td class="num">R$ 5,35</td><td class="num">4,53%</td><td class="num">0</td><td class="num"><span class="badge red">0,00x</span></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Idade × Gênero</h3>
+  <table>
+    <thead><tr><th>Idade</th><th>Gênero</th><th class="num">Spend</th><th class="num">CPM</th><th class="num">CTR</th><th class="num">Compras</th><th class="num">ROAS</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>25-34</td><td>F</td><td class="num">R$ 3.544</td><td class="num">R$ 8,69</td><td class="num">1,90%</td><td class="num">24</td><td class="num"><span class="badge yellow">1,61x</span></td><td>Padrão</td></tr>
+      <tr><td>35-44</td><td>F</td><td class="num">R$ 2.396</td><td class="num">R$ 12,85</td><td class="num">2,37%</td><td class="num">13</td><td class="num"><span class="badge red">1,15x ⚠️</span></td><td>Sangrando</td></tr>
+      <tr><td>45-54</td><td>F</td><td class="num">R$ 227</td><td class="num">R$ 3,87</td><td class="num">2,41%</td><td class="num">2</td><td class="num"><span class="badge green">2,62x ⭐</span></td><td>Sub-investido</td></tr>
+      <tr><td>35-44</td><td>M</td><td class="num">R$ 184</td><td class="num">R$ 8,27</td><td class="num">1,73%</td><td class="num">2</td><td class="num"><span class="badge green">2,58x ⭐</span></td><td>Sub-investido</td></tr>
+      <tr><td>25-34</td><td>M</td><td class="num">R$ 217</td><td class="num">R$ 2,97</td><td class="num">0,73%</td><td class="num">2</td><td class="num"><span class="badge green">2,46x ⭐</span></td><td>Sub-investido</td></tr>
+      <tr><td>18-24</td><td>F</td><td class="num">R$ 158</td><td class="num">R$ 1,93</td><td class="num">2,06%</td><td class="num">0</td><td class="num"><span class="badge red">0,00x</span></td><td>Aprendendo</td></tr>
+      <tr><td>55-64</td><td>F</td><td class="num">R$ 218</td><td class="num">R$ 4,14</td><td class="num">2,91%</td><td class="num">0</td><td class="num"><span class="badge red">0,00x</span></td><td>Sem converter</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="refund">
+  <h2><span class="num">6</span> Monitoramento de Reembolso (passivo)</h2>
+  <div class="callout">
+    <p><strong>Decisão Bruno (21/Mai/2026):</strong> não mudar estratégia por causa de refund — só monitorar. Refund é trabalho conjunto entre tráfego + entrega + suporte, fora do escopo Meta Ads. Acompanhar como métrica de saúde.</p>
+  </div>
+
+  <div class="grid">
+    <div class="card warn">
+      <div class="label">Refund total</div>
+      <div class="value orange">9,4%</div>
+      <div class="sub">15 reembolsos / 159 vendas</div>
+    </div>
+    <div class="card">
+      <div class="label">R$ reembolsado</div>
+      <div class="value">R$ 4.032</div>
+      <div class="sub">10,6% do bruto</div>
+    </div>
+    <div class="card good">
+      <div class="label">Refund [TRAFEGO] Meta</div>
+      <div class="value green">5,9%</div>
+      <div class="sub">apenas 1 de 17 (saudável)</div>
+    </div>
+    <div class="card bad">
+      <div class="label">Refund Instagram (bio)</div>
+      <div class="value red">14,6%</div>
+      <div class="sub">orgânico + tráfego misturado</div>
+    </div>
+  </div>
+
+  <h3>Por produto</h3>
+  <table>
+    <thead><tr><th>Produto</th><th class="num">Refunds</th><th class="num">Vendas</th><th class="num">% Refund</th></tr></thead>
+    <tbody>
+      <tr><td><strong>MÉTODO DREAM BABY</strong></td><td class="num">12</td><td class="num">74</td><td class="num"><span class="badge red">16,2% 🚨</span></td></tr>
+      <tr><td>Consulta Dayane</td><td class="num">1</td><td class="num">12</td><td class="num"><span class="badge yellow">8,3%</span></td></tr>
+      <tr><td>Manual RN</td><td class="num">1</td><td class="num">16</td><td class="num"><span class="badge green">6,2%</span></td></tr>
+      <tr><td>TDA</td><td class="num">1</td><td class="num">17</td><td class="num"><span class="badge green">5,9%</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="pausadas">
+  <h2><span class="num">7</span> Pausadas Valiosas — vale revisitar</h2>
+  <p style="color: var(--text-dim);">5 campanhas DRM pausadas com ROAS histórico &gt; 1,5 e gasto significativo. Criativos / audiences podem ser reciclados.</p>
+  <table>
+    <thead>
+      <tr><th>Campanha</th><th>Objetivo</th><th class="num">Spend</th><th class="num">Compras</th><th class="num">ROAS</th><th class="num">CPA</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>[CBO][IG] PÁGINA ATUAL 26 20/04</strong></td><td>SALES</td><td class="num">R$ 231</td><td class="num">3</td><td class="num"><span class="badge green">2,15x</span></td><td class="num">R$ 77</td><td><span class="badge yellow">Duplicada limpa em 21/05 (V1)</span></td></tr>
+      <tr><td>[CBO][AD+][TESTE] VIDEOS 24/04</td><td>SALES</td><td class="num">R$ 167</td><td class="num">1</td><td class="num"><span class="badge yellow">1,77x</span></td><td class="num">R$ 167</td><td><span class="badge blue">Candidata</span></td></tr>
+      <tr><td>[CBO][AD+][MC] VIDEOS 24/04</td><td>SALES</td><td class="num">R$ 171</td><td class="num">1</td><td class="num"><span class="badge yellow">1,74x</span></td><td class="num">R$ 171</td><td><span class="badge blue">Candidata</span></td></tr>
+      <tr><td>[CBO][AD+] BENICIO 26/04</td><td>SALES</td><td class="num">R$ 302</td><td class="num">3</td><td class="num"><span class="badge yellow">1,64x</span></td><td class="num">R$ 101</td><td><span class="badge blue">Candidata</span></td></tr>
+      <tr><td>[ABO][IG30] RMKT 01/05</td><td>SALES</td><td class="num">R$ 148</td><td class="num">1</td><td class="num"><span class="badge yellow">1,61x</span></td><td class="num">R$ 148</td><td><span class="badge blue">Candidata</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="footer-info">
+  Snapshot Maio/2026 · Última atualização: 21/Mai/2026 · Documento companheiro: <code>CLAUDE-estrategias-meta-ads-26.md</code> · <a href="plano-estrategia.html">Ver plano estratégico completo</a>
+</div>
+
+</div>
+</body>
+</html>
