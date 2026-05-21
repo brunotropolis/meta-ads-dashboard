@@ -726,6 +726,46 @@
       </div>
     </div>
 
+    <!-- Placement + Demografia (dinâmico via breakdowns API) -->
+    <div class="two-col">
+      <div class="section">
+        <div class="section-header">
+          <div>
+            <div class="section-title glow">📡 Placement</div>
+            <div class="section-sub">Onde o dinheiro tá rendendo melhor</div>
+          </div>
+        </div>
+        <div class="table-wrap" id="analisePlacement">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div>
+            <div class="section-title glow">👥 Idade × Gênero</div>
+            <div class="section-sub">Demografia que converte (e a que não converte)</div>
+          </div>
+        </div>
+        <div class="table-wrap" id="analiseDemografia">
+          <div class="loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pausadas valiosas -->
+    <div class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title glow">⏸️ Pausadas Valiosas</div>
+          <div class="section-sub">Campanhas pausadas com ROAS histórico &gt; 1,5 — candidatas a revisitar / reciclar criativos</div>
+        </div>
+      </div>
+      <div class="table-wrap" id="analisePausadas">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
     <!-- Easter egg footer -->
     <div class="easter-footer">
       ⚙️ "Programar é como pilotar uma X-Wing: você precisa confiar nos sensors antes de atirar." · Dashboard rev 2.0 · feito com 💜 ☕ e muito ROAS
@@ -868,7 +908,112 @@ function switchTab(name) {
   });
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  if (name === 'analise' && DATA) renderAnalise();
+  if (name === 'analise' && DATA) {
+    renderAnalise();
+    loadBreakdowns(); // chama 2º endpoint pra placement/demografia/pausadas
+  }
+}
+
+// ─── BREAKDOWNS (placement, demografia, pausadas) ───────────────────────────
+const BREAKDOWNS_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/meta-dashboard-breakdowns';
+let _breakdownsData = null;
+let _breakdownsLoaded = false;
+
+async function loadBreakdowns() {
+  if (_breakdownsLoaded && _breakdownsData) {
+    renderBreakdowns(_breakdownsData);
+    return;
+  }
+  try {
+    const resp = await fetch(`${BREAKDOWNS_URL}?periodo=mes`);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    let d = await resp.json();
+    if (Array.isArray(d)) d = d[0]; // desembrulha array
+    if (d && d.cacheHit) d = d; // cache hit já vem desembrulhado também
+    _breakdownsData = d;
+    _breakdownsLoaded = true;
+    renderBreakdowns(d);
+  } catch (e) {
+    console.error('breakdowns err:', e);
+    document.getElementById('analisePlacement').innerHTML = '<div class="empty">Falha ao carregar placement</div>';
+    document.getElementById('analiseDemografia').innerHTML = '<div class="empty">Falha ao carregar demografia</div>';
+    document.getElementById('analisePausadas').innerHTML = '<div class="empty">Falha ao carregar pausadas</div>';
+  }
+}
+
+function renderBreakdowns(d) {
+  if (!d) return;
+  const brl = (n) => 'R$ ' + Number(n||0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  const pct = (n) => Number(n||0).toFixed(2) + '%';
+  function roasPill(v) {
+    const c = v >= 2.5 ? 'green' : (v >= 1.5 ? 'yellow' : (v > 0 ? 'red' : 'red'));
+    return `<span class="roas-pill ${c}">${v.toFixed(2)}x</span>`;
+  }
+
+  // Placement
+  const plcRows = (d.placements || []).slice(0, 10).map(p => `
+    <tr>
+      <td><strong>${p.plataforma}</strong></td>
+      <td>${p.posicao.replace(/_/g, ' ')}</td>
+      <td class="text-right">${brl(p.spend)}</td>
+      <td class="text-right">${brl(p.cpm)}</td>
+      <td class="text-right">${pct(p.ctr)}</td>
+      <td class="text-right">${p.compras}</td>
+      <td class="text-right">${roasPill(p.roas)}</td>
+    </tr>
+  `).join('');
+  document.getElementById('analisePlacement').innerHTML = `
+    <table>
+      <thead><tr><th>Plataforma</th><th>Posição</th><th class="text-right">Spend</th><th class="text-right">CPM</th><th class="text-right">CTR</th><th class="text-right">Comp</th><th class="text-right">ROAS</th></tr></thead>
+      <tbody>${plcRows || '<tr><td colspan="7" class="text-center" style="color:var(--muted);padding:24px">Sem dados</td></tr>'}</tbody>
+    </table>
+  `;
+
+  // Demografia (com badges de status pra subutilizado/sangrando)
+  const demRows = (d.demografia || []).map(x => {
+    const sp = x.spend, roas = x.roas;
+    let status = '';
+    if (sp > 1000 && roas < 1.3) status = '<span class="roas-pill red">sangrando</span>';
+    else if (sp < 300 && roas > 2.2) status = '<span class="roas-pill green">⭐ sub-investido</span>';
+    else if (sp > 0 && x.compras === 0) status = '<span class="roas-pill yellow">sem converter</span>';
+    return `
+      <tr>
+        <td><strong>${x.idade}</strong></td>
+        <td>${x.genero}</td>
+        <td class="text-right">${brl(sp)}</td>
+        <td class="text-right">${brl(x.cpm)}</td>
+        <td class="text-right">${pct(x.ctr)}</td>
+        <td class="text-right">${x.compras}</td>
+        <td class="text-right">${roasPill(roas)}</td>
+        <td>${status}</td>
+      </tr>
+    `;
+  }).join('');
+  document.getElementById('analiseDemografia').innerHTML = `
+    <table>
+      <thead><tr><th>Idade</th><th>Gen</th><th class="text-right">Spend</th><th class="text-right">CPM</th><th class="text-right">CTR</th><th class="text-right">Comp</th><th class="text-right">ROAS</th><th>Status</th></tr></thead>
+      <tbody>${demRows || '<tr><td colspan="8" class="text-center" style="color:var(--muted);padding:24px">Sem dados</td></tr>'}</tbody>
+    </table>
+  `;
+
+  // Pausadas
+  const fmt = (n, d=0) => Number(n||0).toLocaleString('pt-BR', {minimumFractionDigits: d, maximumFractionDigits: d});
+  const paRows = (d.pausadas || []).map(p => `
+    <tr>
+      <td><strong>${(p.nome||'').replace('[DRM]','').trim()}</strong></td>
+      <td><span style="color:var(--muted);font-size:11px">${(p.objetivo||'').replace('OUTCOME_','')}</span></td>
+      <td class="text-right">${brl(p.spend)}</td>
+      <td class="text-right">${p.compras}</td>
+      <td class="text-right">${roasPill(p.roas)}</td>
+      <td class="text-right">${brl(p.cpa)}</td>
+    </tr>
+  `).join('');
+  document.getElementById('analisePausadas').innerHTML = `
+    <table>
+      <thead><tr><th>Campanha pausada</th><th>Objetivo</th><th class="text-right">Spend hist.</th><th class="text-right">Compras</th><th class="text-right">ROAS</th><th class="text-right">CPA</th></tr></thead>
+      <tbody>${paRows || '<tr><td colspan="6" class="text-center" style="color:var(--muted);padding:24px">Sem pausadas valiosas. <em>"O caminho do Jedi é continuar testando."</em></td></tr>'}</tbody>
+    </table>
+  `;
 }
 
 // ─── RENDER ALL ─────────────────────────────────────────────────────────────
