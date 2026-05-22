@@ -2593,9 +2593,20 @@ setInterval(loadData, 10 * 60 * 1000);
     input.value = ''; input.style.height = 'auto';
     isLoading = true; sendBtn.disabled = true;
     const typingEl = addTyping();
+    // Tic-tac visual: Austin demora ~80-120s (n8n queue + Claude). Mostrar elapsed pra deixar claro que tá processando.
+    const t0 = Date.now();
+    const tickEl = document.createElement('div');
+    tickEl.style.cssText = 'font-size:10px;color:#9ca3b8;margin-top:4px;text-align:center;';
+    tickEl.textContent = 'Austin pensando... 0s';
+    typingEl.appendChild(tickEl);
+    const ticker = setInterval(() => {
+      const sec = Math.floor((Date.now() - t0) / 1000);
+      tickEl.textContent = `Austin pensando... ${sec}s ${sec > 60 ? '(consultando Meta API, normal demorar até 2min)' : ''}`;
+    }, 1000);
     try {
       const ctrl = new AbortController();
-      const timeout = setTimeout(() => ctrl.abort(), 90000);
+      // Timeout 180s — Austin faz 3 reads sequenciais (LER HISTORICO + LER DASHBOARD + LER META 5D) + Claude Sonnet, totaliza ~80-120s normalmente
+      const timeout = setTimeout(() => ctrl.abort(), 180000);
       const res = await fetch(AUSTIN_URL, {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
@@ -2603,13 +2614,16 @@ setInterval(loadData, 10 * 60 * 1000);
         signal: ctrl.signal,
       });
       clearTimeout(timeout);
+      clearInterval(ticker);
       const data = await res.json();
       typingEl.remove();
       const reply = data.reply || 'Oh, behave! Resposta vazia.';
       addBot(reply, data.suggested_actions || []);
     } catch(e) {
+      clearInterval(ticker);
       typingEl.remove();
-      addBot('⚠️ *Groovy bummer!* Erro na conexão com o agente: `' + esc(e.message) + '`. Tenta de novo, baby.');
+      const elapsed = Math.floor((Date.now() - t0) / 1000);
+      addBot(`⚠️ *Groovy bummer!* Erro na conexão com o agente após ${elapsed}s: \`${esc(e.message)}\`. Tenta de novo, baby.`);
     } finally {
       isLoading = false; sendBtn.disabled = false; input.focus();
     }
