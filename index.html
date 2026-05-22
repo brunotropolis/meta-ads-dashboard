@@ -2464,6 +2464,7 @@ setInterval(loadData, 10 * 60 * 1000);
 <script>
 (function(){
   const AUSTIN_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/austin-powers';
+  const EXECUTE_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/austin-execute';
   const SESSION_KEY = 'austin-session-id';
   const HISTORY_KEY = 'austin-history-v1';
 
@@ -2520,9 +2521,33 @@ setInterval(loadData, 10 * 60 * 1000);
       wrap.appendChild(label);
       actions.forEach(a => {
         const btn = document.createElement('button'); btn.className = 'ap-action-btn';
-        btn.innerHTML = `<span class="ap-action-tipo">${esc(a.tipo||'?')}</span> ${esc(a.alvo||'')} ${a.valor?`→ <b>${esc(String(a.valor))}</b>`:''}<div style="opacity:.75;margin-top:3px;font-size:11px;">${esc(a.motivo||'')}</div>`;
-        btn.title = 'Execução vem em sprint posterior';
-        btn.addEventListener('click', () => alert('Aprovação de ações será implementada no próximo sprint. Ação: ' + JSON.stringify(a)));
+        const renderLabel = () => `<span class="ap-action-tipo">${esc(a.tipo||'?')}</span> ${esc(a.alvo||'')} ${a.valor?`→ <b>${esc(String(a.valor))}</b>`:''}<div style="opacity:.75;margin-top:3px;font-size:11px;">${esc(a.motivo||'')}</div>`;
+        btn.innerHTML = renderLabel();
+        btn.title = 'Clique para aprovar e executar via Meta Ads API';
+        btn.addEventListener('click', async () => {
+          if (btn.dataset.executed) return;
+          btn.dataset.executed = 'pending';
+          btn.disabled = true;
+          btn.innerHTML = renderLabel() + '<div style="margin-top:6px;color:#fbbf24;">⏳ Executando...</div>';
+          try {
+            const res = await fetch(EXECUTE_URL, {
+              method: 'POST',
+              headers: {'Content-Type':'application/json'},
+              body: JSON.stringify({ session_id: sessionId, action: a }),
+            });
+            const data = await res.json();
+            const ok = data.status === 'OK';
+            btn.dataset.executed = ok ? 'ok' : 'err';
+            btn.style.borderColor = ok ? 'rgba(74,222,128,0.6)' : 'rgba(248,113,113,0.6)';
+            btn.style.background = ok ? 'linear-gradient(135deg,rgba(74,222,128,0.18),rgba(34,211,238,0.12))'
+                                      : 'linear-gradient(135deg,rgba(248,113,113,0.2),rgba(251,146,60,0.12))';
+            btn.innerHTML = renderLabel() + `<div style="margin-top:6px;color:${ok?'#4ade80':'#f87171'};font-weight:700;">${ok?'✓ Executado':'✗ Erro'}</div><div style="opacity:.8;font-size:10.5px;margin-top:2px;">${esc(data.detalhe||'').slice(0,200)}</div>`;
+          } catch(e) {
+            btn.dataset.executed = 'err';
+            btn.disabled = false;
+            btn.innerHTML = renderLabel() + `<div style="margin-top:6px;color:#f87171;">✗ Falha rede: ${esc(e.message)}</div>`;
+          }
+        });
         wrap.appendChild(btn);
       });
       el.appendChild(wrap);
