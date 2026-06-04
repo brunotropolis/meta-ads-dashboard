@@ -2465,6 +2465,9 @@ setInterval(loadData, 10 * 60 * 1000);
 (function(){
   const AUSTIN_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/austin-powers';
   const EXECUTE_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/austin-execute';
+  // Proteção contra scans/abusos. Pra auth real (login), mover dashboard pra Cloudflare Access.
+  // Override local: localStorage.setItem('austin-webhook-secret', '...')
+  const WEBHOOK_SECRET = localStorage.getItem('austin-webhook-secret') || '06Md1TX1ufLkrTwFXdq3DAtCDvtnpcwdJxFRDqj-Wx0';
   const SESSION_KEY = 'austin-session-id';
   const HISTORY_KEY = 'austin-history-v1';
 
@@ -2532,7 +2535,7 @@ setInterval(loadData, 10 * 60 * 1000);
           try {
             const res = await fetch(EXECUTE_URL, {
               method: 'POST',
-              headers: {'Content-Type':'application/json'},
+              headers: {'Content-Type':'application/json','X-Webhook-Secret':WEBHOOK_SECRET},
               body: JSON.stringify({ session_id: sessionId, action: a }),
             });
             const data = await res.json();
@@ -2609,7 +2612,7 @@ setInterval(loadData, 10 * 60 * 1000);
       const timeout = setTimeout(() => ctrl.abort(), 180000);
       const res = await fetch(AUSTIN_URL, {
         method: 'POST',
-        headers: {'Content-Type':'application/json'},
+        headers: {'Content-Type':'application/json','X-Webhook-Secret':WEBHOOK_SECRET},
         body: JSON.stringify({ session_id: sessionId, message: text }),
         signal: ctrl.signal,
       });
