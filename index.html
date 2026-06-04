@@ -2608,8 +2608,8 @@ setInterval(loadData, 10 * 60 * 1000);
     }, 1000);
     try {
       const ctrl = new AbortController();
-      // Timeout 180s — Austin faz 3 reads sequenciais (LER HISTORICO + LER DASHBOARD + LER META 5D) + Claude Sonnet, totaliza ~80-120s normalmente
-      const timeout = setTimeout(() => ctrl.abort(), 180000);
+      // Timeout 300s — Austin faz 3 reads sequenciais (LER HISTORICO + LER DASHBOARD + LER META 5D) + Claude Sonnet, totaliza ~80-120s normalmente
+      const timeout = setTimeout(() => ctrl.abort(), 300000);
       const res = await fetch(AUSTIN_URL, {
         method: 'POST',
         headers: {'Content-Type':'application/json','X-Webhook-Secret':WEBHOOK_SECRET},
