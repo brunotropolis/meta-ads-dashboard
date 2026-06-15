@@ -1215,6 +1215,8 @@ function renderFunis(f) {
   const P = f.pago || {}, O = f.organico || {};
   const PQ = P.quiz || {}, PV = P.pagina_vendas || {};
   const OQ = O.quiz || {}, OV = O.pagina_vendas || {};
+  const PVm = PV.meta || {}, PVi = PV.interno || {};
+  const OVi = OV.interno || {};
 
   const blocoPago = `
     <div class="section" style="margin-bottom:20px">
@@ -1230,10 +1232,16 @@ function renderFunis(f) {
         <div class="finance-card fc-blue"><span class="fc-icon">🔗</span><div class="fc-label">Connect Rate</div><div class="fc-value">${PQ.connect_rate||0}%</div><div class="fc-sub">clicaram no anúncio → entraram no quiz</div></div>
         <div class="finance-card fc-yellow"><span class="fc-icon">🏁</span><div class="fc-label">Taxa de Finalização do Quiz</div><div class="fc-value">${PQ.taxa_finalizacao||0}%</div><div class="fc-sub">${PQ.iniciou||0} iniciaram → ${PQ.finalizou||0} finalizaram</div></div>
       </div>
-      ${_funilSub('🛒 Dados da Página de Vendas')}
+      ${_funilSub('🛒 Página de Vendas · 📊 via Meta (mês inteiro, retroativo)')}
+      <div class="finance-grid" style="padding:4px;grid-template-columns:repeat(3,1fr)">
+        <div class="finance-card fc-blue"><span class="fc-icon">👀</span><div class="fc-label">Entrou na Página</div><div class="fc-value">${PVm.entrou||0}</div><div class="fc-sub">view_content do pixel</div></div>
+        <div class="finance-card fc-yellow"><span class="fc-icon">🛒</span><div class="fc-label">Página → Checkout</div><div class="fc-value">${PVm.pagina_checkout||0}%</div><div class="fc-sub">${PVm.entrou||0} → ${PVm.checkout||0} no checkout</div></div>
+        <div class="finance-card fc-green"><span class="fc-icon">✅</span><div class="fc-label">Checkout → Compra</div><div class="fc-value">${PVm.checkout_compra||0}%</div><div class="fc-sub">${PVm.checkout||0} checkout → ${P.comprou||0} compraram</div></div>
+      </div>
+      ${_funilSub('🛒 Página de Vendas · 🏠 dados internos (desde ontem)')}
       <div class="finance-grid" style="padding:4px;grid-template-columns:repeat(2,1fr)">
-        <div class="finance-card fc-yellow"><span class="fc-icon">🛒</span><div class="fc-label">Página de Vendas → Checkout</div><div class="fc-value">${PV.pagina_checkout||0}%</div><div class="fc-sub">${PV.entrou||0} entraram → ${PV.checkout||0} no checkout</div></div>
-        <div class="finance-card fc-green"><span class="fc-icon">✅</span><div class="fc-label">Checkout → Compra</div><div class="fc-value">${PV.checkout_compra||0}%</div><div class="fc-sub">${PV.checkout||0} checkout → ${P.comprou||0} compraram</div></div>
+        <div class="finance-card fc-blue"><span class="fc-icon">👀</span><div class="fc-label">Entrou na Página</div><div class="fc-value">${PVi.entrou||0}</div><div class="fc-sub">finalizaram o quiz → página de resultado</div></div>
+        <div class="finance-card fc-yellow"><span class="fc-icon">🛒</span><div class="fc-label">Página → Checkout</div><div class="fc-value">${PVi.pagina_checkout||0}%</div><div class="fc-sub">${PVi.entrou||0} → ${PVi.checkout||0} clicaram comprar</div></div>
       </div>
       <div class="table-wrap" style="margin-top:8px">${_bumpsTable(P.bumps, P.comprou||0)}</div>
     </div>`;
@@ -1248,10 +1256,10 @@ function renderFunis(f) {
       <div class="finance-grid" style="padding:4px">
         <div class="finance-card fc-yellow"><span class="fc-icon">🏁</span><div class="fc-label">Taxa de Finalização do Quiz</div><div class="fc-value">${OQ.taxa_finalizacao||0}%</div><div class="fc-sub">${OQ.iniciou||0} iniciaram → ${OQ.finalizou||0} finalizaram</div></div>
       </div>
-      ${_funilSub('🛒 Dados da Página de Vendas')}
+      ${_funilSub('🛒 Página de Vendas · 🏠 dados internos (desde ontem)')}
       <div class="finance-grid" style="padding:4px;grid-template-columns:repeat(2,1fr)">
-        <div class="finance-card fc-yellow"><span class="fc-icon">🛒</span><div class="fc-label">Página de Vendas → Checkout</div><div class="fc-value">${OV.pagina_checkout||0}%</div><div class="fc-sub">${OV.entrou||0} entraram → ${OV.checkout||0} no checkout</div></div>
-        <div class="finance-card fc-green"><span class="fc-icon">✅</span><div class="fc-label">Checkout → Compra</div><div class="fc-value">${OV.checkout_compra||0}%</div><div class="fc-sub">${OV.checkout||0} checkout → ${O.comprou||0} compraram</div></div>
+        <div class="finance-card fc-blue"><span class="fc-icon">👀</span><div class="fc-label">Entrou na Página</div><div class="fc-value">${OVi.entrou||0}</div><div class="fc-sub">finalizaram o quiz → página de resultado</div></div>
+        <div class="finance-card fc-yellow"><span class="fc-icon">🛒</span><div class="fc-label">Página → Checkout</div><div class="fc-value">${OVi.pagina_checkout||0}%</div><div class="fc-sub">${OVi.entrou||0} → ${OVi.checkout||0} clicaram comprar</div></div>
       </div>
       <div class="table-wrap" style="margin-top:8px">${_bumpsTable(O.bumps, O.comprou||0)}</div>
     </div>`;
