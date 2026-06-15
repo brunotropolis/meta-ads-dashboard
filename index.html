@@ -634,10 +634,66 @@
       .two-col { grid-template-columns: 1fr; }
       #vendasCanais > div { grid-template-columns: 1fr !important; }
     }
+
+    /* Tabs roláveis horizontalmente em telas médias/pequenas (evita estouro) */
+    @media (max-width: 760px) {
+      .tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        gap: 2px;
+        padding: 0 10px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      .tabs::-webkit-scrollbar { display: none; }
+      .tab {
+        padding: 13px 14px;
+        font-size: 13px;
+        flex: 0 0 auto;
+      }
+    }
+
     @media (max-width: 600px) {
       .finance-grid { grid-template-columns: 1fr; }
       .criativos-grid { grid-template-columns: repeat(2, 1fr); }
       .vendas-summary { grid-template-columns: 1fr; }
+
+      /* Header compacto: título à esquerda, ações em linha própria */
+      .header {
+        padding: 10px 14px;
+        flex-wrap: wrap;
+        gap: 8px;
+        row-gap: 8px;
+      }
+      .header-left { gap: 10px; flex: 1 1 auto; min-width: 0; }
+      .header-left > span:first-child { font-size: 22px; }
+      .header h1 { font-size: 16px; }
+      .header-subtitle { display: none; }     /* esconde a tagline pra ganhar altura */
+      .header-right {
+        gap: 6px;
+        width: 100%;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+      }
+      .last-update { font-size: 10px; margin-right: auto; }
+      .btn { padding: 7px 11px; font-size: 12px; }
+      .btn-sm { padding: 6px 10px; font-size: 11px; }
+
+      /* tabs sticky logo abaixo do header (que agora pode ter 2 linhas) */
+      .tabs { top: 0; position: relative; }
+      .tab { padding: 12px 12px; font-size: 12.5px; }
+      .tab-icon { font-size: 16px; }
+
+      /* respiro lateral menor no conteúdo */
+      .main { padding: 16px 12px; }
+      .section-header { padding: 14px 16px; }
+
+      /* seletor de período: rolável sem quebrar feio */
+      #periodSelector { padding: 10px 12px !important; }
+      #periodSelector > span:first-child { width: 100%; margin-bottom: 2px; }
+      .period-btn { padding: 7px 14px; font-size: 12.5px; }
+      #periodLabel { margin-left: 0 !important; width: 100%; margin-top: 4px; }
     }
   </style>
 </head>
