@@ -665,6 +665,7 @@
   <div class="tab" onclick="switchTab('campanhas')"><span class="tab-icon">🚀</span> Campanhas</div>
   <div class="tab" onclick="switchTab('vendas')" id="tabVendas"><span class="tab-icon">💎</span> Vendas</div>
   <div class="tab" onclick="switchTab('analise')"><span class="tab-icon">🔮</span> Análise & Baseline</div>
+  <div class="tab" onclick="switchTab('funis')"><span class="tab-icon">🌪️</span> Funis</div>
 </div>
 
 <div class="main">
@@ -961,6 +962,21 @@
 
   </div>
 
+  <!-- TAB: FUNIS -->
+  <div class="tab-content" id="tab-funis">
+    <div class="section">
+      <div class="section-header">
+        <div>
+          <div class="section-title">🍼 QUIZ DREAM BABY POCKET</div>
+          <div class="section-sub">Funil do quiz (ch_id 140071) — produto principal + order bumps. Pago via Meta retroativo, orgânico via tracking do quiz.</div>
+        </div>
+      </div>
+      <div id="funisBody" style="padding:4px">
+        <div class="loading"><div class="spinner"></div>Carregando funil...</div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -981,6 +997,7 @@ function setPeriodo(periodo) {
   if (periodo !== 'personalizado') {
     loadData();
     if (activeTab === 'analise') loadBreakdowns();
+    if (activeTab === 'funis') loadFunis();
   }
 }
 
@@ -990,6 +1007,7 @@ function applyCustomPeriod() {
   if (!inicio || !fim) { alert('Selecione as datas'); return; }
   loadData();
   if (activeTab === 'analise') loadBreakdowns();
+  if (activeTab === 'funis') loadFunis();
 }
 
 // ─── CACHE (localStorage, TTL 5 min) ────────────────────────────────────────
@@ -1117,7 +1135,7 @@ async function populateData(btn) {
 // ─── SWITCH TAB ─────────────────────────────────────────────────────────────
 function switchTab(name) {
   activeTab = name;
-  const names = ['overview','campanhas','vendas','analise'];
+  const names = ['overview','campanhas','vendas','analise','funis'];
   document.querySelectorAll('.tab').forEach((t, i) => {
     t.classList.toggle('active', names[i] === name);
   });
@@ -1127,6 +1145,106 @@ function switchTab(name) {
     renderAnalise();
     loadBreakdowns(); // chama 2º endpoint pra placement/demografia/pausadas
   }
+  if (name === 'funis') {
+    loadFunis();
+  }
+}
+
+// ─── FUNIS (Quiz Dream Baby Pocket) ─────────────────────────────────────────
+let _funisCache = {};
+async function loadFunis() {
+  const key = _breakdownsKey();
+  const body = document.getElementById('funisBody');
+  if (_funisCache[key]) { renderFunis(_funisCache[key]); return; }
+  body.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando funil (Meta + Greenn)...</div>';
+  try {
+    const params = new URLSearchParams({ view: 'funis', periodo: currentPeriodo });
+    if (currentPeriodo === 'personalizado') {
+      params.set('data_inicio', document.getElementById('dataInicio').value || '');
+      params.set('data_fim', document.getElementById('dataFim').value || '');
+    }
+    const resp = await fetch(`${API_URL}?${params}&_=${Date.now()}`);
+    const d = await resp.json();
+    _funisCache[key] = d.funis || {};
+    renderFunis(_funisCache[key]);
+  } catch (e) {
+    body.innerHTML = `<div style="padding:30px;text-align:center;color:var(--red)">Erro ao carregar funil: ${e.message}</div>`;
+  }
+}
+
+function _funilStep(label, valor, sub) {
+  return `<div style="flex:1;min-width:120px;text-align:center;padding:14px 10px;background:var(--bg2,#16161f);border:1px solid var(--border,#262633);border-radius:12px">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted,#8a8a9a);margin-bottom:6px">${label}</div>
+    <div style="font-size:24px;font-weight:800;color:var(--text,#fff)">${valor}</div>
+    ${sub ? `<div style="font-size:12px;color:var(--green,#3ddc84);margin-top:4px">${sub}</div>` : ''}
+  </div>`;
+}
+
+function _arrow() {
+  return `<div style="display:flex;align-items:center;color:var(--muted,#8a8a9a);font-size:20px;padding:0 2px">→</div>`;
+}
+
+function _bumpsTable(bumps, compras) {
+  if (!bumps || !bumps.length) return `<div style="padding:14px;color:var(--muted,#8a8a9a);font-size:13px">Nenhum order bump vendido no período.</div>`;
+  let rows = bumps.map(b => `<tr>
+    <td>${b.nome}</td>
+    <td style="text-align:center">${b.qtd}</td>
+    <td style="text-align:center"><b style="color:var(--green,#3ddc84)">${b.attach_pct}%</b></td>
+    <td style="text-align:right">R$ ${fmt(b.receita)}</td>
+  </tr>`).join('');
+  return `<table style="width:100%"><thead><tr>
+    <th>Order Bump</th><th style="text-align:center">Vendas</th>
+    <th style="text-align:center">Attach %</th><th style="text-align:right">Receita</th>
+  </tr></thead><tbody>${rows}</tbody></table>
+  <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:8px 4px 0">Attach % = vendas do bump ÷ ${compras} compras do principal</div>`;
+}
+
+function renderFunis(f) {
+  const body = document.getElementById('funisBody');
+  if (!f || (!f.pago && !f.organico)) {
+    body.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted,#8a8a9a)">Sem dados de funil no período.</div>';
+    return;
+  }
+  const P = f.pago || {}, O = f.organico || {};
+
+  const blocoPago = `
+    <div class="section" style="margin-bottom:20px">
+      <div class="section-header"><div class="section-title">🟢 Tráfego Pago (Meta)</div>
+        <div class="section-sub">Investimento, cliques e funil retroativos da Meta Ads · vendas via Greenn</div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">
+        ${_funilStep('Investido', 'R$ ' + fmt(P.investimento))}
+        ${_funilStep('Cliques', P.cliques || 0)}${_arrow()}
+        ${_funilStep('Chegou na página', P.chegou_pagina || 0)}${_arrow()}
+        ${_funilStep('Foi pro checkout', P.foi_checkout || 0, P.conv_pagina_checkout + '%')}${_arrow()}
+        ${_funilStep('Comprou', P.comprou || 0, P.conv_checkout_compra + '%')}
+      </div>
+      <div class="finance-grid" style="padding:4px">
+        <div class="finance-card fc-blue"><span class="fc-icon">🎯</span><div class="fc-label">Conv. Página → Compra</div><div class="fc-value">${P.conv_pagina_compra}%</div><div class="fc-sub">resultado → comprou</div></div>
+        <div class="finance-card fc-yellow"><span class="fc-icon">📊</span><div class="fc-label">ROAS Principal</div><div class="fc-value">${(P.roas_principal||0).toFixed(2)}x</div><div class="fc-sub">R$ ${fmt(P.receita_principal)} ÷ invest.</div></div>
+        <div class="finance-card fc-purple"><span class="fc-icon">🌪️</span><div class="fc-label">ROAS Funil</div><div class="fc-value">${(P.roas_funil||0).toFixed(2)}x</div><div class="fc-sub">principal + bumps</div></div>
+        <div class="finance-card fc-green"><span class="fc-icon">🧾</span><div class="fc-label">Ticket Médio</div><div class="fc-value">R$ ${fmt(P.ticket_medio)}</div><div class="fc-sub">receita ÷ ${P.comprou||0} compras</div></div>
+      </div>
+      <div class="table-wrap" style="margin-top:8px">${_bumpsTable(P.bumps, P.comprou||0)}</div>
+    </div>`;
+
+  const blocoOrg = `
+    <div class="section">
+      <div class="section-header"><div class="section-title">🌱 Orgânico</div>
+        <div class="section-sub">Funil via tracking do quiz (sem investimento/ROAS) · vendas via Greenn</div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">
+        ${_funilStep('Chegou na página', O.chegou_pagina || 0)}${_arrow()}
+        ${_funilStep('Foi pro checkout', O.foi_checkout || 0, O.conv_pagina_checkout + '%')}${_arrow()}
+        ${_funilStep('Comprou', O.comprou || 0, O.conv_checkout_compra + '%')}
+      </div>
+      <div class="finance-grid" style="padding:4px">
+        <div class="finance-card fc-blue"><span class="fc-icon">🎯</span><div class="fc-label">Conv. Página → Compra</div><div class="fc-value">${O.conv_pagina_compra}%</div><div class="fc-sub">resultado → comprou</div></div>
+        <div class="finance-card fc-green"><span class="fc-icon">💰</span><div class="fc-label">Receita Total</div><div class="fc-value">R$ ${fmt(O.receita_total)}</div><div class="fc-sub">principal + bumps</div></div>
+        <div class="finance-card fc-yellow"><span class="fc-icon">🧾</span><div class="fc-label">Ticket Médio</div><div class="fc-value">R$ ${fmt(O.ticket_medio)}</div><div class="fc-sub">receita ÷ ${O.comprou||0} compras</div></div>
+      </div>
+      <div class="table-wrap" style="margin-top:8px">${_bumpsTable(O.bumps, O.comprou||0)}</div>
+    </div>`;
+
+  body.innerHTML = blocoPago + blocoOrg;
 }
 
 // ─── BREAKDOWNS (placement, demografia, pausadas) ───────────────────────────
