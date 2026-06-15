@@ -1336,7 +1336,7 @@ function renderFunis(f) {
       </div>
       ${_funilSub('🔻 Funil do Quiz · conversão total ' + (OF.conv_total||0) + '% (quiz → compra)')}
       ${_funilRow(OF)}
-      <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:2px 6px 0">🌱 Vendas classificadas como orgânico só com utm_campaign=organico (sem vazamento do tráfego). Sem etapa de checkout: o orgânico não tem sinal confiável de checkout (a Meta só vê tráfego pago, e o clique client-side subconta). Mostramos chegou na oferta → comprou direto.</div>
+      <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:2px 6px 0">🌱 Vendas classificadas como orgânico só com utm_campaign=organico (sem vazamento do tráfego). Checkout do orgânico = clique de comprar (via sendBeacon, rastreamento melhorado 16/Jun) com piso nas compras — fica mais preciso conforme acumula dados.</div>
       <div class="table-wrap" style="margin-top:10px">${_bumpsTable(O.bumps, O.comprou||0)}</div>
     </div>`;
 
