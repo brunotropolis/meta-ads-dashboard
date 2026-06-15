@@ -1293,8 +1293,9 @@ function renderFunis(f) {
     if (F.cliques!=null) s.push(_funilStep('Cliques no anúncio', F.cliques||0));
     s.push(_funilStep('Entrou no quiz', F.entrou_quiz||0, F.connect_rate!=null ? ('Connect '+(F.connect_rate||0)+'%') : ''));
     s.push(_funilStep('Chegou na oferta', F.chegou_oferta||0, (F.finalizacao_quiz||0)+'% terminou o quiz'));
-    s.push(_funilStep('Foi pro checkout', F.foi_checkout||0, (F.oferta_checkout||0)+'% da oferta'));
-    s.push(_funilStep('Comprou', F.comprou||0, (F.checkout_compra||0)+'% do checkout'));
+    var temCheckout = F.foi_checkout!=null;
+    if (temCheckout) s.push(_funilStep('Foi pro checkout', F.foi_checkout||0, (F.oferta_checkout||0)+'% da oferta'));
+    s.push(_funilStep('Comprou', F.comprou||0, temCheckout ? ((F.checkout_compra||0)+'% do checkout') : ((F.oferta_compra||0)+'% da oferta')));
     return '<div class="funil-flow" style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">'+s.join(_arrow())+'</div>';
   }
 
@@ -1335,7 +1336,7 @@ function renderFunis(f) {
       </div>
       ${_funilSub('🔻 Funil do Quiz · conversão total ' + (OF.conv_total||0) + '% (quiz → compra)')}
       ${_funilRow(OF)}
-      <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:2px 6px 0">🌱 Vendas classificadas como orgânico só com utm_campaign=organico (sem vazamento do tráfego). Tudo via nosso tracking (sem dados de cliques/Meta).</div>
+      <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:2px 6px 0">🌱 Vendas classificadas como orgânico só com utm_campaign=organico (sem vazamento do tráfego). Sem etapa de checkout: o orgânico não tem sinal confiável de checkout (a Meta só vê tráfego pago, e o clique client-side subconta). Mostramos chegou na oferta → comprou direto.</div>
       <div class="table-wrap" style="margin-top:10px">${_bumpsTable(O.bumps, O.comprou||0)}</div>
     </div>`;
 
