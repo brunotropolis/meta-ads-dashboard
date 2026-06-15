@@ -1191,11 +1191,19 @@ function _bumpsTable(bumps, compras) {
     <td style="text-align:center"><b style="color:var(--green,#3ddc84)">${b.attach_pct}%</b></td>
     <td style="text-align:right">R$ ${fmt(b.receita)}</td>
   </tr>`).join('');
+  const bQtd = bumps.reduce((s,b)=>s+(b.qtd||0),0);
+  const bRev = bumps.reduce((s,b)=>s+(b.receita||0),0);
+  const bMedia = bumps.length ? (bumps.reduce((s,b)=>s+(b.attach_pct||0),0)/bumps.length) : 0;
   return `<table style="width:100%"><thead><tr>
     <th>Order Bump</th><th style="text-align:center">Vendas</th>
     <th style="text-align:center">Conversão %</th><th style="text-align:right">Valor fechado</th>
   </tr></thead><tbody>${rows}</tbody></table>
-  <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:8px 4px 0">Conversão % = vendas do bump ÷ ${compras} compras do principal</div>`;
+  <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:8px 4px 4px">Conversão % = vendas do bump ÷ ${compras} compras do principal</div>
+  <div class="finance-grid" style="padding:4px;grid-template-columns:repeat(3,1fr)">
+    <div class="finance-card fc-purple"><span class="fc-icon">📊</span><div class="fc-label">% Média Conversão Bumps</div><div class="fc-value">${bMedia.toFixed(1)}%</div></div>
+    <div class="finance-card fc-blue"><span class="fc-icon">🧮</span><div class="fc-label">Vendas de Bumps</div><div class="fc-value">${bQtd}</div></div>
+    <div class="finance-card fc-green"><span class="fc-icon">💰</span><div class="fc-label">Valor Total Bumps</div><div class="fc-value">R$ ${fmt(bRev)}</div></div>
+  </div>`;
 }
 
 function renderFunis(f) {
@@ -1215,8 +1223,10 @@ function renderFunis(f) {
         <div class="finance-card fc-yellow"><span class="fc-icon">📊</span><div class="fc-label">ROAS Principal</div><div class="fc-value">${(P.roas_principal||0).toFixed(2)}x</div></div>
         <div class="finance-card fc-purple"><span class="fc-icon">🌪️</span><div class="fc-label">ROAS Funil</div><div class="fc-value">${(P.roas_funil||0).toFixed(2)}x</div></div>
       </div>
-      <div class="finance-grid" style="padding:4px">
-        <div class="finance-card fc-blue"><span class="fc-icon">📈</span><div class="fc-label">% Conversão do Produto</div><div class="fc-value">${P.conv_pagina_compra}%</div><div class="fc-sub">${P.comprou||0} compras · resultado → comprou</div></div>
+      <div class="finance-grid" style="padding:4px;grid-template-columns:repeat(3,1fr)">
+        <div class="finance-card fc-blue"><span class="fc-icon">🔗</span><div class="fc-label">Connect Rate</div><div class="fc-value">${P.connect_rate||0}%</div><div class="fc-sub">clicaram → entraram na página</div></div>
+        <div class="finance-card fc-yellow"><span class="fc-icon">🛒</span><div class="fc-label">Página → Checkout</div><div class="fc-value">${P.conv_pagina_checkout}%</div><div class="fc-sub">da página foram pro checkout</div></div>
+        <div class="finance-card fc-green"><span class="fc-icon">✅</span><div class="fc-label">Checkout → Compra</div><div class="fc-value">${P.conv_checkout_compra}%</div><div class="fc-sub">do checkout compraram</div></div>
       </div>
       <div class="table-wrap" style="margin-top:8px">${_bumpsTable(P.bumps, P.comprou||0)}</div>
     </div>`;
@@ -1224,9 +1234,10 @@ function renderFunis(f) {
   const blocoOrg = `
     <div class="section">
       <div class="section-header"><div class="section-title">🌱 Orgânico</div></div>
-      <div class="finance-grid" style="padding:4px">
+      <div class="finance-grid" style="padding:4px;grid-template-columns:repeat(3,1fr)">
         <div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento Total Funil</div><div class="fc-value">R$ ${fmt(O.receita_total)}</div></div>
-        <div class="finance-card fc-blue"><span class="fc-icon">📈</span><div class="fc-label">% Conversão do Produto</div><div class="fc-value">${O.conv_pagina_compra}%</div><div class="fc-sub">${O.comprou||0} compras · resultado → comprou</div></div>
+        <div class="finance-card fc-yellow"><span class="fc-icon">🛒</span><div class="fc-label">Página → Checkout</div><div class="fc-value">${O.conv_pagina_checkout}%</div><div class="fc-sub">da página foram pro checkout</div></div>
+        <div class="finance-card fc-green"><span class="fc-icon">✅</span><div class="fc-label">Checkout → Compra</div><div class="fc-value">${O.conv_checkout_compra}%</div><div class="fc-sub">do checkout compraram</div></div>
       </div>
       <div class="table-wrap" style="margin-top:8px">${_bumpsTable(O.bumps, O.comprou||0)}</div>
     </div>`;
