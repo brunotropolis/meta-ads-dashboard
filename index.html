@@ -968,7 +968,6 @@
       <div class="section-header">
         <div>
           <div class="section-title">🍼 QUIZ DREAM BABY POCKET</div>
-          <div class="section-sub">Funil do quiz (ch_id 140071) — produto principal + order bumps. Pago via Meta retroativo, orgânico via tracking do quiz.</div>
         </div>
       </div>
       <div id="funisBody" style="padding:4px">
@@ -1194,9 +1193,9 @@ function _bumpsTable(bumps, compras) {
   </tr>`).join('');
   return `<table style="width:100%"><thead><tr>
     <th>Order Bump</th><th style="text-align:center">Vendas</th>
-    <th style="text-align:center">Attach %</th><th style="text-align:right">Receita</th>
+    <th style="text-align:center">Conversão %</th><th style="text-align:right">Valor fechado</th>
   </tr></thead><tbody>${rows}</tbody></table>
-  <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:8px 4px 0">Attach % = vendas do bump ÷ ${compras} compras do principal</div>`;
+  <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:8px 4px 0">Conversão % = vendas do bump ÷ ${compras} compras do principal</div>`;
 }
 
 function renderFunis(f) {
@@ -1209,41 +1208,25 @@ function renderFunis(f) {
 
   const blocoPago = `
     <div class="section" style="margin-bottom:20px">
-      <div class="section-header"><div class="section-title">🟢 Tráfego Pago (Meta)</div>
-        <div class="section-sub">Investimento, cliques e funil retroativos da Meta Ads · vendas via Greenn</div></div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">
-        ${_funilStep('Investido', 'R$ ' + fmt(P.investimento))}
-        ${_funilStep('Cliques', P.cliques || 0)}${_arrow()}
-        ${_funilStep('Chegou na página', P.chegou_pagina || 0, 'Connect ' + (P.connect_rate||0) + '%')}${_arrow()}
-        ${_funilStep('Foi pro checkout', P.foi_checkout || 0, P.conv_pagina_checkout + '%')}${_arrow()}
-        ${_funilStep('Comprou', P.comprou || 0, P.conv_checkout_compra + '%')}
+      <div class="section-header"><div class="section-title">🟢 Tráfego Pago (Meta)</div></div>
+      <div class="finance-grid" style="padding:4px;grid-template-columns:repeat(4,1fr)">
+        <div class="finance-card fc-red"><span class="fc-icon">📢</span><div class="fc-label">Investido</div><div class="fc-value">R$ ${fmt(P.investimento)}</div></div>
+        <div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento Total Funil</div><div class="fc-value">R$ ${fmt(P.receita_total)}</div></div>
+        <div class="finance-card fc-yellow"><span class="fc-icon">📊</span><div class="fc-label">ROAS Principal</div><div class="fc-value">${(P.roas_principal||0).toFixed(2)}x</div></div>
+        <div class="finance-card fc-purple"><span class="fc-icon">🌪️</span><div class="fc-label">ROAS Funil</div><div class="fc-value">${(P.roas_funil||0).toFixed(2)}x</div></div>
       </div>
       <div class="finance-grid" style="padding:4px">
-        <div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento Total Funil</div><div class="fc-value">R$ ${fmt(P.receita_total)}</div><div class="fc-sub">principal + order bumps</div></div>
-        <div class="finance-card fc-blue"><span class="fc-icon">📦</span><div class="fc-label">Faturamento Principal</div><div class="fc-value">R$ ${fmt(P.receita_principal)}</div><div class="fc-sub">${P.comprou||0} un. Dream Baby Pocket</div></div>
-        <div class="finance-card fc-red"><span class="fc-icon">🎯</span><div class="fc-label">CPA Médio</div><div class="fc-value">R$ ${fmt(P.cpa)}</div><div class="fc-sub">invest. ÷ ${P.comprou||0} compras</div></div>
-        <div class="finance-card fc-yellow"><span class="fc-icon">📊</span><div class="fc-label">ROAS Principal</div><div class="fc-value">${(P.roas_principal||0).toFixed(2)}x</div><div class="fc-sub">principal ÷ invest.</div></div>
-        <div class="finance-card fc-purple"><span class="fc-icon">🌪️</span><div class="fc-label">ROAS Funil</div><div class="fc-value">${(P.roas_funil||0).toFixed(2)}x</div><div class="fc-sub">principal + bumps ÷ invest.</div></div>
-        <div class="finance-card fc-green"><span class="fc-icon">🧾</span><div class="fc-label">Ticket Médio</div><div class="fc-value">R$ ${fmt(P.ticket_medio)}</div><div class="fc-sub">funil ÷ ${P.comprou||0} compras</div></div>
-        <div class="finance-card fc-blue"><span class="fc-icon">📈</span><div class="fc-label">Conv. Página → Compra</div><div class="fc-value">${P.conv_pagina_compra}%</div><div class="fc-sub">resultado → comprou</div></div>
+        <div class="finance-card fc-blue"><span class="fc-icon">📈</span><div class="fc-label">% Conversão do Produto</div><div class="fc-value">${P.conv_pagina_compra}%</div><div class="fc-sub">${P.comprou||0} compras · resultado → comprou</div></div>
       </div>
       <div class="table-wrap" style="margin-top:8px">${_bumpsTable(P.bumps, P.comprou||0)}</div>
     </div>`;
 
   const blocoOrg = `
     <div class="section">
-      <div class="section-header"><div class="section-title">🌱 Orgânico</div>
-        <div class="section-sub">Funil via tracking do quiz (sem investimento/ROAS) · vendas via Greenn</div></div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">
-        ${_funilStep('Chegou na página', O.chegou_pagina || 0)}${_arrow()}
-        ${_funilStep('Foi pro checkout', O.foi_checkout || 0, O.conv_pagina_checkout + '%')}${_arrow()}
-        ${_funilStep('Comprou', O.comprou || 0, O.conv_checkout_compra + '%')}
-      </div>
+      <div class="section-header"><div class="section-title">🌱 Orgânico</div></div>
       <div class="finance-grid" style="padding:4px">
-        <div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento Total Funil</div><div class="fc-value">R$ ${fmt(O.receita_total)}</div><div class="fc-sub">principal + order bumps</div></div>
-        <div class="finance-card fc-blue"><span class="fc-icon">📦</span><div class="fc-label">Faturamento Principal</div><div class="fc-value">R$ ${fmt(O.receita_principal||0)}</div><div class="fc-sub">${O.comprou||0} un. Dream Baby Pocket</div></div>
-        <div class="finance-card fc-yellow"><span class="fc-icon">🧾</span><div class="fc-label">Ticket Médio</div><div class="fc-value">R$ ${fmt(O.ticket_medio)}</div><div class="fc-sub">funil ÷ ${O.comprou||0} compras</div></div>
-        <div class="finance-card fc-purple"><span class="fc-icon">📈</span><div class="fc-label">Conv. Página → Compra</div><div class="fc-value">${O.conv_pagina_compra}%</div><div class="fc-sub">resultado → comprou</div></div>
+        <div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento Total Funil</div><div class="fc-value">R$ ${fmt(O.receita_total)}</div></div>
+        <div class="finance-card fc-blue"><span class="fc-icon">📈</span><div class="fc-label">% Conversão do Produto</div><div class="fc-value">${O.conv_pagina_compra}%</div><div class="fc-sub">${O.comprou||0} compras · resultado → comprou</div></div>
       </div>
       <div class="table-wrap" style="margin-top:8px">${_bumpsTable(O.bumps, O.comprou||0)}</div>
     </div>`;
