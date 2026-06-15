@@ -1213,6 +1213,8 @@ function renderFunis(f) {
     return;
   }
   const P = f.pago || {}, O = f.organico || {};
+  const PQ = P.quiz || {}, PV = P.pagina_vendas || {};
+  const OQ = O.quiz || {}, OV = O.pagina_vendas || {};
 
   const blocoPago = `
     <div class="section" style="margin-bottom:20px">
@@ -1220,13 +1222,18 @@ function renderFunis(f) {
       <div class="finance-grid" style="padding:4px;grid-template-columns:repeat(4,1fr)">
         <div class="finance-card fc-red"><span class="fc-icon">📢</span><div class="fc-label">Investido</div><div class="fc-value">R$ ${fmt(P.investimento)}</div></div>
         <div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento Total Funil</div><div class="fc-value">R$ ${fmt(P.receita_total)}</div></div>
-        <div class="finance-card fc-yellow"><span class="fc-icon">📊</span><div class="fc-label">ROAS Principal</div><div class="fc-value">${(P.roas_principal||0).toFixed(2)}x</div></div>
+        <div class="finance-card fc-yellow"><span class="fc-icon">📊</span><div class="fc-label">ROAS Produto Principal</div><div class="fc-value">${(P.roas_principal||0).toFixed(2)}x</div></div>
         <div class="finance-card fc-purple"><span class="fc-icon">🌪️</span><div class="fc-label">ROAS Funil</div><div class="fc-value">${(P.roas_funil||0).toFixed(2)}x</div></div>
       </div>
-      <div class="finance-grid" style="padding:4px;grid-template-columns:repeat(3,1fr)">
-        <div class="finance-card fc-blue"><span class="fc-icon">🔗</span><div class="fc-label">Connect Rate</div><div class="fc-value">${P.connect_rate||0}%</div><div class="fc-sub">clicaram → entraram na página</div></div>
-        <div class="finance-card fc-yellow"><span class="fc-icon">🛒</span><div class="fc-label">Página → Checkout</div><div class="fc-value">${P.conv_pagina_checkout}%</div><div class="fc-sub">da página foram pro checkout</div></div>
-        <div class="finance-card fc-green"><span class="fc-icon">✅</span><div class="fc-label">Checkout → Compra</div><div class="fc-value">${P.conv_checkout_compra}%</div><div class="fc-sub">do checkout compraram</div></div>
+      ${_funilSub('📋 Dados do Quiz')}
+      <div class="finance-grid" style="padding:4px;grid-template-columns:repeat(2,1fr)">
+        <div class="finance-card fc-blue"><span class="fc-icon">🔗</span><div class="fc-label">Connect Rate</div><div class="fc-value">${PQ.connect_rate||0}%</div><div class="fc-sub">clicaram no anúncio → entraram no quiz</div></div>
+        <div class="finance-card fc-yellow"><span class="fc-icon">🏁</span><div class="fc-label">Taxa de Finalização do Quiz</div><div class="fc-value">${PQ.taxa_finalizacao||0}%</div><div class="fc-sub">${PQ.iniciou||0} iniciaram → ${PQ.finalizou||0} finalizaram</div></div>
+      </div>
+      ${_funilSub('🛒 Dados da Página de Vendas')}
+      <div class="finance-grid" style="padding:4px;grid-template-columns:repeat(2,1fr)">
+        <div class="finance-card fc-yellow"><span class="fc-icon">🛒</span><div class="fc-label">Página de Vendas → Checkout</div><div class="fc-value">${PV.pagina_checkout||0}%</div><div class="fc-sub">${PV.entrou||0} entraram → ${PV.checkout||0} no checkout</div></div>
+        <div class="finance-card fc-green"><span class="fc-icon">✅</span><div class="fc-label">Checkout → Compra</div><div class="fc-value">${PV.checkout_compra||0}%</div><div class="fc-sub">${PV.checkout||0} checkout → ${P.comprou||0} compraram</div></div>
       </div>
       <div class="table-wrap" style="margin-top:8px">${_bumpsTable(P.bumps, P.comprou||0)}</div>
     </div>`;
@@ -1234,15 +1241,26 @@ function renderFunis(f) {
   const blocoOrg = `
     <div class="section">
       <div class="section-header"><div class="section-title">🌱 Orgânico</div></div>
-      <div class="finance-grid" style="padding:4px;grid-template-columns:repeat(3,1fr)">
+      <div class="finance-grid" style="padding:4px">
         <div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento Total Funil</div><div class="fc-value">R$ ${fmt(O.receita_total)}</div></div>
-        <div class="finance-card fc-yellow"><span class="fc-icon">🛒</span><div class="fc-label">Página → Checkout</div><div class="fc-value">${O.conv_pagina_checkout}%</div><div class="fc-sub">da página foram pro checkout</div></div>
-        <div class="finance-card fc-green"><span class="fc-icon">✅</span><div class="fc-label">Checkout → Compra</div><div class="fc-value">${O.conv_checkout_compra}%</div><div class="fc-sub">do checkout compraram</div></div>
+      </div>
+      ${_funilSub('📋 Dados do Quiz')}
+      <div class="finance-grid" style="padding:4px">
+        <div class="finance-card fc-yellow"><span class="fc-icon">🏁</span><div class="fc-label">Taxa de Finalização do Quiz</div><div class="fc-value">${OQ.taxa_finalizacao||0}%</div><div class="fc-sub">${OQ.iniciou||0} iniciaram → ${OQ.finalizou||0} finalizaram</div></div>
+      </div>
+      ${_funilSub('🛒 Dados da Página de Vendas')}
+      <div class="finance-grid" style="padding:4px;grid-template-columns:repeat(2,1fr)">
+        <div class="finance-card fc-yellow"><span class="fc-icon">🛒</span><div class="fc-label">Página de Vendas → Checkout</div><div class="fc-value">${OV.pagina_checkout||0}%</div><div class="fc-sub">${OV.entrou||0} entraram → ${OV.checkout||0} no checkout</div></div>
+        <div class="finance-card fc-green"><span class="fc-icon">✅</span><div class="fc-label">Checkout → Compra</div><div class="fc-value">${OV.checkout_compra||0}%</div><div class="fc-sub">${OV.checkout||0} checkout → ${O.comprou||0} compraram</div></div>
       </div>
       <div class="table-wrap" style="margin-top:8px">${_bumpsTable(O.bumps, O.comprou||0)}</div>
     </div>`;
 
   body.innerHTML = blocoPago + blocoOrg;
+}
+
+function _funilSub(t) {
+  return `<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted,#8a8a9a);padding:16px 6px 2px">${t}</div>`;
 }
 
 // ─── BREAKDOWNS (placement, demografia, pausadas) ───────────────────────────
