@@ -1212,8 +1212,32 @@ function renderFunis(f) {
     body.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted,#8a8a9a)">Sem dados de funil no período.</div>';
     return;
   }
-  const P = f.pago || {}, O = f.organico || {};
-  const PF = P.funil || {}, OF = O.funil || {};
+  const P = f.pago || {}, O = f.organico || {}, T = f.tudo || {};
+  const PF = P.funil || {}, OF = O.funil || {}, TF = T.funil || {};
+
+  function _funilRow(F){
+    var s=[];
+    if (F.cliques!=null) s.push(_funilStep('Cliques no anúncio', F.cliques||0));
+    s.push(_funilStep('Entrou no quiz', F.entrou_quiz||0, F.connect_rate!=null ? ('Connect '+(F.connect_rate||0)+'%') : ''));
+    s.push(_funilStep('Chegou na oferta', F.chegou_oferta||0, (F.finalizacao_quiz||0)+'% terminou o quiz'));
+    s.push(_funilStep('Foi pro checkout', F.foi_checkout||0, (F.oferta_checkout||0)+'% da oferta'));
+    s.push(_funilStep('Comprou', F.comprou||0, (F.checkout_compra||0)+'% do checkout'));
+    return '<div style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">'+s.join(_arrow())+'</div>';
+  }
+
+  const blocoTudo = `
+    <div class="section" style="margin-bottom:20px">
+      <div class="section-header"><div class="section-title">🟣 Tudo (Pago + Orgânico)</div></div>
+      <div class="finance-grid" style="padding:4px;grid-template-columns:repeat(4,1fr)">
+        <div class="finance-card fc-red"><span class="fc-icon">📢</span><div class="fc-label">Investido</div><div class="fc-value">R$ ${fmt(T.investimento)}</div></div>
+        <div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento Total Funil</div><div class="fc-value">R$ ${fmt(T.receita_total)}</div></div>
+        <div class="finance-card fc-yellow"><span class="fc-icon">📊</span><div class="fc-label">ROAS Produto Principal</div><div class="fc-value">${(T.roas_principal||0).toFixed(2)}x</div></div>
+        <div class="finance-card fc-purple"><span class="fc-icon">🌪️</span><div class="fc-label">ROAS Funil</div><div class="fc-value">${(T.roas_funil||0).toFixed(2)}x</div></div>
+      </div>
+      ${_funilSub('🔻 Funil do Quiz · conversão total ' + (TF.conv_total||0) + '% (entrou no quiz → compra)')}
+      ${_funilRow(TF)}
+      <div class="table-wrap" style="margin-top:10px">${_bumpsTable(T.bumps, T.comprou||0)}</div>
+    </div>`;
 
   const blocoPago = `
     <div class="section" style="margin-bottom:20px">
@@ -1225,14 +1249,8 @@ function renderFunis(f) {
         <div class="finance-card fc-purple"><span class="fc-icon">🌪️</span><div class="fc-label">ROAS Funil</div><div class="fc-value">${(P.roas_funil||0).toFixed(2)}x</div></div>
       </div>
       ${_funilSub('🔻 Funil do Quiz · conversão total ' + (PF.conv_total||0) + '% (clique → compra)')}
-      <div style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">
-        ${_funilStep('Cliques no anúncio', PF.cliques||0)}${_arrow()}
-        ${_funilStep('Entrou no quiz', PF.entrou_quiz||0, 'Connect ' + (PF.connect_rate||0) + '%')}${_arrow()}
-        ${_funilStep('Chegou na oferta', PF.chegou_oferta||0, (PF.finalizacao_quiz||0) + '% terminou o quiz')}${_arrow()}
-        ${_funilStep('Foi pro checkout', PF.foi_checkout||0, (PF.oferta_checkout||0) + '% da oferta')}${_arrow()}
-        ${_funilStep('Comprou', PF.comprou||0, (PF.checkout_compra||0) + '% do checkout')}
-      </div>
-      <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:2px 6px 0">📊 Cliques, "entrou no quiz" e "foi pro checkout" vêm da Meta (retroativo). 🏠 "Chegou na oferta" = finalizou o quiz (nosso tracking, desde 14/Jun). Compra = produto principal (Greenn). Pra comparar de igual pra igual, use períodos recentes.</div>
+      ${_funilRow(PF)}
+      <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:2px 6px 0">📊 Cliques, "entrou no quiz" e "foi pro checkout" vêm da Meta (retroativo). 🏠 "Chegou na oferta" = finalizou o quiz (nosso tracking, desde 14/Jun). Vendas classificadas como pago só com tag [TRAFEGO]/[DRM] na utm_campaign (sem vazamento do orgânico).</div>
       <div class="table-wrap" style="margin-top:10px">${_bumpsTable(P.bumps, P.comprou||0)}</div>
     </div>`;
 
@@ -1243,16 +1261,12 @@ function renderFunis(f) {
         <div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento Total Funil</div><div class="fc-value">R$ ${fmt(O.receita_total)}</div></div>
       </div>
       ${_funilSub('🔻 Funil do Quiz · conversão total ' + (OF.conv_total||0) + '% (quiz → compra)')}
-      <div style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">
-        ${_funilStep('Entrou no quiz', OF.entrou_quiz||0)}${_arrow()}
-        ${_funilStep('Chegou na oferta', OF.chegou_oferta||0, (OF.finalizacao_quiz||0) + '% terminou o quiz')}${_arrow()}
-        ${_funilStep('Foi pro checkout', OF.foi_checkout||0, (OF.oferta_checkout||0) + '% da oferta')}${_arrow()}
-        ${_funilStep('Comprou', OF.comprou||0, (OF.checkout_compra||0) + '% do checkout')}
-      </div>
+      ${_funilRow(OF)}
+      <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:2px 6px 0">🌱 Vendas classificadas como orgânico só com utm_campaign=organico (sem vazamento do tráfego). Tudo via nosso tracking (sem dados de cliques/Meta).</div>
       <div class="table-wrap" style="margin-top:10px">${_bumpsTable(O.bumps, O.comprou||0)}</div>
     </div>`;
 
-  body.innerHTML = blocoPago + blocoOrg;
+  body.innerHTML = blocoTudo + blocoPago + blocoOrg;
 }
 
 function _funilSub(t) {
