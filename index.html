@@ -202,6 +202,11 @@
     .fc-value { font-size: 26px; font-weight: 800; line-height: 1; letter-spacing: -0.02em; color: currentColor; }
     .fc-sub { font-size: 11px; color: var(--muted); margin-top: 8px; }
 
+    /* ── Funis (grids + esteira) ── */
+    .section .funis-kpi-grid { grid-template-columns: repeat(4, 1fr); }
+    .section .funis-bumps-grid { grid-template-columns: repeat(3, 1fr); }
+    .funil-arrow { transition: transform .2s; }
+
     /* ── Metrics row 2 ── */
     .metrics-row {
       display: grid;
@@ -694,6 +699,18 @@
       #periodSelector > span:first-child { width: 100%; margin-bottom: 2px; }
       .period-btn { padding: 7px 14px; font-size: 12.5px; }
       #periodLabel { margin-left: 0 !important; width: 100%; margin-top: 4px; }
+
+      /* ── Funis no mobile ── */
+      /* KPIs em 2 colunas (4 viram 2×2; bumps 2+1) em vez de espremidos numa linha */
+      .section .funis-kpi-grid,
+      .section .funis-bumps-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .funis-kpi-grid .fc-value { font-size: 22px; }
+      .funis-kpi-grid .fc-label { font-size: 10px; letter-spacing: .4px; }
+
+      /* esteira do funil vira coluna com setas pra baixo (legível no celular) */
+      .funil-flow { flex-direction: column; gap: 4px; padding: 12px 2px; }
+      .funil-step { flex: none !important; width: 100%; }
+      .funil-arrow { transform: rotate(90deg); padding: 4px 0 !important; font-size: 18px; }
     }
   </style>
 </head>
@@ -718,10 +735,10 @@
 
 <div class="tabs">
   <div class="tab active" onclick="switchTab('overview')"><span class="tab-icon">🎮</span> Overview</div>
+  <div class="tab" onclick="switchTab('funis')"><span class="tab-icon">🌪️</span> Funis</div>
   <div class="tab" onclick="switchTab('campanhas')"><span class="tab-icon">🚀</span> Campanhas</div>
   <div class="tab" onclick="switchTab('vendas')" id="tabVendas"><span class="tab-icon">💎</span> Vendas</div>
   <div class="tab" onclick="switchTab('analise')"><span class="tab-icon">🔮</span> Análise & Baseline</div>
-  <div class="tab" onclick="switchTab('funis')"><span class="tab-icon">🌪️</span> Funis</div>
 </div>
 
 <div class="main">
@@ -1190,7 +1207,7 @@ async function populateData(btn) {
 // ─── SWITCH TAB ─────────────────────────────────────────────────────────────
 function switchTab(name) {
   activeTab = name;
-  const names = ['overview','campanhas','vendas','analise','funis'];
+  const names = ['overview','funis','campanhas','vendas','analise'];
   document.querySelectorAll('.tab').forEach((t, i) => {
     t.classList.toggle('active', names[i] === name);
   });
@@ -1228,7 +1245,7 @@ async function loadFunis() {
 }
 
 function _funilStep(label, valor, sub) {
-  return `<div style="flex:1;min-width:120px;text-align:center;padding:14px 10px;background:var(--bg2,#16161f);border:1px solid var(--border,#262633);border-radius:12px">
+  return `<div class="funil-step" style="flex:1;min-width:120px;text-align:center;padding:14px 10px;background:var(--bg2,#16161f);border:1px solid var(--border,#262633);border-radius:12px">
     <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted,#8a8a9a);margin-bottom:6px">${label}</div>
     <div style="font-size:24px;font-weight:800;color:var(--text,#fff)">${valor}</div>
     ${sub ? `<div style="font-size:12px;color:var(--green,#3ddc84);margin-top:4px">${sub}</div>` : ''}
@@ -1236,7 +1253,7 @@ function _funilStep(label, valor, sub) {
 }
 
 function _arrow() {
-  return `<div style="display:flex;align-items:center;color:var(--muted,#8a8a9a);font-size:20px;padding:0 2px">→</div>`;
+  return `<div class="funil-arrow" style="display:flex;align-items:center;justify-content:center;color:var(--muted,#8a8a9a);font-size:20px;padding:0 2px">→</div>`;
 }
 
 function _bumpsTable(bumps, compras) {
@@ -1255,7 +1272,7 @@ function _bumpsTable(bumps, compras) {
     <th style="text-align:center">Conversão %</th><th style="text-align:right">Valor fechado</th>
   </tr></thead><tbody>${rows}</tbody></table>
   <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:8px 4px 4px">Conversão % = vendas do bump ÷ ${compras} compras do principal</div>
-  <div class="finance-grid" style="padding:4px;grid-template-columns:repeat(3,1fr)">
+  <div class="finance-grid funis-bumps-grid" style="padding:4px">
     <div class="finance-card fc-purple"><span class="fc-icon">📊</span><div class="fc-label">% Média Conversão Bumps</div><div class="fc-value">${bMedia.toFixed(1)}%</div></div>
     <div class="finance-card fc-blue"><span class="fc-icon">🧮</span><div class="fc-label">Vendas de Bumps</div><div class="fc-value">${bQtd}</div></div>
     <div class="finance-card fc-green"><span class="fc-icon">💰</span><div class="fc-label">Valor Total Bumps</div><div class="fc-value">R$ ${fmt(bRev)}</div></div>
@@ -1278,13 +1295,13 @@ function renderFunis(f) {
     s.push(_funilStep('Chegou na oferta', F.chegou_oferta||0, (F.finalizacao_quiz||0)+'% terminou o quiz'));
     s.push(_funilStep('Foi pro checkout', F.foi_checkout||0, (F.oferta_checkout||0)+'% da oferta'));
     s.push(_funilStep('Comprou', F.comprou||0, (F.checkout_compra||0)+'% do checkout'));
-    return '<div style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">'+s.join(_arrow())+'</div>';
+    return '<div class="funil-flow" style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">'+s.join(_arrow())+'</div>';
   }
 
   const blocoTudo = `
     <div class="section" style="margin-bottom:20px">
       <div class="section-header"><div class="section-title">🟣 Tudo (Pago + Orgânico)</div></div>
-      <div class="finance-grid" style="padding:4px;grid-template-columns:repeat(4,1fr)">
+      <div class="finance-grid funis-kpi-grid" style="padding:4px">
         <div class="finance-card fc-red"><span class="fc-icon">📢</span><div class="fc-label">Investido</div><div class="fc-value">R$ ${fmt(T.investimento)}</div></div>
         <div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento Total Funil</div><div class="fc-value">R$ ${fmt(T.receita_total)}</div></div>
         <div class="finance-card fc-yellow"><span class="fc-icon">📊</span><div class="fc-label">ROAS Produto Principal</div><div class="fc-value">${(T.roas_principal||0).toFixed(2)}x</div></div>
@@ -1298,7 +1315,7 @@ function renderFunis(f) {
   const blocoPago = `
     <div class="section" style="margin-bottom:20px">
       <div class="section-header"><div class="section-title">🟢 Tráfego Pago (Meta)</div></div>
-      <div class="finance-grid" style="padding:4px;grid-template-columns:repeat(4,1fr)">
+      <div class="finance-grid funis-kpi-grid" style="padding:4px">
         <div class="finance-card fc-red"><span class="fc-icon">📢</span><div class="fc-label">Investido</div><div class="fc-value">R$ ${fmt(P.investimento)}</div></div>
         <div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento Total Funil</div><div class="fc-value">R$ ${fmt(P.receita_total)}</div></div>
         <div class="finance-card fc-yellow"><span class="fc-icon">📊</span><div class="fc-label">ROAS Produto Principal</div><div class="fc-value">${(P.roas_principal||0).toFixed(2)}x</div></div>
