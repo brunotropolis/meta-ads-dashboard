@@ -206,6 +206,9 @@
     .section .funis-kpi-grid { grid-template-columns: repeat(4, 1fr); }
     .section .funis-bumps-grid { grid-template-columns: repeat(3, 1fr); }
     .funil-arrow { transition: transform .2s; }
+    .fsub-btn { background: var(--bg2,#16161f); color: var(--muted,#8a8a9a); border: 1px solid var(--border,#262633); border-radius: 10px; padding: 8px 16px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .15s; }
+    .fsub-btn:hover { color: var(--text,#fff); border-color: var(--purple,#a78bfa); }
+    .fsub-btn.active { background: linear-gradient(135deg, #2d1b4a 0%, #231540 100%); color: var(--text,#fff); border-color: var(--purple,#a78bfa); box-shadow: 0 0 14px rgba(167,139,250,0.25); }
 
     /* ── Metrics row 2 ── */
     .metrics-row {
@@ -1038,9 +1041,10 @@
   <!-- TAB: FUNIS -->
   <div class="tab-content" id="tab-funis">
     <div class="section">
-      <div class="section-header">
-        <div>
-          <div class="section-title">☁️ QUIZ DREAM BABY POCKET</div>
+      <div class="section-header" style="flex-wrap:wrap;gap:8px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button id="fsubQuiz" class="fsub-btn active" onclick="switchFunisSub('quiz')">☁️ Quiz Dream Baby Pocket</button>
+          <button id="fsubMet" class="fsub-btn" onclick="switchFunisSub('meteorico')">🌪️ Meteórico (WhatsApp)</button>
         </div>
       </div>
       <div id="funisBody" style="padding:4px">
@@ -1069,7 +1073,7 @@ function setPeriodo(periodo) {
   if (periodo !== 'personalizado') {
     loadData();
     if (activeTab === 'analise') loadBreakdowns();
-    if (activeTab === 'funis') loadFunis();
+    if (activeTab === 'funis') _loadFunisActive();
   }
 }
 
@@ -1218,7 +1222,33 @@ function switchTab(name) {
     loadBreakdowns(); // chama 2º endpoint pra placement/demografia/pausadas
   }
   if (name === 'funis') {
-    loadFunis();
+    _loadFunisActive();
+  }
+}
+
+// ─── FUNIS — sub-abas Quiz | Meteórico (carregam separado) ──────────────────
+let currentFunisSub = 'quiz';
+function switchFunisSub(which) {
+  currentFunisSub = which;
+  const bq = document.getElementById('fsubQuiz'), bm = document.getElementById('fsubMet');
+  if (bq) bq.classList.toggle('active', which === 'quiz');
+  if (bm) bm.classList.toggle('active', which === 'meteorico');
+  _loadFunisActive();
+}
+function _loadFunisActive() {
+  if (currentFunisSub === 'meteorico') loadMeteorico();
+  else loadFunis();
+}
+async function loadMeteorico() {
+  const body = document.getElementById('funisBody');
+  body.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando funil meteórico (WhatsApp)...</div>';
+  try {
+    const resp = await fetch(`${API_URL}?view=meteorico&_=${Date.now()}`);
+    const d = await resp.json();
+    if (currentFunisSub !== 'meteorico') return;
+    body.innerHTML = _meteoricoSection(d.meteorico || {});
+  } catch (e) {
+    body.innerHTML = `<div style="padding:30px;text-align:center;color:var(--red)">Erro ao carregar meteórico: ${e.message}</div>`;
   }
 }
 
@@ -1227,7 +1257,7 @@ let _funisCache = {};
 async function loadFunis() {
   const key = _breakdownsKey();
   const body = document.getElementById('funisBody');
-  if (_funisCache[key]) { renderFunis(_funisCache[key]); return; }
+  if (_funisCache[key]) { if (currentFunisSub === 'quiz') renderFunis(_funisCache[key]); return; }
   body.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando funil (Meta + Greenn)...</div>';
   try {
     const params = new URLSearchParams({ view: 'funis', periodo: currentPeriodo });
@@ -1238,6 +1268,7 @@ async function loadFunis() {
     const resp = await fetch(`${API_URL}?${params}&_=${Date.now()}`);
     const d = await resp.json();
     _funisCache[key] = d.funis || {};
+    if (currentFunisSub !== 'quiz') return;
     renderFunis(_funisCache[key]);
   } catch (e) {
     body.innerHTML = `<div style="padding:30px;text-align:center;color:var(--red)">Erro ao carregar funil: ${e.message}</div>`;
@@ -1289,6 +1320,19 @@ function _meteoricoSection(m) {
   if (!grupos.length) {
     return `<div class="section" style="margin-bottom:20px">${head}<div style="padding:14px;color:var(--muted,#8a8a9a);font-size:13px">Nenhum meteórico realizado ainda.</div></div>`;
   }
+  const ativo = grupos.find(g => g.status === 'ATIVO');
+  const featured = ativo ? `
+    <div class="section" style="margin-bottom:16px;border:2px solid var(--purple,#a78bfa);box-shadow:0 0 24px rgba(167,139,250,0.22)">
+      <div class="section-header"><div class="section-title">🔴 Funil desta semana · ${ativo.nome}</div></div>
+      <div class="finance-grid funis-kpi-grid" style="padding:4px">
+        <div class="finance-card fc-blue"><span class="fc-icon">👥</span><div class="fc-label">Leads Captados</div><div class="fc-value">${ativo.leads}</div></div>
+        <div class="finance-card fc-red"><span class="fc-icon">🚪</span><div class="fc-label">Saídas</div><div class="fc-value">${ativo.saidas}</div></div>
+        <div class="finance-card fc-yellow"><span class="fc-icon">🎯</span><div class="fc-label">Leads no dia da oferta</div><div class="fc-value">${ativo.leads_oferta}</div></div>
+        <div class="finance-card fc-purple"><span class="fc-icon">📊</span><div class="fc-label">Conversão</div><div class="fc-value">${ativo.conversao||0}%</div></div>
+        <div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento</div><div class="fc-value">R$ ${fmt(ativo.faturamento)}</div></div>
+        <div class="finance-card fc-blue"><span class="fc-icon">🎟️</span><div class="fc-label">Ticket Médio</div><div class="fc-value">R$ ${fmt(ativo.ticket_medio)}</div></div>
+      </div>
+    </div>` : '';
   const rows = grupos.map(g => {
     const badge = g.status === 'ATIVO'
       ? '<span style="color:var(--green,#3ddc84);font-weight:700">● ATIVO</span>'
@@ -1304,7 +1348,7 @@ function _meteoricoSection(m) {
       <td style="text-align:right"><b style="color:var(--green,#3ddc84)">R$ ${fmt(g.faturamento)}</b></td>
     </tr>`;
   }).join('');
-  return `
+  return featured + `
     <div class="section" style="margin-bottom:20px">
       ${head}
       <div class="finance-grid funis-kpi-grid" style="padding:4px">
@@ -1327,9 +1371,8 @@ function _meteoricoSection(m) {
 
 function renderFunis(f) {
   const body = document.getElementById('funisBody');
-  const blocoMeteorico = _meteoricoSection((f && f.meteorico) || {});
   if (!f || (!f.pago && !f.organico)) {
-    body.innerHTML = blocoMeteorico + '<div style="padding:30px;text-align:center;color:var(--muted,#8a8a9a)">Sem dados de funil do quiz no período.</div>';
+    body.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted,#8a8a9a)">Sem dados de funil do quiz no período.</div>';
     return;
   }
   const P = f.pago || {}, O = f.organico || {}, T = f.tudo || {};
@@ -1387,7 +1430,7 @@ function renderFunis(f) {
       <div class="table-wrap" style="margin-top:10px">${_bumpsTable(O.bumps, O.comprou||0)}</div>
     </div>`;
 
-  body.innerHTML = blocoMeteorico + blocoTudo + blocoPago + blocoOrg;
+  body.innerHTML = blocoTudo + blocoPago + blocoOrg;
 }
 
 function _funilSub(t) {
