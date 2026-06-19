@@ -2360,7 +2360,7 @@ function renderReembolsoSection() {
 
     for (const [canal, data] of Object.entries(reembPorCanal)) {
       if (data && data.total > 0) {
-        const canalName = canal === 'organico' ? 'Organico' : canal === 'trafego' ? 'Trafego' : 'Recuperacao';
+        const canalName = canal === 'organico' ? 'Organico' : canal === 'trafego' ? 'Trafego' : canal === 'recuperacao' ? 'Recuperacao' : 'Meteorico';
         reembHtml += `<div style="font-size:13px;padding:2px 0"><span style="color:var(--muted)">${canalName}:</span> ${data.total}x · R$ ${fmt(data.valor)}</div>`;
       }
     }
@@ -2399,9 +2399,10 @@ function renderVendasCanais() {
     { key: 'organico',    title: 'ORGANICO',               icon: '🌱', fillClass: 'bar-fill-green', borderColor: '#2a5a3a', bgGrad: 'linear-gradient(135deg, #1a4a2a 0%, #1a3a22 100%)', titleColor: 'var(--green)' },
     { key: 'trafego',     title: 'TRAFEGO',                 icon: '📢', fillClass: 'bar-fill-blue',  borderColor: '#2a3a5a', bgGrad: 'linear-gradient(135deg, #1a2a4a 0%, #1a2240 100%)', titleColor: 'var(--blue)' },
     { key: 'recuperacao', title: 'RECUPERACAO DE VENDAS', icon: '🔄', fillClass: 'bar-fill-purple', borderColor: '#3d2b5a', bgGrad: 'linear-gradient(135deg, #2d1b4a 0%, #231540 100%)', titleColor: 'var(--purple)' },
+    { key: 'meteorico',   title: 'METEÓRICO (FUNIL)',       icon: '🌪️', fillClass: 'bar-fill-purple', borderColor: '#4a3a6a', bgGrad: 'linear-gradient(135deg, #3a2a5a 0%, #2a2048 100%)', titleColor: 'var(--purple)' },
   ];
 
-  let html = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">';
+  let html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">';
 
   for (const cfg of configs) {
     const ch = canais[cfg.key] || { total: 0, valor: 0, items: [] };
