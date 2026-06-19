@@ -1279,10 +1279,57 @@ function _bumpsTable(bumps, compras) {
   </div>`;
 }
 
+function _meteoricoSection(m) {
+  const grupos = (m && m.grupos) || [];
+  const tot = (m && m.totais) || {};
+  const head = `<div class="section-header"><div class="section-title">🌪️ Meteórico — Funil WhatsApp (por semana)</div></div>`;
+  if (m && m.erro) {
+    return `<div class="section" style="margin-bottom:20px">${head}<div style="padding:14px;color:var(--red,#ff6b6b);font-size:13px">Erro ao carregar o meteórico: ${m.erro}</div></div>`;
+  }
+  if (!grupos.length) {
+    return `<div class="section" style="margin-bottom:20px">${head}<div style="padding:14px;color:var(--muted,#8a8a9a);font-size:13px">Nenhum meteórico realizado ainda.</div></div>`;
+  }
+  const rows = grupos.map(g => {
+    const badge = g.status === 'ATIVO'
+      ? '<span style="color:var(--green,#3ddc84);font-weight:700">● ATIVO</span>'
+      : '<span style="color:var(--muted,#8a8a9a)">encerrado</span>';
+    return `<tr>
+      <td><b>${g.nome}</b></td>
+      <td style="text-align:center">${badge}</td>
+      <td style="text-align:center">${g.leads}</td>
+      <td style="text-align:center">${g.saidas}</td>
+      <td style="text-align:center">${g.leads_oferta}</td>
+      <td style="text-align:center"><b style="color:var(--purple,#a78bfa)">${(g.conversao||0)}%</b></td>
+      <td style="text-align:right">R$ ${fmt(g.ticket_medio)}</td>
+      <td style="text-align:right"><b style="color:var(--green,#3ddc84)">R$ ${fmt(g.faturamento)}</b></td>
+    </tr>`;
+  }).join('');
+  return `
+    <div class="section" style="margin-bottom:20px">
+      ${head}
+      <div class="finance-grid funis-kpi-grid" style="padding:4px">
+        <div class="finance-card fc-purple"><span class="fc-icon">🗓️</span><div class="fc-label">Semanas (meteóricos)</div><div class="fc-value">${tot.semanas||grupos.length}</div></div>
+        <div class="finance-card fc-blue"><span class="fc-icon">👥</span><div class="fc-label">Leads Captados</div><div class="fc-value">${tot.leads||0}</div></div>
+        <div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento Total</div><div class="fc-value">R$ ${fmt(tot.faturamento||0)}</div></div>
+        <div class="finance-card fc-yellow"><span class="fc-icon">🎟️</span><div class="fc-label">Ticket Médio</div><div class="fc-value">R$ ${fmt(tot.ticket_medio||0)}</div></div>
+      </div>
+      <div class="table-wrap" style="margin-top:10px">
+        <table style="width:100%"><thead><tr>
+          <th>Semana / Grupo</th><th style="text-align:center">Status</th>
+          <th style="text-align:center">Leads</th><th style="text-align:center">Saídas</th>
+          <th style="text-align:center">Leads dia oferta</th><th style="text-align:center">Conversão</th>
+          <th style="text-align:right">Ticket médio</th><th style="text-align:right">Faturamento</th>
+        </tr></thead><tbody>${rows}</tbody></table>
+      </div>
+      <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:8px 6px 0">🌪️ Cada linha = um meteórico (abrimos ~toda quinta). Semana sem abertura não conta. Dados do funil WhatsApp (Clube do Soninho), independentes do período selecionado acima.</div>
+    </div>`;
+}
+
 function renderFunis(f) {
   const body = document.getElementById('funisBody');
+  const blocoMeteorico = _meteoricoSection((f && f.meteorico) || {});
   if (!f || (!f.pago && !f.organico)) {
-    body.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted,#8a8a9a)">Sem dados de funil no período.</div>';
+    body.innerHTML = blocoMeteorico + '<div style="padding:30px;text-align:center;color:var(--muted,#8a8a9a)">Sem dados de funil do quiz no período.</div>';
     return;
   }
   const P = f.pago || {}, O = f.organico || {}, T = f.tudo || {};
@@ -1340,7 +1387,7 @@ function renderFunis(f) {
       <div class="table-wrap" style="margin-top:10px">${_bumpsTable(O.bumps, O.comprou||0)}</div>
     </div>`;
 
-  body.innerHTML = blocoTudo + blocoPago + blocoOrg;
+  body.innerHTML = blocoMeteorico + blocoTudo + blocoPago + blocoOrg;
 }
 
 function _funilSub(t) {
