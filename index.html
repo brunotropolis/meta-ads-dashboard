@@ -1504,7 +1504,7 @@ function renderFunisGuia(f) {
       </div>
       ${_funilSub('🔻 Funil · conversão total ' + (PF.conv_total||0) + '% (clique → compra)')}
       ${_funilRowG(PF)}
-      <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:2px 6px 0">📊 Cliques, "entrou na página" e "foi pro checkout" vêm da Meta (campanhas com <b>[GUIA DA PEGA]</b>). Vendas marcadas como pago pela tag [TRAFEGO]/[DRM] na utm_campaign. ⚠️ O "foi pro checkout" estava com bug até 22/Jun (evento corrigido) — repopula a partir de agora.</div>
+      <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:2px 6px 0">📊 Cliques e "entrou na página" vêm da Meta (campanhas com <b>[GUIA DA PEGA]</b>). "Foi pro checkout" = chegou na página de pagamento da Greenn (evento AddToCart, mais confiável que o clique no botão). Vendas marcadas como pago pela tag [TRAFEGO] na utm_campaign.</div>
       <div class="table-wrap" style="margin-top:10px">${_bumpsTable(P.bumps, P.comprou||0)}</div>
     </div>`;
 
