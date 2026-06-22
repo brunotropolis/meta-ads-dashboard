@@ -1514,7 +1514,7 @@ function renderFunisGuia(f) {
         <div class="finance-card fc-blue"><span class="fc-icon">🛒</span><div class="fc-label">Compras (principal)</div><div class="fc-value">${O.comprou||0}</div></div>
         <div class="finance-card fc-yellow"><span class="fc-icon">🎟️</span><div class="fc-label">Ticket Médio</div><div class="fc-value">R$ ${fmt(O.ticket_medio)}</div></div>
       </div>
-      <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:8px 6px 0">🌱 Vendas com <b>utm_campaign=organico</b> (link da bio, stories etc). O topo do funil (visitas) não é separável por origem no pixel — por isso o orgânico mostra só compras e receita.</div>
+      <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:8px 6px 0">🌱 Toda venda do checkout que <b>não veio do tráfego pago</b> (sem tag [TRAFEGO] na utm_campaign): link da bio, stories, direto, organico. O topo do funil (visitas) não é separável por origem no pixel — por isso o orgânico mostra só compras, receita e bumps.</div>
       <div class="table-wrap" style="margin-top:10px">${_bumpsTable(O.bumps, O.comprou||0)}</div>
     </div>`;
 
