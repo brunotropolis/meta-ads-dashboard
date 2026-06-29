@@ -719,6 +719,35 @@
 </head>
 <body>
 
+<!-- ===================== LOGIN GATE (Supabase Auth — mesmos usuários do caixa) ===================== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<div id="login-overlay">
+  <form id="login-box" autocomplete="on">
+    <div class="lo-logo">⚡</div>
+    <h1>Meta Ads Command Center</h1>
+    <p class="lo-sub">Acesso restrito</p>
+    <input id="lo-email" type="email" placeholder="E-mail" autocomplete="username" required>
+    <input id="lo-pass" type="password" placeholder="Senha" autocomplete="current-password" required>
+    <button id="lo-btn" type="submit">Entrar</button>
+    <div id="lo-err"></div>
+  </form>
+</div>
+<style>
+  #login-overlay{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 50% 30%, #1a0f2e, #0a0b15);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  #login-box{background:rgba(22,27,41,.85);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:36px 32px;
+    width:min(360px,90vw);display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.5);backdrop-filter:blur(8px)}
+  #login-box .lo-logo{font-size:40px;text-align:center;filter:drop-shadow(0 0 14px rgba(168,85,247,.6))}
+  #login-box h1{margin:0;font-size:20px;color:#fff;text-align:center;font-weight:700}
+  #login-box .lo-sub{margin:0 0 6px;color:#8a8a9a;text-align:center;font-size:13px}
+  #login-box input{background:#0f1320;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;color:#fff;font-size:14px;outline:none}
+  #login-box input:focus{border-color:#a855f7}
+  #login-box button{background:linear-gradient(135deg,#a855f7,#ec4899);border:none;border-radius:10px;padding:12px;color:#fff;font-weight:700;font-size:15px;cursor:pointer;margin-top:4px}
+  #login-box button:disabled{opacity:.6;cursor:default}
+  #lo-err{color:#f87171;font-size:13px;text-align:center;min-height:16px}
+</style>
+<!-- ===================== /LOGIN GATE ===================== -->
+
 <div class="header">
   <div class="header-left">
     <span style="font-size:28px;filter:drop-shadow(0 0 14px var(--purple-glow))" title="May the ROAS be with you ✨">⚡</span>
@@ -2711,9 +2740,15 @@ function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-// ─── INIT ───────────────────────────────────────────────────────────────────
-loadData();
-setInterval(loadData, 10 * 60 * 1000);
+// ─── INIT (gated por login — disparado pelo script de auth no fim) ───────────
+let __dashStarted = false;
+function startDashboard(){
+  if (__dashStarted) return;
+  __dashStarted = true;
+  loadData();
+  setInterval(loadData, 10 * 60 * 1000);
+}
+window.startDashboard = startDashboard;
 </script>
 
 <!-- ===================== AUSTIN POWERS CHAT WIDGET ===================== -->
@@ -3042,6 +3077,49 @@ setInterval(loadData, 10 * 60 * 1000);
 })();
 </script>
 <!-- ===================== /AUSTIN POWERS CHAT WIDGET ===================== -->
+
+<!-- ===================== AUTH (Supabase — login gate) ===================== -->
+<script>
+(function(){
+  const SUPA_URL  = 'https://zageqyuwodvyxwohpugb.supabase.co';
+  const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphZ2VxeXV3b2R2eXh3b2hwdWdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1NTU5NTIsImV4cCI6MjA5MzEzMTk1Mn0.hpSav9X11Qq2wJMxOWFekHniJuHTgWZSUbwYhQfnKpM';
+  const sb = window.supabase.createClient(SUPA_URL, SUPA_ANON);
+  const overlay = document.getElementById('login-overlay');
+  const form    = document.getElementById('login-box');
+  const errEl   = document.getElementById('lo-err');
+  const btn     = document.getElementById('lo-btn');
+
+  function unlock(){
+    overlay.style.display = 'none';
+    if (window.startDashboard) window.startDashboard();
+    addLogout();
+  }
+  function addLogout(){
+    if (document.getElementById('lo-logout')) return;
+    const b = document.createElement('button');
+    b.id = 'lo-logout'; b.textContent = 'Sair';
+    b.style.cssText = 'position:fixed;top:8px;right:10px;z-index:99998;background:rgba(22,27,41,.85);color:#8a8a9a;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:5px 11px;font-size:12px;cursor:pointer';
+    b.onclick = async () => { await sb.auth.signOut(); location.reload(); };
+    document.body.appendChild(b);
+  }
+
+  // Sessão já existente? entra direto.
+  sb.auth.getSession().then(({ data }) => { if (data && data.session) unlock(); });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errEl.textContent = '';
+    btn.disabled = true; btn.textContent = 'Entrando...';
+    const email = document.getElementById('lo-email').value.trim();
+    const pass  = document.getElementById('lo-pass').value;
+    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+    btn.disabled = false; btn.textContent = 'Entrar';
+    if (error) { errEl.textContent = 'E-mail ou senha incorretos.'; return; }
+    unlock();
+  });
+})();
+</script>
+<!-- ===================== /AUTH ===================== -->
 
 </body>
 </html>
