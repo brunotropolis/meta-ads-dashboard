@@ -2074,10 +2074,11 @@ function renderOverview() {
 
   const receita = fatLiquido; // usado em outros lugares (deltaFat)
 
-  // ROAS de Mídia = bruto ÷ meta (retorno bruto sobre ads)
-  // ROAS do Projeto = (bruto − reembolsos) ÷ meta (retorno líquido de reembolsos sobre ads)
-  const roasMidia = gHoje > 0 && fatBruto > 0 ? (fatBruto / gHoje) : 0;
-  const roasProjeto = gHoje > 0 && fatLiquido > 0 ? (fatLiquido / gHoje) : 0;
+  // ROAS de Mídia = vendas do tráfego pago (canal trafego via UTM) ÷ meta
+  // ROAS do Projeto = faturamento total (todos os canais) ÷ meta
+  const vTrafego = parseFloat((DATA.vendas_por_canal && DATA.vendas_por_canal.trafego && DATA.vendas_por_canal.trafego.valor) || 0);
+  const roasMidia = gHoje > 0 && vTrafego > 0 ? (vTrafego / gHoje) : 0;
+  const roasProjeto = gHoje > 0 && fatBruto > 0 ? (fatBruto / gHoje) : 0;
 
   // Delta gasto vs ontem
   const delta = gOntem > 0 ? ((gHoje - gOntem) / gOntem * 100).toFixed(1) : null;
@@ -2116,13 +2117,13 @@ function renderOverview() {
       <span class="fc-icon">📊</span>
       <div class="fc-label">ROAS de Mídia</div>
       <div class="fc-value">${roasMidia > 0 ? roasMidia.toFixed(2) + 'x' : '—'}</div>
-      <div class="fc-sub">Bruto ÷ Meta</div>
+      <div class="fc-sub">Vendas do tráfego ÷ Meta</div>
     </div>
     <div class="finance-card fc-purple">
       <span class="fc-icon">🎯</span>
       <div class="fc-label">ROAS do Projeto</div>
       <div class="fc-value">${roasProjeto > 0 ? roasProjeto.toFixed(2) + 'x' : (roasProjeto < 0 ? roasProjeto.toFixed(2) + 'x' : '—')}</div>
-      <div class="fc-sub">(Bruto − Reimb) ÷ Meta</div>
+      <div class="fc-sub">Tudo (todos os canais) ÷ Meta</div>
     </div>
     ${currentPeriodo === 'mes' ? '' : `
     <div class="finance-card fc-yellow">
@@ -2507,8 +2508,9 @@ function renderVendas() {
 
   // Summary cards
   const receitaFinalV = fatLiquido - gHoje;
-  const roasMidiaV = gHoje > 0 && fatBruto > 0 ? (fatBruto / gHoje) : 0;
-  const roasProjetoV = gHoje > 0 && fatLiquido > 0 ? (fatLiquido / gHoje) : 0;
+  const vTrafegoV = parseFloat((DATA.vendas_por_canal && DATA.vendas_por_canal.trafego && DATA.vendas_por_canal.trafego.valor) || 0);
+  const roasMidiaV = gHoje > 0 && vTrafegoV > 0 ? (vTrafegoV / gHoje) : 0;
+  const roasProjetoV = gHoje > 0 && fatBruto > 0 ? (fatBruto / gHoje) : 0;
   document.getElementById('vendasSummary').innerHTML = `
     <div class="vendas-summary">
       <div class="finance-card fc-blue">
@@ -2539,13 +2541,13 @@ function renderVendas() {
         <span class="fc-icon">📊</span>
         <div class="fc-label">ROAS de Mídia</div>
         <div class="fc-value">${roasMidiaV > 0 ? roasMidiaV.toFixed(2) + 'x' : '—'}</div>
-        <div class="fc-sub">Bruto ÷ Meta</div>
+        <div class="fc-sub">Vendas do tráfego ÷ Meta</div>
       </div>
       <div class="finance-card ${roasProjetoV > 1 ? 'fc-green' : roasProjetoV > 0 ? 'fc-yellow' : 'fc-red'}" style="background: linear-gradient(135deg, #2d1b4a 0%, #231540 100%); border: 1px solid #3d2b5a;">
         <span class="fc-icon">🎯</span>
         <div class="fc-label">ROAS do Projeto</div>
         <div class="fc-value" style="color:var(--purple)">${roasProjetoV !== 0 ? roasProjetoV.toFixed(2) + 'x' : '—'}</div>
-        <div class="fc-sub">(Bruto − Reimb) ÷ Meta</div>
+        <div class="fc-sub">Tudo (todos os canais) ÷ Meta</div>
       </div>
     </div>
   `;
