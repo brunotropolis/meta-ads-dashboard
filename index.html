@@ -1105,6 +1105,7 @@
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button id="fsubQuiz" class="fsub-btn active" onclick="switchFunisSub('quiz')">☁️ Quiz Dream Baby Pocket</button>
           <button id="fsubGuia" class="fsub-btn" onclick="switchFunisSub('guia')">🤱 Guia da Pega</button>
+          <button id="fsubPocket" class="fsub-btn" onclick="switchFunisSub('pocket')">👶 Dream Baby Pocket</button>
           <button id="fsubMet" class="fsub-btn" onclick="switchFunisSub('meteorico')">🌪️ Meteórico (WhatsApp)</button>
         </div>
       </div>
@@ -1291,15 +1292,17 @@ function switchTab(name) {
 let currentFunisSub = 'quiz';
 function switchFunisSub(which) {
   currentFunisSub = which;
-  const bq = document.getElementById('fsubQuiz'), bm = document.getElementById('fsubMet'), bg = document.getElementById('fsubGuia');
+  const bq = document.getElementById('fsubQuiz'), bm = document.getElementById('fsubMet'), bg = document.getElementById('fsubGuia'), bp = document.getElementById('fsubPocket');
   if (bq) bq.classList.toggle('active', which === 'quiz');
   if (bg) bg.classList.toggle('active', which === 'guia');
+  if (bp) bp.classList.toggle('active', which === 'pocket');
   if (bm) bm.classList.toggle('active', which === 'meteorico');
   _loadFunisActive();
 }
 function _loadFunisActive() {
   if (currentFunisSub === 'meteorico') loadMeteorico();
   else if (currentFunisSub === 'guia') loadFunisGuia();
+  else if (currentFunisSub === 'pocket') loadFunisPocket();
   else loadFunis();
 }
 async function loadMeteorico() {
@@ -1577,6 +1580,85 @@ function renderFunisGuia(f) {
       <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:8px 6px 0">🌱 Toda venda do checkout que <b>não veio do tráfego pago</b> (sem tag [TRAFEGO] na utm_campaign): link da bio, stories, direto, organico. O topo do funil (visitas) não é separável por origem no pixel — por isso o orgânico mostra só compras, receita e bumps.</div>
       <div class="table-wrap" style="margin-top:10px">${_bumpsTable(O.bumps, O.comprou||0)}</div>
     </div>`;
+
+  body.innerHTML = blocoTudo + blocoPago + blocoOrg;
+}
+
+// ─── FUNIS (Dream Baby Pocket — landing direta, oferta AXqJQg) ─────────────
+let _funisPocketCache = {};
+async function loadFunisPocket() {
+  const key = _breakdownsKey();
+  const body = document.getElementById('funisBody');
+  if (_funisPocketCache[key]) { if (currentFunisSub === 'pocket') renderFunisPocket(_funisPocketCache[key]); return; }
+  body.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando funil Dream Baby Pocket (Meta + Greenn)...</div>';
+  try {
+    const params = new URLSearchParams({ view: 'funis_pocket', periodo: currentPeriodo });
+    if (currentPeriodo === 'personalizado') {
+      params.set('data_inicio', document.getElementById('dataInicio').value || '');
+      params.set('data_fim', document.getElementById('dataFim').value || '');
+    }
+    const resp = await fetch(`${API_URL}?${params}&_=${Date.now()}`);
+    const d = await resp.json();
+    _funisPocketCache[key] = d.funis || {};
+    if (currentFunisSub !== 'pocket') return;
+    renderFunisPocket(_funisPocketCache[key]);
+  } catch (e) {
+    body.innerHTML = `<div style="padding:30px;text-align:center;color:var(--red)">Erro ao carregar funil: ${e.message}</div>`;
+  }
+}
+
+function renderFunisPocket(f) {
+  const body = document.getElementById('funisBody');
+  if (!f || (!f.pago && !f.tudo)) {
+    body.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted,#8a8a9a)">Sem dados do funil Dream Baby Pocket no período.</div>';
+    return;
+  }
+  const P = f.pago || {}, O = f.organico || {}, T = f.tudo || {};
+  const PF = P.funil || {}, TF = T.funil || {};
+
+  function _funilRowP(F){
+    var s=[];
+    if (F.cliques!=null) s.push(_funilStep('Cliques no anúncio', F.cliques||0));
+    if (F.visitou!=null) s.push(_funilStep('Entrou na página', F.visitou||0, F.connect_rate!=null?('Connect '+(F.connect_rate||0)+'%'):''));
+    if (F.foi_checkout!=null) s.push(_funilStep('Foi pro checkout', F.foi_checkout||0, (F.visita_checkout||0)+'% da página'));
+    s.push(_funilStep('Comprou', F.comprou||0, F.foi_checkout!=null?((F.checkout_compra||0)+'% do checkout'):''));
+    return '<div class="funil-flow" style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">'+s.join(_arrow())+'</div>';
+  }
+
+  const blocoTudo = `
+    <div class="section" style="margin-bottom:20px">
+      <div class="section-header"><div class="section-title">🟣 Tudo (funil Dream Baby Pocket)</div></div>
+      <div class="finance-grid funis-kpi-grid" style="padding:4px">
+        <div class="finance-card fc-red"><span class="fc-icon">📢</span><div class="fc-label">Investido</div><div class="fc-value">R$ ${fmt(T.investimento)}</div></div>
+        <div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento Total Funil</div><div class="fc-value">R$ ${fmt(T.receita_total)}</div></div>
+        <div class="finance-card fc-yellow"><span class="fc-icon">📊</span><div class="fc-label">ROAS Produto Principal</div><div class="fc-value">${(T.roas_principal||0).toFixed(2)}x</div></div>
+        <div class="finance-card fc-purple"><span class="fc-icon">👶</span><div class="fc-label">ROAS Funil</div><div class="fc-value">${(T.roas_funil||0).toFixed(2)}x</div></div>
+      </div>
+      ${_funilSub('🔻 Funil · conversão total ' + (TF.conv_total||0) + '% (clique → compra)')}
+      ${_funilRowP(TF)}
+      <div class="table-wrap" style="margin-top:10px">${_bumpsTable(T.bumps, T.comprou||0)}</div>
+    </div>`;
+
+  const blocoPago = `
+    <div class="section" style="margin-bottom:20px">
+      <div class="section-header"><div class="section-title">🟢 Tráfego Pago (Meta)</div></div>
+      <div class="finance-grid funis-kpi-grid" style="padding:4px">
+        <div class="finance-card fc-red"><span class="fc-icon">📢</span><div class="fc-label">Investido</div><div class="fc-value">R$ ${fmt(P.investimento)}</div></div>
+        <div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento Total Funil</div><div class="fc-value">R$ ${fmt(P.receita_total)}</div></div>
+        <div class="finance-card fc-yellow"><span class="fc-icon">📊</span><div class="fc-label">ROAS Produto Principal</div><div class="fc-value">${(P.roas_principal||0).toFixed(2)}x</div></div>
+        <div class="finance-card fc-purple"><span class="fc-icon">👶</span><div class="fc-label">ROAS Funil</div><div class="fc-value">${(P.roas_funil||0).toFixed(2)}x</div></div>
+      </div>
+      ${_funilSub('🔻 Funil · conversão total ' + (PF.conv_total||0) + '% (clique → compra)')}
+      ${_funilRowP(PF)}
+      <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:2px 6px 0">📊 Cliques e "entrou na página" vêm da Meta (campanhas com <b>[DREAM POCKET]</b> no nome). Vendas = checkout 140071 com oferta <b>AXqJQg</b> (+ bumps oKddbt/wfOioJ) — separadas do funil do quiz pelo código da oferta. Pago pela tag [TRAFEGO] na utm_campaign.</div>
+      <div class="table-wrap" style="margin-top:10px">${_bumpsTable(P.bumps, P.comprou||0)}</div>
+    </div>`;
+
+  const blocoOrg = (O.comprou||0) > 0 ? `
+    <div class="section">
+      <div class="section-header"><div class="section-title">🌱 Fora do tráfego (${O.comprou} venda${O.comprou!==1?'s':''})</div></div>
+      <div style="font-size:12px;color:var(--muted,#8a8a9a);padding:4px 6px 10px">Este funil é só tráfego por enquanto, mas ${O.comprou} venda${O.comprou!==1?'s':''} da oferta chegou sem tag de tráfego (R$ ${fmt(O.receita_total)}) — mostrado aqui pra nada se perder.</div>
+    </div>` : '';
 
   body.innerHTML = blocoTudo + blocoPago + blocoOrg;
 }
