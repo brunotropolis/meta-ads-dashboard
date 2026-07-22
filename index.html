@@ -398,6 +398,43 @@
       box-shadow: 0 4px 16px var(--pink-glow);
     }
 
+    /* Navbar única: tabs + seletor de período na mesma linha (desktop) */
+    .navrow {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+      background: rgba(15, 17, 30, 0.6);
+      backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 14px;
+      position: sticky; top: 73px; z-index: 99;
+    }
+    .navrow .tabs {
+      background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none;
+      border-bottom: none; padding: 0;
+      position: static; top: auto; z-index: auto;
+    }
+    .navrow #periodSelector {
+      margin-left: auto;
+      margin-bottom: 0 !important;
+      background: transparent !important;
+      border: none !important; border-radius: 0 !important;
+      padding: 8px 0 !important;
+    }
+    /* versão compacta pra caber tudo numa linha só no desktop */
+    .navrow .tab { padding: 14px 13px; font-size: 13.5px; }
+    .navrow .period-btn { padding: 7px 12px; font-size: 12.5px; }
+    .navrow #periodSelector > span:first-child { display: none; }
+    @media (max-width: 1280px) {
+      /* não coube ao lado: período vira segunda linha da barra */
+      .navrow #periodSelector { margin-left: 0; flex: 1 1 100%; padding: 4px 0 12px !important; }
+    }
+    @media (max-width: 760px) {
+      .navrow { padding: 0 10px; }
+      .navrow .tabs { flex: 1 1 100%; }
+    }
+    @media (max-width: 600px) {
+      .navrow { position: relative; top: 0; }
+    }
+
     /* Date inputs estilizados */
     #customDates {
       background: rgba(99,102,241,0.06);
@@ -781,22 +818,19 @@
   </div>
 </div>
 
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('overview')"><span class="tab-icon">🎮</span> Overview</div>
-  <div class="tab" onclick="switchTab('funis')"><span class="tab-icon">🌪️</span> Funis</div>
-  <div class="tab" onclick="switchTab('campanhas')"><span class="tab-icon">🚀</span> Campanhas</div>
-  <div class="tab" onclick="switchTab('vendas')" id="tabVendas"><span class="tab-icon">💎</span> Vendas</div>
-  <div class="tab" onclick="switchTab('analise')"><span class="tab-icon">🔮</span> Análise & Baseline</div>
-</div>
-
-<div class="main">
-
-  <!-- Period Selector -->
+<div class="navrow">
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('overview')"><span class="tab-icon">🎮</span> Overview</div>
+    <div class="tab" onclick="switchTab('funis')"><span class="tab-icon">🌪️</span> Funis</div>
+    <div class="tab" onclick="switchTab('campanhas')"><span class="tab-icon">🚀</span> Campanhas</div>
+    <div class="tab" onclick="switchTab('vendas')" id="tabVendas"><span class="tab-icon">💎</span> Vendas</div>
+    <div class="tab" onclick="switchTab('analise')"><span class="tab-icon">🔮</span> Análise & Baseline</div>
+  </div>
   <div id="periodSelector" style="display:flex;align-items:center;flex-wrap:wrap">
     <span>⏱ Período</span>
     <button class="period-btn active" onclick="setPeriodo('hoje')">🌟 Hoje</button>
     <button class="period-btn" onclick="setPeriodo('ontem')">🌙 Ontem</button>
-    <button class="period-btn" onclick="setPeriodo('3dias')">📅 Últimos 3 dias</button>
+    <button class="period-btn" onclick="setPeriodo('3dias')">📅 3 dias</button>
     <button class="period-btn" onclick="setPeriodo('semana')">📆 Semana</button>
     <button class="period-btn" onclick="setPeriodo('mes')">🗓 Mês</button>
     <button class="period-btn" onclick="setPeriodo('personalizado')">🎯 Personalizado</button>
@@ -806,8 +840,11 @@
       <input type="date" id="dataFim">
       <button class="period-btn active" onclick="applyCustomPeriod()" style="padding:7px 16px">Aplicar</button>
     </div>
-    <span id="periodLabel" style="margin-left:auto"></span>
+    <span id="periodLabel"></span>
   </div>
+</div>
+
+<div class="main">
 
   <!-- TAB: OVERVIEW -->
   <div class="tab-content active" id="tab-overview">
@@ -817,6 +854,8 @@
     </div>
     <!-- Metrics row 2 -->
     <div class="metrics-row" id="metricsRow"></div>
+    <!-- Fatura das contas de anúncio (saldo a pagar — independe do período) -->
+    <div class="metrics-row" id="billingRow" style="display:none"></div>
     <!-- Conta breakdown -->
     <div class="section">
       <div class="section-header">
@@ -2195,13 +2234,6 @@ function renderOverview() {
       <div class="fc-value">R$ ${fmt(gHoje)}</div>
       ${deltaHtml}
     </div>
-    ${(DATA.billing||[]).filter(b=>b.conta).map(b=>`
-    <div class="finance-card fc-blue">
-      <span class="fc-icon">💳</span>
-      <div class="fc-label">Fatura ${b.conta}</div>
-      <div class="fc-value">R$ ${fmt(b.saldo)}</div>
-      <div class="fc-sub">a pagar no ${b.cartao||'cartão'} — transferir pra Conta Simples antes do teto</div>
-    </div>`).join('')}
     <div class="finance-card fc-yellow">
       <span class="fc-icon">📊</span>
       <div class="fc-label">ROAS de Mídia</div>
@@ -2264,6 +2296,19 @@ function renderOverview() {
       <div class="metric-sub">R$ ${fmt(convVal)} receita</div>
     </div>
   `;
+
+  // Fatura das contas de anúncio (saldo a pagar na Meta — fora dos dados do dia)
+  const billEl = document.getElementById('billingRow');
+  if (billEl) {
+    const bill = (DATA.billing || []).filter(b => b.conta);
+    billEl.style.display = bill.length ? '' : 'none';
+    billEl.innerHTML = bill.map(b => `
+    <div class="metric-card">
+      <div class="metric-label">💳 Fatura ${b.conta}</div>
+      <div class="metric-value" style="color:var(--orange)">R$ ${fmt(b.saldo)}</div>
+      <div class="metric-sub">a pagar no ${b.cartao || 'cartão'} · transferir antes do teto</div>
+    </div>`).join('');
+  }
 
   // Conta breakdown
   renderContaBreakdown();
