@@ -2195,6 +2195,13 @@ function renderOverview() {
       <div class="fc-value">R$ ${fmt(gHoje)}</div>
       ${deltaHtml}
     </div>
+    ${(DATA.billing||[]).filter(b=>b.conta).map(b=>`
+    <div class="finance-card fc-blue">
+      <span class="fc-icon">💳</span>
+      <div class="fc-label">Fatura ${b.conta}</div>
+      <div class="fc-value">R$ ${fmt(b.saldo)}</div>
+      <div class="fc-sub">a pagar no ${b.cartao||'cartão'} — transferir pra Conta Simples antes do teto</div>
+    </div>`).join('')}
     <div class="finance-card fc-yellow">
       <span class="fc-icon">📊</span>
       <div class="fc-label">ROAS de Mídia</div>
