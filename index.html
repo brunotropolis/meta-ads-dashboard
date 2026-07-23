@@ -818,8 +818,13 @@
   </div>
   <div class="header-right">
     <span class="last-update" id="lastUpdate">Carregando...</span>
-    <button class="btn btn-sm" onclick="populateData(this)" title="Força refresh dos dados da Meta API → atualiza a planilha (use quando os números estiverem desatualizados). Demora ~8s.">🛸 Sync Meta</button>
     <button class="btn btn-green" onclick="loadData()" title="Recarrega o dashboard com os dados que já estão na planilha (instantâneo). Auto-refresh a cada 10 min.">↻ Atualizar</button>
+    <div style="position:relative">
+      <button class="btn btn-sm" onclick="toggleMoreMenu()" title="Mais opções" style="padding:8px 12px">⋯</button>
+      <div id="moreMenu" style="display:none;position:absolute;right:0;top:115%;background:var(--card,#16161f);border:1px solid var(--border,#262633);border-radius:10px;padding:6px;z-index:300;min-width:190px;box-shadow:0 12px 34px rgba(0,0,0,.55)">
+        <button class="btn btn-sm" style="width:100%;justify-content:flex-start" onclick="toggleMoreMenu();populateData(this)" title="Força refresh dos dados da Meta API → atualiza o banco (use quando os números estiverem desatualizados). Demora ~8s.">🛸 Sync Meta API</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1256,6 +1261,15 @@ function cacheSave(data) {
 
 // ─── LOAD DATA ──────────────────────────────────────────────────────────────
 let _abortCtrl = null;
+function toggleMoreMenu() {
+  const m = document.getElementById('moreMenu');
+  if (m) m.style.display = m.style.display === 'none' ? 'block' : 'none';
+}
+document.addEventListener('click', (e) => {
+  const m = document.getElementById('moreMenu');
+  if (m && m.style.display !== 'none' && !e.target.closest('.header-right')) m.style.display = 'none';
+});
+
 async function loadData() {
   // Render cache imediatamente se disponível
   const cached = cacheLoad();
