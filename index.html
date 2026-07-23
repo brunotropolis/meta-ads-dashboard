@@ -400,7 +400,8 @@
 
     /* Navbar única: tabs + seletor de período na mesma linha (desktop) */
     .navrow {
-      display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+      display: flex; align-items: center; flex-wrap: wrap; gap: 22px;
+      justify-content: center;
       background: rgba(15, 17, 30, 0.6);
       backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
       border-bottom: 1px solid var(--border);
@@ -413,7 +414,7 @@
       position: static; top: auto; z-index: auto;
     }
     .navrow #periodSelector {
-      margin-left: auto;
+      margin-left: 0;
       margin-bottom: 0 !important;
       background: transparent !important;
       border: none !important; border-radius: 0 !important;
@@ -1754,6 +1755,37 @@ function renderRegua(b) {
   }
   html += '</tbody></table></div>';
   html += `<div style="font-size:11px;color:var(--muted);padding:8px 6px 0">📏 Mediana (p25–p75) dos dias com gasto ≥ R$ 20 na janela ${b.janela ? b.janela.inicio + ' → ' + b.janela.fim : ''}. ROAS real = vendas Greenn atribuídas por UTM (principal + order bumps) ÷ gasto Meta — sem inflação de atribuição do gerenciador. <b>Regra combinada 24/Jul:</b> meta ≥ 1,8–2,0 · na faixa 1,5–1,8 acompanhar de perto · abaixo de 1,5 por 3 dias = reduzir verba ou pausar e duplicar campanha/criativos.</div>`;
+
+  // Vendas por dia da semana + formatos (30d)
+  const vs = b.vendas_semana || [], td = b.top_dias || [], fm = b.formatos || [];
+  if (vs.length || fm.length) {
+    const maxR = Math.max(...vs.map(v => v.receita_dia), 1);
+    const best = Math.max(...vs.map(v => v.receita_dia), 0);
+    let diasHtml = '<table><thead><tr><th>Dia</th><th>Vendas/dia</th><th>Receita/dia</th><th></th></tr></thead><tbody>';
+    for (const v of vs) {
+      diasHtml += `<tr><td><strong>${v.dia}</strong>${v.receita_dia === best ? ' 🏆' : ''}</td><td>${v.vendas_dia}</td><td>R$ ${fmt(v.receita_dia)}</td><td style="min-width:110px"><div class="bar-bg"><div class="bar-fill bar-fill-green" style="width:${(v.receita_dia / maxR * 100).toFixed(0)}%"></div></div></td></tr>`;
+    }
+    diasHtml += '</tbody></table>';
+    const topHtml = td.map(t => `${t.data.slice(5).split('-').reverse().join('/')} (${t.dia}): ${t.vendas} vendas · R$ ${fmt(t.receita)}`).join('<br>');
+    const maxF = Math.max(...fm.map(f => f.vendas), 1);
+    let fmtHtml = '<table><thead><tr><th>Placement</th><th>Vendas</th><th>%</th><th>Receita</th><th></th></tr></thead><tbody>';
+    for (const f of fm) {
+      fmtHtml += `<tr><td><strong>${f.placement}</strong></td><td>${f.vendas}</td><td>${f.pct}%</td><td>R$ ${fmt(f.receita)}</td><td style="min-width:110px"><div class="bar-bg"><div class="bar-fill" style="width:${(f.vendas / maxF * 100).toFixed(0)}%"></div></div></td></tr>`;
+    }
+    fmtHtml += '</tbody></table>';
+    html += `<div class="two-col" style="margin-top:18px">
+      <div>
+        <div style="font-size:13px;font-weight:700;padding:6px 4px">📅 Vendas por dia da semana <span style="color:var(--muted);font-weight:400">(30d, todos os canais)</span></div>
+        <div class="table-wrap">${diasHtml}</div>
+        <div style="font-size:11px;color:var(--muted);padding:8px 6px 0"><b>🏅 Top dias do período:</b><br>${topHtml}</div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;padding:6px 4px">📱 Vendas pagas por formato <span style="color:var(--muted);font-weight:400">(30d, placement real da venda)</span></div>
+        <div class="table-wrap">${fmtHtml}</div>
+        <div style="font-size:11px;color:var(--muted);padding:8px 6px 0">Ranking mistura eficiência com onde o Advantage+ escolhe entregar — usar pra priorizar criativo por formato.</div>
+      </div>
+    </div>`;
+  }
   el.innerHTML = html;
 }
 
