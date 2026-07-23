@@ -1288,6 +1288,7 @@ async function loadData() {
     renderAll();
     const now = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
     document.getElementById('lastUpdate').innerHTML = `<span class="dot-live"></span>Atualizado às ${now}`;
+    schedulePrefetchFunis(); // pré-aquece a aba Funis em background
   } catch (e) {
     clearTimeout(timeout);
     if (e.name === 'AbortError') {
@@ -1368,6 +1369,29 @@ async function loadMeteorico() {
   } catch (e) {
     body.innerHTML = `<div style="padding:30px;text-align:center;color:var(--red)">Erro ao carregar meteórico: ${e.message}</div>`;
   }
+}
+
+// ─── Pré-aquecimento dos funis (background, encadeado pra não travar a fila do n8n) ───
+let _prefetchDone = {};
+function schedulePrefetchFunis() {
+  const key = _breakdownsKey();
+  if (_prefetchDone[key]) return;
+  _prefetchDone[key] = true;
+  const mk = (view) => {
+    const p = new URLSearchParams({ view, periodo: currentPeriodo });
+    if (currentPeriodo === 'personalizado') {
+      p.set('data_inicio', document.getElementById('dataInicio').value || '');
+      p.set('data_fim', document.getElementById('dataFim').value || '');
+    }
+    return `${API_URL}?${p}`;
+  };
+  setTimeout(async () => {
+    try {
+      if (!_funisCache[key]) { const d = await (await fetch(mk('funis'))).json(); if (d.funis) _funisCache[key] = d.funis; }
+      if (!_funisPocketCache[key]) { const d = await (await fetch(mk('funis_pocket'))).json(); if (d.funis) _funisPocketCache[key] = d.funis; }
+      if (!_funisGuiaCache[key]) { const d = await (await fetch(mk('funis_guia'))).json(); if (d.funis) _funisGuiaCache[key] = d.funis; }
+    } catch (e) {}
+  }, 1200);
 }
 
 // ─── FUNIS (Quiz Dream Baby Pocket) ─────────────────────────────────────────
