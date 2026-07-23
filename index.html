@@ -967,6 +967,17 @@
       <p>Padrão de comparação pra decisões de scale/pause. Dados dinâmicos do período selecionado + snapshot de breakdowns. <span style="color:var(--purple)">"Não há tentativa, há ROAS ou não há ROAS."</span> — Mestre Yoda</p>
     </div>
 
+    <!-- Régua Low Ticket por funil (janela móvel 14d) -->
+    <div class="section" style="margin-bottom:16px">
+      <div class="section-header">
+        <div>
+          <div class="section-title glow">📏 Régua Low Ticket por Funil</div>
+          <div class="section-sub">Janela móvel de 14 dias · ROAS real (Greenn, com bumps) · 🟢 ≥1,8 · 🟡 1,5–1,8 · 🔴 &lt;1,5 = agir</div>
+        </div>
+      </div>
+      <div id="reguaBody"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+
     <!-- KPIs principais -->
     <div class="analise-kpi-grid" id="analiseKpis">
       <div class="loading"><div class="spinner"></div></div>
@@ -1321,6 +1332,7 @@ function switchTab(name) {
   if (name === 'analise' && DATA) {
     renderAnalise();
     loadBreakdowns(); // chama 2º endpoint pra placement/demografia/pausadas
+    loadRegua();      // régua low ticket por funil (14d)
   }
   if (name === 'funis') {
     _loadFunisActive();
@@ -1704,6 +1716,45 @@ function renderFunisPocket(f) {
 
 function _funilSub(t) {
   return `<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted,#8a8a9a);padding:16px 6px 2px">${t}</div>`;
+}
+
+// ─── RÉGUA LOW TICKET POR FUNIL (view=baselines, 14d) ───────────────────────
+let _reguaCache = null, _reguaTs = 0;
+async function loadRegua() {
+  const el = document.getElementById('reguaBody');
+  if (!el) return;
+  if (_reguaCache && Date.now() - _reguaTs < 300000) { renderRegua(_reguaCache); return; }
+  try {
+    const resp = await fetch(`${API_URL}?view=baselines&_=${Date.now()}`);
+    const d = await resp.json();
+    _reguaCache = d.baselines || {}; _reguaTs = Date.now();
+    renderRegua(_reguaCache);
+  } catch (e) {
+    el.innerHTML = '<div class="empty">Erro ao carregar régua: ' + e.message + '</div>';
+  }
+}
+function renderRegua(b) {
+  const el = document.getElementById('reguaBody');
+  const NOMES = { QUIZ: '☁️ Quiz Dream Baby Pocket', POCKET: '👶 Dream Baby Pocket (direto)', GUIA: '🤱 Guia da Pega' };
+  const COR = { verde: 'var(--green,#34d399)', amarelo: 'var(--orange,#fbbf24)', vermelho: 'var(--red,#f87171)', sem_dados: 'var(--muted,#8a8a9a)' };
+  const LBL = { verde: '🟢 saudável', amarelo: '🟡 atenção', vermelho: '🔴 AGIR — reduzir verba ou pausar+duplicar', sem_dados: '⚪ sem gasto relevante' };
+  function fx(o, suf, pre) { return o && o.med != null ? `${pre || ''}${o.med}${suf || ''} <span style="color:var(--muted);font-size:11px">(${o.p25}–${o.p75})</span>` : '—'; }
+  let html = '<div class="table-wrap"><table><thead><tr><th>Funil</th><th>ROAS últ. 3 dias</th><th>Status</th><th>ROAS 14d</th><th>CPA 14d</th><th>CPM 14d</th><th>CTR 14d</th></tr></thead><tbody>';
+  for (const f of (b.funis || [])) {
+    const u = f.ult3d || {};
+    html += `<tr>
+      <td><strong>${NOMES[f.funil] || f.funil}</strong></td>
+      <td><strong style="color:${COR[f.status]};font-size:16px">${u.roas != null ? u.roas.toFixed(2) + 'x' : '—'}</strong><br><span style="color:var(--muted);font-size:11px">R$ ${fmt(u.spend || 0)} → ${u.vendas || 0} vendas</span></td>
+      <td style="color:${COR[f.status]};font-weight:700">${LBL[f.status]}</td>
+      <td>${fx(f.roas, 'x')}</td>
+      <td>${fx(f.cpa, '', 'R$ ')}</td>
+      <td>${fx(f.cpm, '', 'R$ ')}</td>
+      <td>${fx(f.ctr, '%')}</td>
+    </tr>`;
+  }
+  html += '</tbody></table></div>';
+  html += `<div style="font-size:11px;color:var(--muted);padding:8px 6px 0">📏 Mediana (p25–p75) dos dias com gasto ≥ R$ 20 na janela ${b.janela ? b.janela.inicio + ' → ' + b.janela.fim : ''}. ROAS real = vendas Greenn atribuídas por UTM (principal + order bumps) ÷ gasto Meta — sem inflação de atribuição do gerenciador. <b>Regra combinada 24/Jul:</b> meta ≥ 1,8–2,0 · na faixa 1,5–1,8 acompanhar de perto · abaixo de 1,5 por 3 dias = reduzir verba ou pausar e duplicar campanha/criativos.</div>`;
+  el.innerHTML = html;
 }
 
 // ─── BREAKDOWNS (placement, demografia, pausadas) ───────────────────────────
