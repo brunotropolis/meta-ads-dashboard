@@ -933,6 +933,7 @@
   <!-- TAB: VENDAS (Greenn) -->
   <div class="tab-content" id="tab-vendas">
     <div id="vendasSummary"></div>
+    <div id="vendasTiktok"></div>
     <div class="two-col">
       <div class="section">
         <div class="section-header">
@@ -2742,10 +2743,31 @@ function renderHora() {
 }
 
 // ─── VENDAS (Greenn) ────────────────────────────────────────────────────────
+function renderVendasTiktok(vendas) {
+  const el = document.getElementById('vendasTiktok');
+  if (!el) return;
+  const isTT = s => /tiktok|\[tiktok\]/i.test((s.utm_source || '') + ' ' + (s.utm_campaign || ''));
+  const tt = (vendas || []).filter(s => s.tipo === 'VENDA' && isTT(s));
+  const n = tt.length;
+  const receita = tt.reduce((a, s) => a + (parseFloat(s.valor) || 0), 0);
+  const rows = tt.length
+    ? tt.map(s => `<tr><td class="text-right nowrap" style="font-weight:700">R$ ${fmt(parseFloat(s.valor) || 0)}</td><td>${esc(s.produto_nome || '')}</td><td class="nowrap">${esc(s.utm_source || '—')}</td><td class="nowrap">${esc(s.utm_campaign || '—')}</td><td class="nowrap" style="color:var(--muted)">${esc((s.timestamp || '').split(' ')[1] || '')}</td></tr>`).join('')
+    : `<tr><td colspan="5" class="empty" style="padding:14px">Nenhuma venda do TikTok ainda no período. As vendas aparecem aqui quando o anúncio usar <b>utm_source=tiktok</b> (ou <b>[TIKTOK]</b> na utm_campaign).</td></tr>`;
+  el.innerHTML = `
+    <div class="section" style="margin-bottom:16px;border-left:3px solid #ff0050">
+      <div class="section-header">
+        <div><div class="section-title">🎵 Vendas TikTok</div><div class="section-sub">Campanha de performance · atribuídas por utm_source=tiktok / [TIKTOK]</div></div>
+        <div style="text-align:right"><div style="font-size:24px;font-weight:800">${n} venda${n !== 1 ? 's' : ''}</div><div style="color:var(--green);font-weight:700;font-size:13px">R$ ${fmt(receita)}</div></div>
+      </div>
+      <div class="table-wrap"><table><thead><tr><th class="text-right">Valor</th><th>Produto</th><th>utm_source</th><th>utm_campaign</th><th>Hora</th></tr></thead><tbody>${rows}</tbody></table></div>
+    </div>`;
+}
+
 function renderVendas() {
   const r = DATA.resumo || {};
   const v = DATA.vendas || {};
   const vendasHoje = v.hoje || [];
+  renderVendasTiktok(vendasHoje);
   const porProduto = v.por_produto || [];
   const porUtm = v.por_utm || [];
   const fatBruto = parseFloat(r.faturamento_hoje || 0);
