@@ -994,14 +994,14 @@
       <div class="section-header">
         <div>
           <div class="section-title glow">🌡️ Termômetro dos Criativos</div>
-          <div class="section-sub">Anúncios ativos × faixas ideais da conta · custo por finalização é o sinal que mais acerta (95%) · nada é julgado antes de R$ 25 gastos</div>
+          <div class="section-sub">Venda <b>real da Greenn</b> (por UTM) × gasto Meta em janela móvel · 28% dos dias-criativo fecham zerados mesmo em criativo bom, por isso a decisão nunca é do dia isolado</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center">
           <select id="monPreset" onchange="loadMonitor(true)" style="background:var(--card2);color:var(--text,#e6e8f0);border:1px solid var(--border);border-radius:8px;padding:5px 9px;font-size:12px;cursor:pointer">
-            <option value="today">Hoje</option>
-            <option value="yesterday">Ontem</option>
-            <option value="last_3d">Últimos 3 dias</option>
-            <option value="last_7d">Últimos 7 dias</option>
+            <option value="3">Janela de 3 dias</option>
+            <option value="5">Janela de 5 dias</option>
+            <option value="7">Janela de 7 dias</option>
+            <option value="1">Só hoje (ruidoso)</option>
           </select>
           <button onclick="loadMonitor(true)" title="Atualizar" style="background:var(--card2);color:var(--muted);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer">↻</button>
         </div>
@@ -1860,13 +1860,13 @@ let _monCache = {}, _monTs = {};
 async function loadMonitor(force) {
   const el = document.getElementById('monitorBody');
   if (!el) return;
-  const preset = (document.getElementById('monPreset') || {}).value || 'today';
+  const preset = (document.getElementById('monPreset') || {}).value || '3';
   if (!force && _monCache[preset] && Date.now() - (_monTs[preset] || 0) < 120000) {
     renderMonitor(_monCache[preset]); return;
   }
   el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
   try {
-    const resp = await fetch(`${MONITOR_URL}?preset=${preset}&_=${Date.now()}`);
+    const resp = await fetch(`${MONITOR_URL}?dias=${preset}&_=${Date.now()}`);
     const d = await resp.json();
     _monCache[preset] = d; _monTs[preset] = Date.now();
     renderMonitor(d);
@@ -1893,20 +1893,22 @@ function renderMonitor(d) {
   const n = (v, pre, suf) => v == null ? '—' : (pre || '') + br(v) + (suf || '');
   const brTxt = t => String(t || '').replace(/(\d)\.(\d)/g, '$1,$2');
 
-  // ── medidores: como estamos × ideal ──
+  // ── medidores: ROAS e CPA reais na frente (o pixel nao decide mais) ──
   const medidores = [
+    { rot: 'ROAS real', val: a.roas, fmt: v => n(v, '', 'x'),
+      ideal: `≥ ${br(L.roas_meta)}x`, det: `corta abaixo de ${br(L.roas_corte)}x`,
+      st: cor(a.roas, L.roas_meta, L.roas_corte, true), peso: 1 },
+    { rot: 'CPA real', val: a.cpa, fmt: v => n(v, 'R$ '),
+      ideal: `≤ R$ ${br(L.cpa_bom, 0)}`, det: `atenção até R$ ${br(L.cpa_max, 0)}`,
+      st: cor(a.cpa, L.cpa_bom, L.cpa_max, false), peso: 1 },
     { rot: 'Custo por finalização', val: a.custo_finalizacao, fmt: v => n(v, 'R$ '),
-      ideal: `≤ R$ ${br(L.cpic_bom,0)}`, det: `atenção até R$ ${br(L.cpic_ruim,0)}`,
-      st: cor(a.custo_finalizacao, L.cpic_bom, L.cpic_ruim, false), peso: 1 },
-    { rot: 'Custo por visita', val: a.custo_visita, fmt: v => n(v, 'R$ '),
-      ideal: `≤ R$ ${br(L.cplpv_bom)}`, det: `atenção até R$ ${br(L.cplpv_max)}`,
-      st: cor(a.custo_visita, L.cplpv_bom, L.cplpv_max, false) },
+      ideal: 'sinal precoce', det: 'vale antes da 1ª venda', st: 'none' },
     { rot: 'CTR de link', val: a.ctr, fmt: v => n(v, '', '%'),
       ideal: `≥ ${br(L.ctr_bom)}%`, det: `mínimo ${br(L.ctr_min)}%`,
       st: cor(a.ctr, L.ctr_bom, L.ctr_min, true) },
-    { rot: 'Visita → finalização', val: a.taxa_finalizacao, fmt: v => n(v, '', '%'),
-      ideal: `≥ ${br(L.icr_bom,0)}%`, det: `mínimo ${br(L.icr_min,0)}%`,
-      st: cor(a.taxa_finalizacao, L.icr_bom, L.icr_min, true) },
+    { rot: 'Custo por visita', val: a.custo_visita, fmt: v => n(v, 'R$ '),
+      ideal: `≤ R$ ${br(L.cplpv_bom)}`, det: `atenção até R$ ${br(L.cplpv_max)}`,
+      st: cor(a.custo_visita, L.cplpv_bom, L.cplpv_max, false) },
     { rot: 'CPM', val: a.cpm, fmt: v => n(v, 'R$ '),
       ideal: 'só contexto', det: 'não prevê conversão', st: 'none' },
   ];
@@ -1930,38 +1932,49 @@ function renderMonitor(d) {
     const r = R[st]; if (!r) continue;
     html += `<div style="background:${c}1a;border:1px solid ${c}55;color:${c};border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700">${ic} ${st} · ${r.n} <span style="opacity:.75;font-weight:500">(R$ ${fmt(r.spend)})</span></div>`;
   }
-  html += `<div style="margin-left:auto;font-size:11px;color:var(--muted);align-self:center">R$ ${fmt(a.gasto)} gastos · ${a.finalizacoes} finalizações · ${a.vendas} vendas · ROAS ${br(a.roas)}x</div>`;
+  const jan = d.janela || {};
+  html += `<div style="margin-left:auto;font-size:11px;color:var(--muted);align-self:center">R$ ${fmt(a.gasto)} → <b style="color:var(--green)">${a.vendas} vendas reais</b> · pixel viu ${a.pixel} · ROAS ${br(a.roas)}x <span style="opacity:.7">(${jan.de || ''} a ${jan.ate || ''})</span></div>`;
   html += '</div>';
 
-  // ── aviso de dia parcial ──
+  // ── avisos ──
   const julgaveis = cr.filter(c => c.status !== 'AQUECENDO').length;
-  if (d.preset === 'today' && julgaveis === 0) {
+  if (!julgaveis) {
     html += `<div style="background:rgba(251,146,60,.1);border:1px solid rgba(251,146,60,.3);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--orange);margin-bottom:12px">
-      ⏳ Dia ainda no começo — nenhum anúncio passou dos R$ ${br(L.gasto_min,0)} de gasto. Os números acima são parciais e não sustentam decisão. A leitura confiável costuma vir a partir das 14h.</div>`;
+      ⏳ Nenhum criativo passou de R$ ${br(L.gasto_min, 0)} na janela — ainda sem base para decidir.</div>`;
+  }
+  if (String((document.getElementById('monPreset') || {}).value) === '1') {
+    html += `<div style="background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--red);margin-bottom:12px">
+      ⚠️ Janela de 1 dia: <b>não decida por aqui</b>. Nesta conta, 28% dos dias-criativo fecham com zero venda mesmo quando o criativo é bom, e o CPA do mesmo criativo varia de R$ 18 a R$ 99 entre dias.</div>`;
   }
 
   // ── tabela por criativo ──
   const cel = (v, st, txt) => `<td style="color:${C[st]};font-weight:${st === 'none' ? '400' : '700'}">${txt}</td>`;
-  html += '<div class="table-wrap"><table><thead><tr><th>Criativo</th><th>Gasto</th><th>CTR</th><th>Custo/visita</th><th>Custo/finaliz.</th><th>Vis→Fin</th><th>Vendas</th><th>Situação</th></tr></thead><tbody>';
+  html += '<div class="table-wrap"><table><thead><tr><th>Criativo</th><th>Gasto</th><th>Vendas reais</th><th>ROAS</th><th>CPA</th><th>CTR</th><th>Custo/finaliz.</th><th>Hoje</th><th>Situação</th></tr></thead><tbody>';
   for (const c of cr) {
     const stc = { CORTAR: 'bad', OBSERVAR: 'warn', OK: 'ok', AQUECENDO: 'none' }[c.status];
     const ic = { CORTAR: '🔴', OBSERVAR: '🟡', OK: '🟢', AQUECENDO: '⚪' }[c.status];
     const dim = c.status === 'AQUECENDO' ? 'opacity:.6' : '';
+    const gapPixel = (c.vendas && c.pixel !== c.vendas)
+      ? ` <span style="color:var(--muted);font-size:10px" title="vendas que o pixel atribuiu">px ${c.pixel}</span>` : '';
     html += `<tr style="${dim}">
       <td><strong>${c.nome}</strong><br><span style="color:var(--muted);font-size:11px">${c.conjunto || ''}</span></td>
       <td>R$ ${fmt(c.spend)}</td>
+      <td><strong>${c.vendas || 0}</strong>${gapPixel}${c.receita ? `<br><span style="color:var(--muted);font-size:11px">R$ ${fmt(c.receita)}</span>` : ''}</td>
+      ${cel(c.roas, cor(c.roas, L.roas_meta, L.roas_corte, true), c.vendas ? br(c.roas) + 'x' : '—')}
+      ${cel(c.cpa, cor(c.cpa, L.cpa_bom, L.cpa_max, false), n(c.cpa, 'R$ '))}
       ${cel(c.ctr, cor(c.ctr, L.ctr_bom, L.ctr_min, true), br(c.ctr) + '%')}
-      ${cel(c.custo_visita, cor(c.custo_visita, L.cplpv_bom, L.cplpv_max, false), n(c.custo_visita, 'R$ '))}
-      ${cel(c.custo_finalizacao, cor(c.custo_finalizacao, L.cpic_bom, L.cpic_ruim, false), n(c.custo_finalizacao, 'R$ '))}
-      ${cel(c.taxa_finalizacao, cor(c.taxa_finalizacao, L.icr_bom, L.icr_min, true), br(c.taxa_finalizacao,1) + '%')}
-      <td>${c.vendas || 0}${c.vendas ? ` <span style="color:var(--muted);font-size:11px">(R$ ${fmt(c.receita)})</span>` : ''}</td>
+      ${cel(c.custo_finalizacao, 'none', n(c.custo_finalizacao, 'R$ '))}
+      <td style="white-space:nowrap">R$ ${fmt(c.spend_hoje || 0)}<br><span style="color:var(--muted);font-size:11px">${c.vendas_hoje || 0} venda${(c.vendas_hoje || 0) === 1 ? '' : 's'}</span></td>
       <td style="color:${C[stc]};font-weight:700;white-space:nowrap">${ic} ${c.status}<br><span style="color:var(--muted);font-weight:400;font-size:11px">${brTxt(c.motivo)}</span></td>
     </tr>`;
   }
   html += '</tbody></table></div>';
   html += `<div style="font-size:11px;color:var(--muted);padding:8px 6px 0">
-    ⭐ <b>Custo por finalização</b> é o critério de corte — testado contra 30 dias da conta, acerta 95% dos casos de ROAS &lt; 1,5. <b>CPM não prevê conversão</b> (quem vendeu teve CPM mediano R$ 29,54 × R$ 25,22 de quem não vendeu), por isso entra só como contexto.
-    Conta Dream Baby · dados do pixel (bate 1:1 com a venda real da Greenn na campanha DREAM POCKET) · atualizado ${d.gerado_em || ''}.</div>`;
+    ⭐ Decisão pelo <b>ROAS/CPA real da Greenn</b> (venda casada por <code>utm_content</code>) em <b>janela de ${(d.janela || {}).dias || 3} dias</b> — nunca pelo dia isolado.
+    O pixel entra só como comparação (coluna "px"): por criativo ele erra bastante — em 29/07 viu 4 vendas do Mathias 008 quando a Greenn registrou 7.
+    <b>Custo por finalização</b> só decide <i>antes</i> da primeira venda; depois dela quem manda é o CPA.
+    <b>CPM não prevê conversão</b> (R$ 29,54 de quem vendeu × R$ 25,22 de quem não vendeu).
+    Conta Dream Baby · atualizado ${d.gerado_em || ''}.</div>`;
 
   el.innerHTML = html;
 }
