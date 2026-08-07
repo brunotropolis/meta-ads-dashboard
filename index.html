@@ -934,6 +934,7 @@
   <div class="tab-content" id="tab-vendas">
     <div id="vendasSummary"></div>
     <div id="vendasTiktok"></div>
+    <div id="vendasChatgpt"></div>
     <div class="two-col">
       <div class="section">
         <div class="section-header">
@@ -2910,11 +2911,32 @@ function renderVendasTiktok(vendas) {
     </div>`;
 }
 
+function renderVendasChatgpt(vendas) {
+  const el = document.getElementById('vendasChatgpt');
+  if (!el) return;
+  const isGPT = s => /chatgpt|openai|\[chatgpt\]|\[openai\]/i.test((s.utm_source || '') + ' ' + (s.utm_campaign || ''));
+  const gp = (vendas || []).filter(s => s.tipo === 'VENDA' && isGPT(s));
+  const n = gp.length;
+  const receita = gp.reduce((a, s) => a + (parseFloat(s.valor) || 0), 0);
+  const rows = gp.length
+    ? gp.map(s => `<tr><td class="text-right nowrap" style="font-weight:700">R$ ${fmt(parseFloat(s.valor) || 0)}</td><td>${esc(s.produto_nome || '')}</td><td class="nowrap">${esc(s.utm_source || '—')}</td><td class="nowrap">${esc(s.utm_campaign || '—')}</td><td class="nowrap" style="color:var(--muted)">${esc((s.timestamp || '').split(' ')[1] || '')}</td></tr>`).join('')
+    : `<tr><td colspan="5" class="empty" style="padding:14px">Nenhuma venda do ChatGPT ainda no período. As vendas aparecem aqui quando o anúncio usar <b>utm_source=chatgpt</b> (ou <b>[CHATGPT]</b> na utm_campaign).</td></tr>`;
+  el.innerHTML = `
+    <div class="section" style="margin-bottom:16px;border-left:3px solid #10a37f">
+      <div class="section-header">
+        <div><div class="section-title">🤖 Vendas ChatGPT</div><div class="section-sub">ChatGPT Ads (OpenAI) · atribuídas por utm_source=chatgpt / [CHATGPT] · verba fora do ROAS de Mídia do Meta</div></div>
+        <div style="text-align:right"><div style="font-size:24px;font-weight:800">${n} venda${n !== 1 ? 's' : ''}</div><div style="color:var(--green);font-weight:700;font-size:13px">R$ ${fmt(receita)}</div></div>
+      </div>
+      <div class="table-wrap"><table><thead><tr><th class="text-right">Valor</th><th>Produto</th><th>utm_source</th><th>utm_campaign</th><th>Hora</th></tr></thead><tbody>${rows}</tbody></table></div>
+    </div>`;
+}
+
 function renderVendas() {
   const r = DATA.resumo || {};
   const v = DATA.vendas || {};
   const vendasHoje = v.hoje || [];
   renderVendasTiktok(vendasHoje);
+  renderVendasChatgpt(vendasHoje);
   const porProduto = v.por_produto || [];
   const porUtm = v.por_utm || [];
   const fatBruto = parseFloat(r.faturamento_hoje || 0);
@@ -3121,6 +3143,7 @@ function renderVendasCanais() {
     { key: 'trafego',     title: 'TRAFEGO',                 icon: '📢', fillClass: 'bar-fill-blue',  borderColor: '#2a3a5a', bgGrad: 'linear-gradient(135deg, #1a2a4a 0%, #1a2240 100%)', titleColor: 'var(--blue)' },
     { key: 'recuperacao', title: 'RECUPERACAO DE VENDAS', icon: '🔄', fillClass: 'bar-fill-purple', borderColor: '#3d2b5a', bgGrad: 'linear-gradient(135deg, #2d1b4a 0%, #231540 100%)', titleColor: 'var(--purple)' },
     { key: 'meteorico',   title: 'METEÓRICO (FUNIL)',       icon: '🌪️', fillClass: 'bar-fill-purple', borderColor: '#4a3a6a', bgGrad: 'linear-gradient(135deg, #3a2a5a 0%, #2a2048 100%)', titleColor: 'var(--purple)' },
+    { key: 'chatgpt',     title: 'CHATGPT ADS',             icon: '🤖', fillClass: 'bar-fill-green', borderColor: '#1d5c4a', bgGrad: 'linear-gradient(135deg, #10402f 0%, #0d3327 100%)', titleColor: '#10a37f' },
   ];
 
   let html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">';
