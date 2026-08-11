@@ -136,6 +136,7 @@
   .msg { max-width:88%; padding:10px 13px; border-radius:13px; font-size:13px; line-height:1.5; }
   .msg.bot { background:var(--card2); border:1px solid var(--border); align-self:flex-start; border-bottom-left-radius:4px; }
   .msg.me { background:var(--grad-purple); color:#fff; align-self:flex-end; border-bottom-right-radius:4px; }
+  .typing { display:inline-block; letter-spacing:3px; animation:blink2 1.2s infinite; } @keyframes blink2 { 0%,100%{opacity:.3} 50%{opacity:1} }
   .msg b { color:inherit; } .msg.bot b { color:var(--text); }
   .chat-input { padding:12px; border-top:1px solid var(--border); display:flex; gap:8px; align-items:flex-end; }
   .chat-input textarea { flex:1; background:rgba(10,11,21,.6); border:1px solid var(--border); border-radius:11px; color:var(--text); padding:10px 12px; font-size:13px; font-family:inherit; resize:none; max-height:100px; outline:none; }
@@ -207,7 +208,7 @@
       <textarea id="chatIn" rows="1" placeholder="Pergunta pro Gestor…"></textarea>
       <button class="chat-send" id="chatSend">➤</button>
     </div>
-    <div class="chat-hint">motor completo (executar + salvar histórico) em breve</div>
+    <div class="chat-hint">responde de verdade (Claude + seus dados) · executar pausas/verba em breve</div>
   </aside>
 
   <script>
@@ -680,7 +681,23 @@
     }
     const msgs=document.getElementById('chatMsgs'), inp=document.getElementById('chatIn');
     function addMsg(html,cls){ const d=document.createElement('div'); d.className='msg '+cls; d.innerHTML=html; msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight; }
-    function send(){ const v=inp.value.trim(); if(!v)return; addMsg(esc(v),'me'); inp.value=''; inp.style.height='auto'; setTimeout(()=>addMsg(responder(v),'bot'),260); }
+    const CHAT_URL='https://n8n-n8n.xktssy.easypanel.host/webhook/gestor-chat';
+    const historico=[]; let sending=false;
+    function dadosContexto(){ const p=periodo(); if(!p) return {}; return { periodo:state.per, campanhas:p.campanhas.filter(c=>c.gasto>0).map(c=>({nome:c.nome,funil:c.funil,gasto:c.gasto,vendas:c.vendas,receita:c.receita,roas:c.roas,cpa:c.cpa,ctr:c.ctr,connect:c.connect,ida:c.ida,freq:c.freq,estado:c.estado})), orfas:p.orfas }; }
+    function mdToHtml(t){ let h=esc(t); h=h.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>'); h=h.replace(/^[-*] (.+)$/gm,'• $1'); h=h.replace(/\n/g,'<br>'); return h; }
+    async function send(){
+      const v=inp.value.trim(); if(!v||sending) return;
+      addMsg(esc(v),'me'); historico.push({role:'me',content:v}); inp.value=''; inp.style.height='auto';
+      const typing=document.createElement('div'); typing.className='msg bot'; typing.innerHTML='<span class="typing">•••</span>'; msgs.appendChild(typing); msgs.scrollTop=msgs.scrollHeight;
+      sending=true;
+      try {
+        const r=await fetch(CHAT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({message:v,periodo:state.per,tab:state.tab,dados:dadosContexto(),historico:historico.slice(-6)})});
+        const j=await r.json(); typing.remove();
+        const reply=(j&&j.reply)||responder(v);
+        addMsg(mdToHtml(reply),'bot'); historico.push({role:'bot',content:reply});
+      } catch(e) { typing.remove(); addMsg(mdToHtml(responder(v)),'bot'); }
+      sending=false;
+    }
     document.getElementById('chatSend').onclick=send;
     inp.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send(); } });
     inp.addEventListener('input',()=>{ inp.style.height='auto'; inp.style.height=Math.min(inp.scrollHeight,100)+'px'; });
