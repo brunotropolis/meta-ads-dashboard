@@ -835,10 +835,10 @@
   <div class="tabs">
     <div class="tab active" onclick="switchTab('overview')"><span class="tab-icon">🎮</span> Overview</div>
     <div class="tab" onclick="switchTab('funis')"><span class="tab-icon">🌪️</span> Funis</div>
-    <div class="tab" onclick="switchTab('campanhas')"><span class="tab-icon">🚀</span> Campanhas</div>
+    <div class="tab" onclick="switchTab('campanhas')" style="display:none"><span class="tab-icon">🚀</span> Campanhas</div>
     <div class="tab" onclick="switchTab('vendas')" id="tabVendas"><span class="tab-icon">💎</span> Vendas</div>
-    <div class="tab" onclick="switchTab('analise')"><span class="tab-icon">🔮</span> Análise & Baseline</div>
-    <a class="tab" href="gestor.html" style="text-decoration:none;color:inherit"><span class="tab-icon">🎛️</span> Gestor</a>
+    <div class="tab" onclick="switchTab('analise')" style="display:none"><span class="tab-icon">🔮</span> Análise & Baseline</div>
+    <div class="tab" onclick="switchTab('gestor')"><span class="tab-icon">🎛️</span> Gestor</div>
   </div>
   <div id="periodSelector" style="display:flex;align-items:center;flex-wrap:wrap">
     <span>⏱ Período</span>
@@ -859,6 +859,11 @@
 </div>
 
 <div class="main">
+
+  <!-- TAB: GESTOR (embed) -->
+  <div class="tab-content" id="tab-gestor">
+    <iframe id="gestorFrame" src="gestor.html?embed=1" title="Gestor de Tráfego" style="width:100%;height:calc(100vh - 176px);min-height:640px;border:0;border-radius:14px;background:transparent"></iframe>
+  </div>
 
   <!-- TAB: OVERVIEW -->
   <div class="tab-content active" id="tab-overview">
@@ -3436,7 +3441,7 @@ window.startDashboard = startDashboard;
 
 <script>
 (function(){
-  const AUSTIN_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/austin-powers';
+  const AUSTIN_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/gestor-chat';
   const EXECUTE_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/austin-execute';
   // Proteção contra scans/abusos. Pra auth real (login), mover dashboard pra Cloudflare Access.
   // Override local: localStorage.setItem('austin-webhook-secret', '...')
@@ -3465,7 +3470,7 @@ window.startDashboard = startDashboard;
     if (!msgsEl.dataset.welcomed) {
       const hist = loadHistory();
       if (hist.length === 0) {
-        addBot("Yeah baby, yeah! 🕺 Sou o Austin, seu espião de Meta Ads. Pergunta o que quiser — ROAS, criativos, públicos, alocação de verba. Eu olho a planilha em tempo real e te dou minha leitura. *Oh, behave!*");
+        addBot("Oi! Sou o **Gestor**. Pergunta o que quiser sobre as campanhas — ROAS, o que cortar, escalar, o gargalo da página. Respondo com os teus dados reais e a régua da casa, comparando com as nossas médias.");
       } else {
         hist.forEach(m => m.role === 'user' ? addUser(m.content, true) : addBot(m.content, m.actions||[], true));
       }
@@ -3585,8 +3590,8 @@ window.startDashboard = startDashboard;
       const timeout = setTimeout(() => ctrl.abort(), 300000);
       const res = await fetch(AUSTIN_URL, {
         method: 'POST',
-        headers: {'Content-Type':'application/json','X-Webhook-Secret':WEBHOOK_SECRET},
-        body: JSON.stringify({ session_id: sessionId, message: text }),
+        headers: {'Content-Type':'text/plain'},
+        body: JSON.stringify({ message: text, periodo: '7d', historico: loadHistory().slice(-6) }),
         signal: ctrl.signal,
       });
       clearTimeout(timeout);
