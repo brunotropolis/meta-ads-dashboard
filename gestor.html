@@ -22,34 +22,35 @@
   body::-webkit-scrollbar { width:10px; } body::-webkit-scrollbar-thumb { background:var(--border); border-radius:5px; }
   .num { font-variant-numeric:tabular-nums; }
 
-  .header { background:rgba(15,17,30,.85); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); border-bottom:1px solid var(--border); padding:15px 24px; display:flex; align-items:center; justify-content:space-between; gap:12px; position:sticky; top:0; z-index:100; }
+  .header { background:rgba(15,17,30,.85); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); border-bottom:1px solid var(--border); padding:14px 24px; display:flex; align-items:center; justify-content:space-between; gap:12px; position:sticky; top:0; z-index:100; }
   .header::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--grad-vibrant); opacity:.7; }
   .header-left { display:flex; align-items:center; gap:13px; }
   .header h1 { font-size:18px; font-weight:800; letter-spacing:-.01em; background:var(--grad-vibrant); -webkit-background-clip:text; background-clip:text; color:transparent; }
   .header-sub { font-size:11.5px; color:var(--muted); margin-top:2px; }
   .btn { background:var(--card); border:1px solid var(--border); color:var(--text); padding:7px 14px; border-radius:10px; cursor:pointer; font-size:13px; font-weight:600; text-decoration:none; transition:all .2s; display:inline-flex; align-items:center; gap:6px; }
   .btn:hover { background:rgba(99,102,241,.15); border-color:var(--border-hover); }
+  .btn-chat { background:var(--grad-purple,linear-gradient(135deg,#6366f1,#a78bfa)); border-color:transparent; color:#fff; box-shadow:0 3px 12px var(--purple-glow); }
   .badge-db { padding:3px 11px; border-radius:14px; font-size:11px; font-weight:700; letter-spacing:.3px; background:rgba(167,139,250,.15); color:var(--purple); border:1px solid rgba(167,139,250,.3); }
 
-  /* barra de controle: sub-abas + período */
-  .controls { position:sticky; top:64px; z-index:99; background:rgba(15,17,30,.72); backdrop-filter:blur(15px); border-bottom:1px solid var(--border); padding:10px 24px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
-  .subtabs { display:flex; gap:5px; flex-wrap:wrap; }
-  .subtab { padding:8px 15px; border-radius:10px; cursor:pointer; color:var(--muted); font-size:13px; font-weight:600; border:1px solid transparent; transition:all .18s; white-space:nowrap; }
+  /* controle: sub-abas centralizadas + período centralizado */
+  .controls { position:sticky; top:62px; z-index:99; background:rgba(15,17,30,.72); backdrop-filter:blur(15px); border-bottom:1px solid var(--border); padding:11px 20px; display:flex; flex-direction:column; align-items:center; gap:9px; }
+  .subtabs { display:flex; gap:5px; flex-wrap:wrap; justify-content:center; }
+  .subtab { padding:8px 16px; border-radius:10px; cursor:pointer; color:var(--muted); font-size:13px; font-weight:600; border:1px solid transparent; transition:all .18s; white-space:nowrap; }
   .subtab:hover { color:var(--text); }
   .subtab.active { color:#fff; background:var(--grad-vibrant); box-shadow:0 3px 14px var(--purple-glow); }
+  .periodo-wrap { display:flex; align-items:center; gap:8px; }
   .periodo { display:flex; gap:3px; background:rgba(10,11,21,.6); border:1px solid var(--border); border-radius:11px; padding:3px; }
-  .per { padding:6px 13px; border-radius:8px; cursor:pointer; color:var(--muted); font-size:12.5px; font-weight:600; transition:all .15s; }
+  .per { padding:6px 14px; border-radius:8px; cursor:pointer; color:var(--muted); font-size:12.5px; font-weight:600; transition:all .15s; }
   .per:hover { color:var(--text); }
   .per.active { color:#fff; background:rgba(167,139,250,.22); box-shadow:inset 0 0 0 1px rgba(167,139,250,.4); }
-  .per-hint { font-size:11px; color:var(--muted); margin-left:8px; }
+  .per-hint { font-size:11px; color:var(--muted); }
 
-  .main { padding:22px 24px 60px; max-width:1160px; margin:0 auto; }
+  .main { padding:22px 28px 60px; max-width:1500px; margin:0 auto; }
 
-  /* summary strip */
-  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:11px; margin-bottom:20px; }
-  .kpi { background:var(--card); border:1px solid var(--border); border-radius:13px; padding:13px 15px; }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:20px; }
+  .kpi { background:var(--card); border:1px solid var(--border); border-radius:13px; padding:13px 16px; }
   .kpi .l { font-size:11px; color:var(--muted); margin-bottom:5px; }
-  .kpi .v { font-size:21px; font-weight:800; letter-spacing:-.02em; }
+  .kpi .v { font-size:22px; font-weight:800; letter-spacing:-.02em; display:flex; align-items:baseline; gap:6px; }
   .kpi .v small { font-size:11.5px; color:var(--muted); font-weight:600; }
 
   .section { background:var(--card); border:1px solid var(--border); border-radius:16px; margin-bottom:16px; overflow:hidden; }
@@ -58,26 +59,25 @@
   .section-sub { font-size:11px; color:var(--muted); margin-top:2px; }
   .section-body { padding:16px 18px; }
 
-  /* funnel filter (pills) */
   .fpills { display:flex; gap:5px; flex-wrap:wrap; }
   .fp { padding:5px 12px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600; color:var(--muted); border:1px solid var(--border); transition:all .15s; }
   .fp:hover { color:var(--text); border-color:var(--border-hover); }
   .fp.active { color:#fff; background:rgba(167,139,250,.2); border-color:rgba(167,139,250,.45); }
 
-  /* tabela horizontal */
   .table-wrap { overflow-x:auto; }
-  table { width:100%; border-collapse:collapse; font-size:12.5px; white-space:nowrap; }
-  th { padding:9px 12px; text-align:right; font-size:10.5px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; border-bottom:1px solid var(--border); }
+  table { width:100%; border-collapse:collapse; font-size:12.5px; }
+  th { padding:9px 10px; text-align:right; font-size:10.5px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.3px; border-bottom:1px solid var(--border); white-space:nowrap; }
   th.l, td.l { text-align:left; }
-  td { padding:10px 12px; text-align:right; border-bottom:1px solid var(--border); font-variant-numeric:tabular-nums; }
+  td { padding:9px 10px; text-align:right; border-bottom:1px solid var(--border); font-variant-numeric:tabular-nums; white-space:nowrap; }
   tr:last-child td { border-bottom:none; }
   tr:hover td { background:rgba(255,255,255,.02); }
-  .cname { font-weight:600; color:var(--text); max-width:230px; overflow:hidden; text-overflow:ellipsis; }
+  .cname { font-weight:600; color:var(--text); display:inline-block; max-width:260px; overflow:hidden; text-overflow:ellipsis; vertical-align:middle; }
   .fbadge { font-size:9.5px; padding:1px 7px; border-radius:6px; font-weight:700; letter-spacing:.3px; vertical-align:middle; margin-right:6px; }
   .fb-pocket { background:rgba(96,165,250,.16); color:var(--blue); }
   .fb-quiz { background:rgba(244,114,182,.16); color:var(--pink); }
   .fb-outro { background:rgba(156,163,184,.14); color:var(--muted); }
   .ok { color:var(--green); } .bad { color:var(--red); } .warn2 { color:var(--yellow); }
+  .meta-tag { font-size:9.5px; color:var(--muted); font-weight:600; margin-left:5px; }
   .estado { font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:7px; }
   .e-MANTER { background:rgba(74,222,128,.15); color:var(--green); }
   .e-OBSERVAR { background:rgba(251,191,36,.16); color:var(--yellow); }
@@ -91,24 +91,34 @@
   .cols { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:14px; }
   .chip { font-size:11px; color:var(--muted); border:1px dashed var(--border); border-radius:7px; padding:4px 9px; }
 
-  /* página do funil */
-  .page-metrics { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px; }
+  .page-metrics { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; }
   .pm { background:var(--card2); border:1px solid var(--border); border-radius:11px; padding:12px 14px; }
   .pm .pl { font-size:11px; color:var(--muted); margin-bottom:5px; display:flex; align-items:center; }
   .pm .pv { font-size:18px; font-weight:700; font-variant-numeric:tabular-nums; }
 
-  .timeline .row { display:grid; grid-template-columns:70px 1fr auto; gap:14px; align-items:start; padding:13px 0; border-bottom:1px solid var(--border); }
-  .timeline .row:last-child { border-bottom:0; }
-  .timeline .when { font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
-  .timeline .what b { font-weight:700; } .timeline .what .goal { font-size:12px; color:var(--muted); margin-top:3px; }
-  .timeline .ba { text-align:right; font-size:12px; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; }
-  .tag-wait { font-size:10px; padding:2px 8px; border-radius:8px; background:rgba(156,163,184,.12); color:var(--muted); }
-  .tag-live { font-size:10px; padding:2px 8px; border-radius:8px; background:rgba(74,222,128,.14); color:var(--green); }
-  .verdict { margin-top:14px; padding:11px 14px; background:rgba(251,191,36,.07); border-radius:10px; border-left:3px solid var(--yellow); font-size:12.5px; line-height:1.5; }
-  .verdict b { color:var(--yellow); }
+  /* histórico da página — cards por versão */
+  .ver { border:1px solid var(--border); border-radius:13px; margin-bottom:12px; overflow:hidden; }
+  .ver.atual { border-color:rgba(167,139,250,.45); box-shadow:0 0 0 1px rgba(167,139,250,.2); }
+  .ver-head { padding:13px 16px; display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.02); flex-wrap:wrap; }
+  .ver-name { font-size:14px; font-weight:700; }
+  .ver-when { font-size:11.5px; color:var(--muted); }
+  .ver-status { font-size:10px; font-weight:700; padding:2px 9px; border-radius:8px; margin-left:auto; }
+  .vs-atual { background:rgba(74,222,128,.15); color:var(--green); }
+  .vs-anterior { background:rgba(156,163,184,.14); color:var(--muted); }
+  .ver-body { padding:4px 16px 14px; display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  @media(max-width:720px){ .ver-body{ grid-template-columns:1fr; } }
+  .ver-col h4 { font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin:12px 0 8px; font-weight:700; }
+  .talk { font-size:13px; line-height:1.55; color:var(--text); padding:5px 0 5px 14px; position:relative; }
+  .talk::before { content:''; position:absolute; left:0; top:11px; width:5px; height:5px; border-radius:50%; background:var(--purple); }
+  .adj { padding:8px 0; border-bottom:1px solid var(--border); }
+  .adj:last-child { border-bottom:0; }
+  .adj .aw { font-size:13px; font-weight:600; }
+  .adj .ag { font-size:12px; color:var(--muted); margin-top:2px; }
+  .adj .ab { font-size:11.5px; color:var(--muted); font-variant-numeric:tabular-nums; margin-top:4px; }
+  .adj .ab b { color:var(--text); }
 
   /* FAQ */
-  .faq details { border:1px solid var(--border); border-radius:10px; margin-bottom:8px; overflow:hidden; background:rgba(255,255,255,.02); transition:border-color .2s,box-shadow .2s; scroll-margin-top:130px; }
+  .faq details { border:1px solid var(--border); border-radius:10px; margin-bottom:8px; overflow:hidden; background:rgba(255,255,255,.02); transition:border-color .2s,box-shadow .2s; scroll-margin-top:150px; }
   .faq details.flash { border-color:var(--purple); box-shadow:0 0 0 1px var(--purple),0 6px 20px rgba(167,139,250,.25); }
   .faq summary { padding:12px 15px; cursor:pointer; font-weight:600; font-size:13.5px; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:10px; }
   .faq summary::-webkit-details-marker { display:none; }
@@ -119,7 +129,18 @@
   .src { display:inline-block; margin-top:9px; font-size:11px; padding:2px 9px; border-radius:7px; background:rgba(167,139,250,.12); color:var(--purple); font-weight:600; }
   .faq-src-grid { display:grid; gap:6px; margin-top:6px; } .faq-src-grid span { font-size:12.5px; }
 
-  .hide { display:none; }
+  /* chat drawer */
+  .drawer-bg { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:200; opacity:0; pointer-events:none; transition:opacity .2s; }
+  .drawer-bg.open { opacity:1; pointer-events:auto; }
+  .drawer { position:fixed; top:0; right:0; bottom:0; width:min(420px,92vw); background:var(--card-solid); border-left:1px solid var(--border); z-index:201; transform:translateX(100%); transition:transform .25s; display:flex; flex-direction:column; }
+  .drawer.open { transform:none; }
+  .drawer-head { padding:16px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .drawer-head .t { font-weight:700; font-size:15px; }
+  .drawer-body { padding:18px; overflow-y:auto; color:var(--muted); font-size:13.5px; line-height:1.6; }
+  .soon { display:inline-block; font-size:10px; font-weight:700; padding:2px 8px; border-radius:8px; background:rgba(251,191,36,.16); color:var(--yellow); margin-left:8px; }
+  .x { cursor:pointer; color:var(--muted); font-size:20px; background:none; border:none; }
+
+  @media(max-width:640px){ .main{ padding:16px; } .header{ padding:12px 15px; } }
   footer { margin-top:32px; padding-top:16px; border-top:1px solid var(--border); color:var(--muted); font-size:11.5px; }
 </style>
 </head>
@@ -129,7 +150,8 @@
       <span style="font-size:22px">🎛️</span>
       <div><h1>Gestor de Tráfego</h1><div class="header-sub">Direcionado por funil · dados reais · read-only</div></div>
     </div>
-    <div style="display:flex; align-items:center; gap:10px">
+    <div style="display:flex; align-items:center; gap:9px">
+      <button class="btn btn-chat" id="chatBtn">💬 Conversar</button>
       <span class="badge-db">DREAM BABY</span>
       <a class="btn" href="index.html">← Dashboard</a>
     </div>
@@ -142,7 +164,7 @@
       <div class="subtab" data-tab="quiz">🎯 Quiz Dream Baby</div>
       <div class="subtab" data-tab="banco">🗂️ Banco de dados &amp; métricas</div>
     </div>
-    <div style="display:flex; align-items:center">
+    <div class="periodo-wrap">
       <div class="periodo">
         <div class="per" data-per="hoje">Hoje</div>
         <div class="per" data-per="ontem">Ontem</div>
@@ -156,6 +178,22 @@
   <div class="main">
     <div id="view"></div>
     <footer><b style="color:var(--text)">Painel Gestor</b> · read-only, sem execução · <span id="gerado"></span> · <a href="index.html" style="color:var(--purple)">voltar ao dashboard</a></footer>
+  </div>
+
+  <!-- chat drawer -->
+  <div class="drawer-bg" id="drawerBg"></div>
+  <div class="drawer" id="drawer">
+    <div class="drawer-head"><div class="t">💬 Conversar com o Gestor <span class="soon">em breve</span></div><button class="x" id="drawerX">×</button></div>
+    <div class="drawer-body">
+      <p>Aqui vai ficar o chat com o <b style="color:var(--purple)">Gestor (Austin)</b>.</p>
+      <p style="margin-top:12px">A ideia: você conversa em linguagem normal — <i>"a AD+ está sangrando, o que faço?"</i> ou <i>"mudei o hero do Pocket hoje"</i> — e o Gestor:</p>
+      <ul style="margin:10px 0 0 18px; line-height:1.9">
+        <li>responde com base nos dados reais desta tela;</li>
+        <li><b>registra no histórico</b> o que a gente decidiu e o que ajustou;</li>
+        <li>salva dentro do dash, aparecendo nas abas de página automaticamente.</li>
+      </ul>
+      <p style="margin-top:14px">É o <b>próximo tijolo</b>. Pra ele salvar de verdade, preciso ligar um pequeno backend (o Austin já existe) — quando você aprovar a forma da tela, eu conecto.</p>
+    </div>
   </div>
 
   <script>
@@ -443,56 +481,61 @@
  }
 };
 
-    // registro de funis (o que a gente "cadastra")
     const FUNIS = {
       pocket: {
-        nome:'Dream Baby Pocket', icon:'👶', tag:'[DREAM POCKET]',
+        nome:'Dream Baby Pocket', icon:'👶',
         page:'dbpocket.manualdorecemnascido.com.br',
         pageMetrics:[
-          {l:'Ida pro checkout', v:'12,7%', cls:'bad', faq:'ida'},
-          {l:'Passam do hero', v:'31,5%', cls:'bad', faq:'hero'},
-          {l:'Dead-clicks', v:'13,3%', cls:'', faq:'dead'},
-          {l:'LCP', v:'4,3s', cls:'bad', faq:'lcp'},
-          {l:'Mobile IG/FB', v:'91%', cls:'', faq:''},
+          {l:'Ida pro checkout', v:'12,7%', cls:'bad', meta:'ideal 25%', faq:'ida'},
+          {l:'Passam do hero', v:'31,5%', cls:'bad', meta:'', faq:'hero'},
+          {l:'Dead-clicks', v:'13,3%', cls:'', meta:'', faq:'dead'},
+          {l:'LCP', v:'4,3s', cls:'bad', meta:'ideal < 2,5s', faq:'lcp'},
+          {l:'Mobile IG/FB', v:'91%', cls:'', meta:'', faq:''},
         ],
         versoes:[
-          {when:'20 jul', what:'v2 — clara verde (atual)', goal:'funil separado do quiz, foco em sono', tag:'live'},
-          {when:'—', what:'v1 — noturna (roxo/Cardo)', goal:'estilo perfis · substituída', tag:'wait'},
-        ],
-        ajustes:[
-          {when:'25 jul', what:'"30 minutos" deixou de parecer botão', goal:'derrubar dead-clicks no hero', ba:'13,3% → medindo'},
-          {when:'25 jul', what:'Preload do hero + fontes assíncronas', goal:'LCP 4,3s → menos de 2,5s', ba:'4,3s → medindo'},
-          {when:'25 jul', what:'Headline do hero em CAIXA ALTA', goal:'prender na 1ª tela', ba:'31,5% → medindo'},
-          {when:'21 jul', what:'Seed fbp/fbc + repasse de UTM pro checkout', goal:'parar de perder atribuição', ba:'—'},
+          { nome:'Clara Verde', when:'no ar desde 20/jul', status:'atual',
+            conversamos:['Funil separado do quiz — visual próprio pra não parecer o tráfego direto','Foco em sono na soneca e à noite','Gancho "plano na mão em ~30 min"'],
+            ajustes:[
+              {when:'25 jul', what:'"30 minutos" deixou de parecer botão', goal:'derrubar dead-clicks no hero', ba:'13,3% → medindo'},
+              {when:'25 jul', what:'Preload do hero + fontes assíncronas', goal:'LCP 4,3s → menos de 2,5s', ba:'4,3s → medindo'},
+              {when:'25 jul', what:'Headline do hero em CAIXA ALTA', goal:'prender na 1ª tela', ba:'31,5% → medindo'},
+              {when:'21 jul', what:'Seed fbp/fbc + repasse de UTM pro checkout', goal:'parar de perder atribuição', ba:'—'},
+            ]},
+          { nome:'Noturna', when:'v1 · substituída', status:'anterior',
+            conversamos:['Primeira versão, estilo perfis (roxo escuro / fonte Cardo)'],
+            ajustes:[] },
         ],
       },
       quiz: {
-        nome:'Quiz Dream Baby', icon:'🎯', tag:'[QUIZ POCKET]',
+        nome:'Quiz Dream Baby', icon:'🎯',
         page:'perfis.manualdorecemnascido.com.br',
         pageMetrics:[
-          {l:'Ida pro checkout', v:'9,9%', cls:'bad', faq:'ida'},
-          {l:'Scroll médio', v:'70%', cls:'', faq:'scroll'},
-          {l:'Dead-click (sessões)', v:'50%', cls:'', faq:'dead'},
-          {l:'Rage / quickback', v:'0%', cls:'ok', faq:'rage'},
+          {l:'Ida pro checkout', v:'9,9%', cls:'bad', meta:'ideal 25%', faq:'ida'},
+          {l:'Scroll médio', v:'70%', cls:'', meta:'', faq:'scroll'},
+          {l:'Dead-click (sessões)', v:'50%', cls:'', meta:'', faq:'dead'},
+          {l:'Rage / quickback', v:'0%', cls:'ok', meta:'', faq:'rage'},
         ],
         versoes:[
-          {when:'atual', what:'Quiz 5 perguntas → página do perfil (5 bichos)', goal:'loading ~3s, redirect por perfil', tag:'live'},
-        ],
-        ajustes:[
-          {when:'—', what:'Filtro anti-bot no "iniciar quiz"', goal:'parar de inflar "iniciaram"', ba:'—'},
-          {when:'—', what:'CAPI própria server-side (Lead/ViewContent)', goal:'recuperar evento cortado no navegador', ba:'—'},
+          { nome:'Quiz 5 perguntas → Perfil', when:'atual', status:'atual',
+            conversamos:['Quiz de 5 perguntas → página do perfil (5 bichos)','Loading de ~3s, redirect por perfil','Perda escondida entre terminar o quiz e ver a oferta'],
+            ajustes:[
+              {when:'—', what:'Filtro anti-bot no "iniciar quiz"', goal:'parar de inflar "iniciaram"', ba:'—'},
+              {when:'—', what:'CAPI própria server-side (Lead / ViewContent)', goal:'recuperar evento cortado no navegador', ba:'—'},
+            ]},
         ],
       },
     };
 
     const state = { tab:'geral', per:'7d' };
+    let fFiltro = 'todos';
     const money = n => 'R$ ' + Math.round(n).toLocaleString('pt-BR');
     const fb = f => `<span class="fbadge fb-${f}">${f==='pocket'?'POCKET':f==='quiz'?'QUIZ':'OUTRO'}</span>`;
+    const metaTag = t => t ? `<span class="meta-tag">${t}</span>` : '';
 
     function periodo() { return DATA.periodos ? DATA.periodos[state.per] : null; }
-    function campanhasComGasto(filtroFunil) {
+    function campanhas(filtro) {
       const p = periodo(); if (!p) return [];
-      return p.campanhas.filter(c => c.gasto > 0 && (!filtroFunil || filtroFunil==='todos' || c.funil===filtroFunil));
+      return p.campanhas.filter(c => c.gasto > 0 && (!filtro || filtro==='todos' || c.funil===filtro));
     }
     function resumo(rows, p) {
       const gasto = rows.reduce((s,c)=>s+c.gasto,0), vendas = rows.reduce((s,c)=>s+c.vendas,0), rec = rows.reduce((s,c)=>s+c.receita,0);
@@ -501,19 +544,21 @@
 
     function tabela(rows) {
       if (!rows.length) return `<div class="empty"><div class="big">Nenhuma campanha com gasto nesse período.</div>Troque o período acima, ou este funil está sem verba agora.</div>`;
-      const tr = rows.map(c => `<tr>
+      const tr = rows.map(c => {
+        const roasBad = c.roas>0 && c.roas<1.3, idaBad = c.ida!=null && c.ida<15, freqBad = c.freq>=3;
+        return `<tr>
         <td class="l"><span class="cname">${fb(c.funil)}${c.nome}</span></td>
         <td>${money(c.gasto)}</td>
-        <td class="${c.freq>=3?'bad':c.freq>=2?'warn2':''}">${c.freq||'—'}</td>
-        <td class="${c.ctr>=1.3?'ok':c.ctr?'':''}">${c.ctr?c.ctr+'%':'—'}</td>
+        <td class="${freqBad?'bad':c.freq>=2?'warn2':''}">${c.freq||'—'}${freqBad?metaTag('máx 2'):''}</td>
+        <td class="${c.ctr>=1.3?'ok':''}">${c.ctr?c.ctr+'%':'—'}</td>
         <td>${c.connect!=null?c.connect+'%':'—'}</td>
-        <td class="${c.ida!=null&&c.ida<15?'bad':''}">${c.ida!=null?c.ida+'%':'—'}</td>
+        <td class="${idaBad?'bad':''}">${c.ida!=null?c.ida+'%':'—'}${idaBad?metaTag('ideal 25%'):''}</td>
         <td>${c.vendas}</td>
         <td>${c.receita?money(c.receita):'—'}</td>
-        <td class="${c.roas>=1.8?'ok':c.roas>=1.3?'warn2':c.roas?'bad':''}">${c.roas?c.roas.toFixed(2):'—'}</td>
+        <td class="${c.roas>=1.8?'ok':c.roas>=1.3?'warn2':c.roas?'bad':''}">${c.roas?c.roas.toFixed(2):'—'}${roasBad?metaTag('meta 1,8'):''}</td>
         <td>${c.cpa?money(c.cpa):'—'}</td>
         <td><span class="estado e-${c.estado}">${c.estado}</span></td>
-      </tr>`).join('');
+      </tr>`; }).join('');
       return `<div class="table-wrap"><table>
         <thead><tr>
           <th class="l">Campanha</th><th>Gasto</th><th>Freq<a class="q" data-faq="freq">?</a></th>
@@ -525,19 +570,17 @@
     }
 
     function kpiStrip(r) {
+      const roasBad = r.roas>0 && r.roas<1.3;
       return `<div class="kpis">
         <div class="kpi"><div class="l">Gasto de mídia</div><div class="v num">${money(r.gasto)}</div></div>
         <div class="kpi"><div class="l">Vendas da mídia</div><div class="v num">${r.vendas} <small>· ${money(r.rec)}</small></div></div>
-        <div class="kpi"><div class="l">ROAS de mídia</div><div class="v num" style="color:${r.roas>=1.8?'var(--green)':r.roas>=1.3?'var(--yellow)':'var(--red)'}">${r.roas?r.roas.toFixed(2):'—'}</div></div>
+        <div class="kpi"><div class="l">ROAS de mídia</div><div class="v num" style="color:${r.roas>=1.8?'var(--green)':r.roas>=1.3?'var(--yellow)':'var(--red)'}">${r.roas?r.roas.toFixed(2):'—'}${roasBad?metaTag('meta 1,8'):''}</div></div>
         <div class="kpi"><div class="l">Vendas fora da mídia</div><div class="v num">${r.orfas.n}</div></div>
       </div>`;
     }
 
-    let fFiltro = 'todos';
     function renderGeral() {
-      const p = periodo();
-      const rows = campanhasComGasto(fFiltro);
-      const r = resumo(rows, p);
+      const p = periodo(); const rows = campanhas(fFiltro); const r = resumo(rows, p);
       return kpiStrip(r) + `
       <div class="section">
         <div class="section-header">
@@ -555,10 +598,19 @@
 
     function renderFunil(fkey) {
       const F = FUNIS[fkey]; const p = periodo();
-      const rows = campanhasComGasto(fkey); const r = resumo(rows, p);
-      const pm = F.pageMetrics.map(m=>`<div class="pm"><div class="pl">${m.l}${m.faq?`<a class="q" data-faq="${m.faq}">?</a>`:''}</div><div class="pv ${m.cls}">${m.v}</div></div>`).join('');
-      const versoes = F.versoes.map(v=>`<div class="row"><div class="when">${v.when}</div><div class="what"><b>${v.what}</b><div class="goal">${v.goal}</div></div><div><span class="${v.tag==='live'?'tag-live':'tag-wait'}">${v.tag==='live'?'no ar':'histórico'}</span></div></div>`).join('');
-      const ajustes = F.ajustes.map(a=>`<div class="row"><div class="when">${a.when}</div><div class="what"><b>${a.what}</b><div class="goal">${a.goal}</div></div><div class="ba">${a.ba}</div></div>`).join('');
+      const rows = campanhas(fkey); const r = resumo(rows, p);
+      const pm = F.pageMetrics.map(m=>`<div class="pm"><div class="pl">${m.l}${m.faq?`<a class="q" data-faq="${m.faq}">?</a>`:''}</div><div class="pv ${m.cls}">${m.v}${m.cls==='bad'?metaTag(m.meta):''}</div></div>`).join('');
+      const versoes = F.versoes.map(v => {
+        const talk = v.conversamos.map(t=>`<div class="talk">${t}</div>`).join('');
+        const adj = v.ajustes.length ? v.ajustes.map(a=>`<div class="adj"><div class="aw">${a.what}</div><div class="ag">${a.goal}</div>${a.ba&&a.ba!=='—'?`<div class="ab">${a.ba.replace('→','→ <b>').concat('</b>').replace('<b></b>','')}</div>`:''}</div>`).join('') : `<div style="font-size:12.5px;color:var(--muted);padding:8px 0">sem ajustes registrados</div>`;
+        return `<div class="ver ${v.status==='atual'?'atual':''}">
+          <div class="ver-head"><span class="ver-name">${v.nome}</span><span class="ver-when">${v.when}</span><span class="ver-status ${v.status==='atual'?'vs-atual':'vs-anterior'}">${v.status==='atual'?'versão atual':'anterior'}</span></div>
+          <div class="ver-body">
+            <div class="ver-col"><h4>💬 O que conversamos</h4>${talk}</div>
+            <div class="ver-col"><h4>📐 O que ajustamos</h4>${adj}</div>
+          </div>
+        </div>`;
+      }).join('');
       return kpiStrip(r) + `
       <div class="section">
         <div class="section-header"><div><div class="section-title">🚀 Campanhas do funil</div><div class="section-sub">${p?p.since+' → '+p.until:''}</div></div></div>
@@ -569,12 +621,8 @@
         <div class="section-body"><div class="page-metrics">${pm}</div></div>
       </div>
       <div class="section">
-        <div class="section-header"><div><div class="section-title">🧪 Páginas testadas</div><div class="section-sub">versões da página de venda que rodamos</div></div></div>
-        <div class="section-body timeline" style="padding-top:2px">${versoes}</div>
-      </div>
-      <div class="section">
-        <div class="section-header"><div><div class="section-title">📐 Histórico de ajustes</div><div class="section-sub">cada mudança com a métrica-alvo e o antes × depois</div></div></div>
-        <div class="section-body timeline" style="padding-top:2px">${ajustes}</div>
+        <div class="section-header"><div><div class="section-title">🧪 Histórico da página</div><div class="section-sub">cada versão nomeada, com o que conversamos e o que ajustamos</div></div></div>
+        <div class="section-body">${versoes}</div>
       </div>`;
     }
 
@@ -586,7 +634,7 @@
           ${item('fontes','De onde vêm os dados (as 3 fontes)',`<div class="faq-src-grid"><span>🔵 <b>Meta (gerenciador)</b> — entrega, custo, cliques, frequência e retenção. Boa nisso, mas <b>superconta venda</b> (27–43%), então nunca decide corte.</span><span>🟣 <b>Greenn</b> (via Supabase) — a <b>venda e receita reais</b>, casadas por UTM. <b>Fonte de verdade</b> do ROAS.</span><span>🟢 <b>Clarity</b> — o <b>comportamento na página</b>. Instalado em todas.</span></div>`,'')}
           ${item('roas','ROAS real / ROAS de mídia','Quanto voltou por real gasto: <b>receita líquida (Greenn) ÷ gasto (Meta)</b>. Meta ≥ <b>1,8</b>; abaixo de 1,3 com gasto = candidato a corte.','Greenn ÷ Meta')}
           ${item('cpa','CPA — custo por venda','Gasto ÷ nº de vendas. Ideal ~<b>metade do ticket</b> (R$ 36).','Meta ÷ Greenn')}
-          ${item('freq','Frequência','Quantas vezes, em média, <b>a mesma pessoa viu</b> o anúncio na janela. Acima de <b>3</b> (acumulado) começa a cansar. ⚠️ frequência de 7d é maior que a de 1 dia — sempre olhar junto do período.','Meta')}
+          ${item('freq','Frequência','Quantas vezes, em média, <b>a mesma pessoa viu</b> o anúncio na janela. Acima de <b>3</b> (acumulado) começa a cansar. ⚠️ freq de 7d é maior que a de 1 dia — olhar junto do período.','Meta')}
           ${item('ctr','CTR (link)','De 100 que veem, quantos <b>clicam no link</b>. Bom acima de <b>1,3%</b>.','Meta')}
           ${item('connect','Connect rate','Dos que clicam, quantos <b>carregam a página</b>. Abaixo de 80% = quebra técnica.','Meta')}
           ${item('ida','Ida pro checkout <span style="color:var(--red);font-weight:700;font-size:11px">gargalo</span>','Dos que chegam na página, quantos vão pro checkout. <b>Maior buraco</b>: 9–13% contra <b>25%</b> ideal. Dobrar isso dobra a venda sem gastar mais.','Meta')}
@@ -608,11 +656,10 @@
       else if (state.tab==='banco') view.innerHTML = renderBanco();
       else view.innerHTML = renderFunil(state.tab);
       const p = periodo();
-      document.getElementById('perHint').textContent = p ? `${p.since==p.until?p.since:p.dias+' dias'}` : '';
+      document.getElementById('perHint').textContent = p ? (p.since==p.until ? p.since : p.dias+' dias') : '';
       document.getElementById('gerado').textContent = DATA.gerado_em ? 'dados de ' + DATA.gerado_em.slice(0,16).replace('T',' ') : '';
       wireQ();
     }
-
     function wireQ() {
       document.querySelectorAll('.q').forEach(q => q.onclick = e => {
         e.preventDefault();
@@ -636,11 +683,16 @@
       document.querySelectorAll('.per').forEach(x => x.classList.toggle('active', x===pp));
       render();
     });
-    // delega o clique dos pills de funil (recriados a cada render)
     document.getElementById('view').addEventListener('click', e => {
       const fp = e.target.closest('.fp'); if (!fp) return;
       fFiltro = fp.dataset.f; render();
     });
+    // chat drawer
+    const dbg = document.getElementById('drawerBg'), dr = document.getElementById('drawer');
+    const openDrawer = o => { dbg.classList.toggle('open', o); dr.classList.toggle('open', o); };
+    document.getElementById('chatBtn').onclick = () => openDrawer(true);
+    document.getElementById('drawerX').onclick = () => openDrawer(false);
+    dbg.onclick = () => openDrawer(false);
 
     render();
   </script>
