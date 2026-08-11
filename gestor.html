@@ -13,27 +13,31 @@
     --green:#4ade80; --red:#f87171; --yellow:#fbbf24; --blue:#60a5fa;
     --purple:#a78bfa; --purple-glow:rgba(167,139,250,.4); --pink:#f472b6; --cyan:#22d3ee;
     --grad-vibrant:linear-gradient(135deg,#a78bfa 0%,#f472b6 50%,#22d3ee 100%);
+    --grad-purple:linear-gradient(135deg,#6366f1,#a78bfa);
+    --chatw:380px; --headh:57px;
   }
   * { box-sizing:border-box; margin:0; padding:0; }
   body { background:var(--bg);
     background-image:radial-gradient(at 15% 0%,rgba(167,139,250,.18) 0,transparent 50%),radial-gradient(at 85% 0%,rgba(244,114,182,.12) 0,transparent 50%),radial-gradient(at 50% 50%,rgba(99,102,241,.08) 0,transparent 50%),radial-gradient(at 80% 100%,rgba(34,211,238,.08) 0,transparent 50%);
     background-attachment:fixed; color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-size:14px; min-height:100vh; overflow-x:hidden; }
   ::selection { background:var(--purple); color:var(--bg); }
-  body::-webkit-scrollbar { width:10px; } body::-webkit-scrollbar-thumb { background:var(--border); border-radius:5px; }
+  ::-webkit-scrollbar { width:9px; height:9px; } ::-webkit-scrollbar-thumb { background:var(--border); border-radius:5px; }
   .num { font-variant-numeric:tabular-nums; }
 
-  .header { background:rgba(15,17,30,.85); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); border-bottom:1px solid var(--border); padding:14px 24px; display:flex; align-items:center; justify-content:space-between; gap:12px; position:sticky; top:0; z-index:100; }
+  .header { background:rgba(15,17,30,.85); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); border-bottom:1px solid var(--border); padding:13px 22px; display:flex; align-items:center; justify-content:space-between; gap:12px; position:sticky; top:0; z-index:100; }
   .header::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--grad-vibrant); opacity:.7; }
   .header-left { display:flex; align-items:center; gap:13px; }
   .header h1 { font-size:18px; font-weight:800; letter-spacing:-.01em; background:var(--grad-vibrant); -webkit-background-clip:text; background-clip:text; color:transparent; }
   .header-sub { font-size:11.5px; color:var(--muted); margin-top:2px; }
   .btn { background:var(--card); border:1px solid var(--border); color:var(--text); padding:7px 14px; border-radius:10px; cursor:pointer; font-size:13px; font-weight:600; text-decoration:none; transition:all .2s; display:inline-flex; align-items:center; gap:6px; }
   .btn:hover { background:rgba(99,102,241,.15); border-color:var(--border-hover); }
-  .btn-chat { background:var(--grad-purple,linear-gradient(135deg,#6366f1,#a78bfa)); border-color:transparent; color:#fff; box-shadow:0 3px 12px var(--purple-glow); }
   .badge-db { padding:3px 11px; border-radius:14px; font-size:11px; font-weight:700; letter-spacing:.3px; background:rgba(167,139,250,.15); color:var(--purple); border:1px solid rgba(167,139,250,.3); }
+  #chatToggle { display:none; }
 
-  /* controle: sub-abas centralizadas + período centralizado */
-  .controls { position:sticky; top:62px; z-index:99; background:rgba(15,17,30,.72); backdrop-filter:blur(15px); border-bottom:1px solid var(--border); padding:11px 20px; display:flex; flex-direction:column; align-items:center; gap:9px; }
+  /* coluna esquerda (dados) — deixa espaço pro chat fixo */
+  .leftcol { margin-right:var(--chatw); transition:margin .2s; }
+
+  .controls { position:sticky; top:var(--headh); z-index:90; background:rgba(15,17,30,.72); backdrop-filter:blur(15px); border-bottom:1px solid var(--border); padding:11px 20px; display:flex; flex-direction:column; align-items:center; gap:9px; }
   .subtabs { display:flex; gap:5px; flex-wrap:wrap; justify-content:center; }
   .subtab { padding:8px 16px; border-radius:10px; cursor:pointer; color:var(--muted); font-size:13px; font-weight:600; border:1px solid transparent; transition:all .18s; white-space:nowrap; }
   .subtab:hover { color:var(--text); }
@@ -45,9 +49,9 @@
   .per.active { color:#fff; background:rgba(167,139,250,.22); box-shadow:inset 0 0 0 1px rgba(167,139,250,.4); }
   .per-hint { font-size:11px; color:var(--muted); }
 
-  .main { padding:22px 28px 60px; max-width:1500px; margin:0 auto; }
+  .main { padding:20px 24px 60px; max-width:1180px; margin:0 auto; }
 
-  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:20px; }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:18px; }
   .kpi { background:var(--card); border:1px solid var(--border); border-radius:13px; padding:13px 16px; }
   .kpi .l { font-size:11px; color:var(--muted); margin-bottom:5px; }
   .kpi .v { font-size:22px; font-weight:800; letter-spacing:-.02em; display:flex; align-items:baseline; gap:6px; }
@@ -71,7 +75,7 @@
   td { padding:9px 10px; text-align:right; border-bottom:1px solid var(--border); font-variant-numeric:tabular-nums; white-space:nowrap; }
   tr:last-child td { border-bottom:none; }
   tr:hover td { background:rgba(255,255,255,.02); }
-  .cname { font-weight:600; color:var(--text); display:inline-block; max-width:260px; overflow:hidden; text-overflow:ellipsis; vertical-align:middle; }
+  .cname { font-weight:600; color:var(--text); display:inline-block; max-width:240px; overflow:hidden; text-overflow:ellipsis; vertical-align:middle; }
   .fbadge { font-size:9.5px; padding:1px 7px; border-radius:6px; font-weight:700; letter-spacing:.3px; vertical-align:middle; margin-right:6px; }
   .fb-pocket { background:rgba(96,165,250,.16); color:var(--blue); }
   .fb-quiz { background:rgba(244,114,182,.16); color:var(--pink); }
@@ -88,15 +92,12 @@
 
   .empty { padding:26px 18px; text-align:center; color:var(--muted); }
   .empty .big { font-size:14.5px; color:var(--text); font-weight:700; margin-bottom:5px; }
-  .cols { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:14px; }
-  .chip { font-size:11px; color:var(--muted); border:1px dashed var(--border); border-radius:7px; padding:4px 9px; }
 
   .page-metrics { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; }
   .pm { background:var(--card2); border:1px solid var(--border); border-radius:11px; padding:12px 14px; }
   .pm .pl { font-size:11px; color:var(--muted); margin-bottom:5px; display:flex; align-items:center; }
   .pm .pv { font-size:18px; font-weight:700; font-variant-numeric:tabular-nums; }
 
-  /* histórico da página — cards por versão */
   .ver { border:1px solid var(--border); border-radius:13px; margin-bottom:12px; overflow:hidden; }
   .ver.atual { border-color:rgba(167,139,250,.45); box-shadow:0 0 0 1px rgba(167,139,250,.2); }
   .ver-head { padding:13px 16px; display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.02); flex-wrap:wrap; }
@@ -106,19 +107,15 @@
   .vs-atual { background:rgba(74,222,128,.15); color:var(--green); }
   .vs-anterior { background:rgba(156,163,184,.14); color:var(--muted); }
   .ver-body { padding:4px 16px 14px; display:grid; grid-template-columns:1fr 1fr; gap:18px; }
-  @media(max-width:720px){ .ver-body{ grid-template-columns:1fr; } }
+  @media(max-width:820px){ .ver-body{ grid-template-columns:1fr; } }
   .ver-col h4 { font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); margin:12px 0 8px; font-weight:700; }
   .talk { font-size:13px; line-height:1.55; color:var(--text); padding:5px 0 5px 14px; position:relative; }
   .talk::before { content:''; position:absolute; left:0; top:11px; width:5px; height:5px; border-radius:50%; background:var(--purple); }
-  .adj { padding:8px 0; border-bottom:1px solid var(--border); }
-  .adj:last-child { border-bottom:0; }
-  .adj .aw { font-size:13px; font-weight:600; }
-  .adj .ag { font-size:12px; color:var(--muted); margin-top:2px; }
+  .adj { padding:8px 0; border-bottom:1px solid var(--border); } .adj:last-child { border-bottom:0; }
+  .adj .aw { font-size:13px; font-weight:600; } .adj .ag { font-size:12px; color:var(--muted); margin-top:2px; }
   .adj .ab { font-size:11.5px; color:var(--muted); font-variant-numeric:tabular-nums; margin-top:4px; }
-  .adj .ab b { color:var(--text); }
 
-  /* FAQ */
-  .faq details { border:1px solid var(--border); border-radius:10px; margin-bottom:8px; overflow:hidden; background:rgba(255,255,255,.02); transition:border-color .2s,box-shadow .2s; scroll-margin-top:150px; }
+  .faq details { border:1px solid var(--border); border-radius:10px; margin-bottom:8px; overflow:hidden; background:rgba(255,255,255,.02); transition:border-color .2s,box-shadow .2s; scroll-margin-top:130px; }
   .faq details.flash { border-color:var(--purple); box-shadow:0 0 0 1px var(--purple),0 6px 20px rgba(167,139,250,.25); }
   .faq summary { padding:12px 15px; cursor:pointer; font-weight:600; font-size:13.5px; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:10px; }
   .faq summary::-webkit-details-marker { display:none; }
@@ -129,19 +126,36 @@
   .src { display:inline-block; margin-top:9px; font-size:11px; padding:2px 9px; border-radius:7px; background:rgba(167,139,250,.12); color:var(--purple); font-weight:600; }
   .faq-src-grid { display:grid; gap:6px; margin-top:6px; } .faq-src-grid span { font-size:12.5px; }
 
-  /* chat drawer */
-  .drawer-bg { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:200; opacity:0; pointer-events:none; transition:opacity .2s; }
-  .drawer-bg.open { opacity:1; pointer-events:auto; }
-  .drawer { position:fixed; top:0; right:0; bottom:0; width:min(420px,92vw); background:var(--card-solid); border-left:1px solid var(--border); z-index:201; transform:translateX(100%); transition:transform .25s; display:flex; flex-direction:column; }
-  .drawer.open { transform:none; }
-  .drawer-head { padding:16px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-  .drawer-head .t { font-weight:700; font-size:15px; }
-  .drawer-body { padding:18px; overflow-y:auto; color:var(--muted); font-size:13.5px; line-height:1.6; }
-  .soon { display:inline-block; font-size:10px; font-weight:700; padding:2px 8px; border-radius:8px; background:rgba(251,191,36,.16); color:var(--yellow); margin-left:8px; }
-  .x { cursor:pointer; color:var(--muted); font-size:20px; background:none; border:none; }
+  /* CHAT fixo à direita */
+  .chat { position:fixed; top:var(--headh); right:0; bottom:0; width:var(--chatw); background:rgba(16,19,30,.92); backdrop-filter:blur(16px); border-left:1px solid var(--border); z-index:95; display:flex; flex-direction:column; }
+  .chat-head { padding:14px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:9px; }
+  .chat-avatar { width:30px; height:30px; border-radius:50%; background:var(--grad-vibrant); display:flex; align-items:center; justify-content:center; font-size:15px; }
+  .chat-head .t { font-weight:700; font-size:14px; } .chat-head .st { font-size:10.5px; color:var(--muted); }
+  .chat-x { display:none; margin-left:auto; background:none; border:none; color:var(--muted); font-size:22px; cursor:pointer; }
+  .chat-msgs { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:11px; }
+  .msg { max-width:88%; padding:10px 13px; border-radius:13px; font-size:13px; line-height:1.5; }
+  .msg.bot { background:var(--card2); border:1px solid var(--border); align-self:flex-start; border-bottom-left-radius:4px; }
+  .msg.me { background:var(--grad-purple); color:#fff; align-self:flex-end; border-bottom-right-radius:4px; }
+  .msg b { color:inherit; } .msg.bot b { color:var(--text); }
+  .chat-input { padding:12px; border-top:1px solid var(--border); display:flex; gap:8px; align-items:flex-end; }
+  .chat-input textarea { flex:1; background:rgba(10,11,21,.6); border:1px solid var(--border); border-radius:11px; color:var(--text); padding:10px 12px; font-size:13px; font-family:inherit; resize:none; max-height:100px; outline:none; }
+  .chat-input textarea:focus { border-color:var(--border-hover); }
+  .chat-send { width:40px; height:40px; flex:none; border:none; border-radius:11px; background:var(--grad-purple); color:#fff; font-size:16px; cursor:pointer; box-shadow:0 3px 12px var(--purple-glow); }
+  .chat-hint { font-size:10px; color:var(--muted); text-align:center; padding:0 12px 10px; }
 
-  @media(max-width:640px){ .main{ padding:16px; } .header{ padding:12px 15px; } }
-  footer { margin-top:32px; padding-top:16px; border-top:1px solid var(--border); color:var(--muted); font-size:11.5px; }
+  .chat-bg { display:none; }
+
+  /* responsivo: some o chat fixo, vira overlay via botão */
+  @media(max-width:960px){
+    .leftcol { margin-right:0; }
+    #chatToggle { display:inline-flex; }
+    .chat { transform:translateX(100%); transition:transform .25s; width:min(380px,92vw); box-shadow:-10px 0 40px rgba(0,0,0,.4); }
+    .chat.open { transform:none; }
+    .chat-x { display:block; }
+    .chat-bg.open { display:block; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:94; }
+  }
+  @media(max-width:640px){ .main{ padding:16px; } .header{ padding:11px 14px; } }
+  footer { margin-top:30px; padding-top:16px; border-top:1px solid var(--border); color:var(--muted); font-size:11.5px; }
 </style>
 </head>
 <body>
@@ -151,50 +165,50 @@
       <div><h1>Gestor de Tráfego</h1><div class="header-sub">Direcionado por funil · dados reais · read-only</div></div>
     </div>
     <div style="display:flex; align-items:center; gap:9px">
-      <button class="btn btn-chat" id="chatBtn">💬 Conversar</button>
+      <button class="btn" id="chatToggle">💬 Chat</button>
       <span class="badge-db">DREAM BABY</span>
       <a class="btn" href="index.html">← Dashboard</a>
     </div>
   </div>
 
-  <div class="controls">
-    <div class="subtabs">
-      <div class="subtab active" data-tab="geral">Geral</div>
-      <div class="subtab" data-tab="pocket">👶 Dream Baby Pocket</div>
-      <div class="subtab" data-tab="quiz">🎯 Quiz Dream Baby</div>
-      <div class="subtab" data-tab="banco">🗂️ Banco de dados &amp; métricas</div>
-    </div>
-    <div class="periodo-wrap">
-      <div class="periodo">
-        <div class="per" data-per="hoje">Hoje</div>
-        <div class="per" data-per="ontem">Ontem</div>
-        <div class="per" data-per="3d">3 dias</div>
-        <div class="per active" data-per="7d">7 dias</div>
+  <div class="leftcol">
+    <div class="controls">
+      <div class="subtabs">
+        <div class="subtab active" data-tab="geral">Geral</div>
+        <div class="subtab" data-tab="pocket">👶 Dream Baby Pocket</div>
+        <div class="subtab" data-tab="quiz">🎯 Quiz Dream Baby</div>
+        <div class="subtab" data-tab="banco">🗂️ Banco de dados &amp; métricas</div>
       </div>
-      <span class="per-hint" id="perHint"></span>
+      <div class="periodo-wrap">
+        <div class="periodo">
+          <div class="per" data-per="hoje">Hoje</div>
+          <div class="per" data-per="ontem">Ontem</div>
+          <div class="per" data-per="3d">3 dias</div>
+          <div class="per active" data-per="7d">7 dias</div>
+        </div>
+        <span class="per-hint" id="perHint"></span>
+      </div>
+    </div>
+    <div class="main">
+      <div id="view"></div>
+      <footer><b style="color:var(--text)">Painel Gestor</b> · read-only · <span id="gerado"></span> · <a href="index.html" style="color:var(--purple)">voltar ao dashboard</a></footer>
     </div>
   </div>
 
-  <div class="main">
-    <div id="view"></div>
-    <footer><b style="color:var(--text)">Painel Gestor</b> · read-only, sem execução · <span id="gerado"></span> · <a href="index.html" style="color:var(--purple)">voltar ao dashboard</a></footer>
-  </div>
-
-  <!-- chat drawer -->
-  <div class="drawer-bg" id="drawerBg"></div>
-  <div class="drawer" id="drawer">
-    <div class="drawer-head"><div class="t">💬 Conversar com o Gestor <span class="soon">em breve</span></div><button class="x" id="drawerX">×</button></div>
-    <div class="drawer-body">
-      <p>Aqui vai ficar o chat com o <b style="color:var(--purple)">Gestor (Austin)</b>.</p>
-      <p style="margin-top:12px">A ideia: você conversa em linguagem normal — <i>"a AD+ está sangrando, o que faço?"</i> ou <i>"mudei o hero do Pocket hoje"</i> — e o Gestor:</p>
-      <ul style="margin:10px 0 0 18px; line-height:1.9">
-        <li>responde com base nos dados reais desta tela;</li>
-        <li><b>registra no histórico</b> o que a gente decidiu e o que ajustou;</li>
-        <li>salva dentro do dash, aparecendo nas abas de página automaticamente.</li>
-      </ul>
-      <p style="margin-top:14px">É o <b>próximo tijolo</b>. Pra ele salvar de verdade, preciso ligar um pequeno backend (o Austin já existe) — quando você aprovar a forma da tela, eu conecto.</p>
+  <div class="chat-bg" id="chatBg"></div>
+  <aside class="chat" id="chat">
+    <div class="chat-head">
+      <div class="chat-avatar">🎛️</div>
+      <div><div class="t">Gestor</div><div class="st">responde com os dados da tela</div></div>
+      <button class="chat-x" id="chatX">×</button>
     </div>
-  </div>
+    <div class="chat-msgs" id="chatMsgs"></div>
+    <div class="chat-input">
+      <textarea id="chatIn" rows="1" placeholder="Pergunta pro Gestor…"></textarea>
+      <button class="chat-send" id="chatSend">➤</button>
+    </div>
+    <div class="chat-hint">motor completo (executar + salvar histórico) em breve</div>
+  </aside>
 
   <script>
     const DATA = {
@@ -483,8 +497,7 @@
 
     const FUNIS = {
       pocket: {
-        nome:'Dream Baby Pocket', icon:'👶',
-        page:'dbpocket.manualdorecemnascido.com.br',
+        nome:'Dream Baby Pocket', icon:'👶', page:'dbpocket.manualdorecemnascido.com.br',
         pageMetrics:[
           {l:'Ida pro checkout', v:'12,7%', cls:'bad', meta:'ideal 25%', faq:'ida'},
           {l:'Passam do hero', v:'31,5%', cls:'bad', meta:'', faq:'hero'},
@@ -502,13 +515,11 @@
               {when:'21 jul', what:'Seed fbp/fbc + repasse de UTM pro checkout', goal:'parar de perder atribuição', ba:'—'},
             ]},
           { nome:'Noturna', when:'v1 · substituída', status:'anterior',
-            conversamos:['Primeira versão, estilo perfis (roxo escuro / fonte Cardo)'],
-            ajustes:[] },
+            conversamos:['Primeira versão, estilo perfis (roxo escuro / fonte Cardo)'], ajustes:[] },
         ],
       },
       quiz: {
-        nome:'Quiz Dream Baby', icon:'🎯',
-        page:'perfis.manualdorecemnascido.com.br',
+        nome:'Quiz Dream Baby', icon:'🎯', page:'perfis.manualdorecemnascido.com.br',
         pageMetrics:[
           {l:'Ida pro checkout', v:'9,9%', cls:'bad', meta:'ideal 25%', faq:'ida'},
           {l:'Scroll médio', v:'70%', cls:'', meta:'', faq:'scroll'},
@@ -529,25 +540,21 @@
     const state = { tab:'geral', per:'7d' };
     let fFiltro = 'todos';
     const money = n => 'R$ ' + Math.round(n).toLocaleString('pt-BR');
+    const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
     const fb = f => `<span class="fbadge fb-${f}">${f==='pocket'?'POCKET':f==='quiz'?'QUIZ':'OUTRO'}</span>`;
     const metaTag = t => t ? `<span class="meta-tag">${t}</span>` : '';
+    const nomeCurto = c => c.nome.replace(/\[dream pocket\]/i,'').replace(/\[|\]/g,'').replace(/\s+/g,' ').trim().slice(0,34);
 
     function periodo() { return DATA.periodos ? DATA.periodos[state.per] : null; }
-    function campanhas(filtro) {
-      const p = periodo(); if (!p) return [];
-      return p.campanhas.filter(c => c.gasto > 0 && (!filtro || filtro==='todos' || c.funil===filtro));
-    }
-    function resumo(rows, p) {
-      const gasto = rows.reduce((s,c)=>s+c.gasto,0), vendas = rows.reduce((s,c)=>s+c.vendas,0), rec = rows.reduce((s,c)=>s+c.receita,0);
-      return { gasto, vendas, rec, roas: gasto>0 ? rec/gasto : 0, orfas: p ? p.orfas : {n:0} };
-    }
+    function campanhas(filtro) { const p=periodo(); if(!p) return []; return p.campanhas.filter(c=>c.gasto>0 && (!filtro||filtro==='todos'||c.funil===filtro)); }
+    function resumo(rows,p) { const g=rows.reduce((s,c)=>s+c.gasto,0),v=rows.reduce((s,c)=>s+c.vendas,0),r=rows.reduce((s,c)=>s+c.receita,0); return {gasto:g,vendas:v,rec:r,roas:g>0?r/g:0,orfas:p?p.orfas:{n:0}}; }
 
     function tabela(rows) {
       if (!rows.length) return `<div class="empty"><div class="big">Nenhuma campanha com gasto nesse período.</div>Troque o período acima, ou este funil está sem verba agora.</div>`;
       const tr = rows.map(c => {
-        const roasBad = c.roas>0 && c.roas<1.3, idaBad = c.ida!=null && c.ida<15, freqBad = c.freq>=3;
+        const roasBad=c.roas>0&&c.roas<1.3, idaBad=c.ida!=null&&c.ida<15, freqBad=c.freq>=3;
         return `<tr>
-        <td class="l"><span class="cname">${fb(c.funil)}${c.nome}</span></td>
+        <td class="l"><span class="cname">${fb(c.funil)}${esc(c.nome)}</span></td>
         <td>${money(c.gasto)}</td>
         <td class="${freqBad?'bad':c.freq>=2?'warn2':''}">${c.freq||'—'}${freqBad?metaTag('máx 2'):''}</td>
         <td class="${c.ctr>=1.3?'ok':''}">${c.ctr?c.ctr+'%':'—'}</td>
@@ -568,9 +575,8 @@
           <th>CPA<a class="q" data-faq="cpa">?</a></th><th>Estado</th>
         </tr></thead><tbody>${tr}</tbody></table></div>`;
     }
-
     function kpiStrip(r) {
-      const roasBad = r.roas>0 && r.roas<1.3;
+      const roasBad=r.roas>0&&r.roas<1.3;
       return `<div class="kpis">
         <div class="kpi"><div class="l">Gasto de mídia</div><div class="v num">${money(r.gasto)}</div></div>
         <div class="kpi"><div class="l">Vendas da mídia</div><div class="v num">${r.vendas} <small>· ${money(r.rec)}</small></div></div>
@@ -578,13 +584,11 @@
         <div class="kpi"><div class="l">Vendas fora da mídia</div><div class="v num">${r.orfas.n}</div></div>
       </div>`;
     }
-
     function renderGeral() {
-      const p = periodo(); const rows = campanhas(fFiltro); const r = resumo(rows, p);
-      return kpiStrip(r) + `
-      <div class="section">
+      const p=periodo(), rows=campanhas(fFiltro), r=resumo(rows,p);
+      return kpiStrip(r)+`<div class="section">
         <div class="section-header">
-          <div><div class="section-title">🚀 Campanhas</div><div class="section-sub">${p?p.since+' → '+p.until:''} · todas as campanhas com gasto no período</div></div>
+          <div><div class="section-title">🚀 Campanhas</div><div class="section-sub">${p?p.since+' → '+p.until:''} · todas com gasto no período</div></div>
           <div class="fpills">
             <div class="fp ${fFiltro==='todos'?'active':''}" data-f="todos">Todos</div>
             <div class="fp ${fFiltro==='pocket'?'active':''}" data-f="pocket">👶 Pocket</div>
@@ -592,109 +596,101 @@
             <div class="fp ${fFiltro==='outro'?'active':''}" data-f="outro">Outro</div>
           </div>
         </div>
-        <div class="section-body" style="padding:0">${tabela(rows)}</div>
-      </div>`;
+        <div class="section-body" style="padding:0">${tabela(rows)}</div></div>`;
     }
-
     function renderFunil(fkey) {
-      const F = FUNIS[fkey]; const p = periodo();
-      const rows = campanhas(fkey); const r = resumo(rows, p);
-      const pm = F.pageMetrics.map(m=>`<div class="pm"><div class="pl">${m.l}${m.faq?`<a class="q" data-faq="${m.faq}">?</a>`:''}</div><div class="pv ${m.cls}">${m.v}${m.cls==='bad'?metaTag(m.meta):''}</div></div>`).join('');
-      const versoes = F.versoes.map(v => {
-        const talk = v.conversamos.map(t=>`<div class="talk">${t}</div>`).join('');
-        const adj = v.ajustes.length ? v.ajustes.map(a=>`<div class="adj"><div class="aw">${a.what}</div><div class="ag">${a.goal}</div>${a.ba&&a.ba!=='—'?`<div class="ab">${a.ba.replace('→','→ <b>').concat('</b>').replace('<b></b>','')}</div>`:''}</div>`).join('') : `<div style="font-size:12.5px;color:var(--muted);padding:8px 0">sem ajustes registrados</div>`;
+      const F=FUNIS[fkey], p=periodo(), rows=campanhas(fkey), r=resumo(rows,p);
+      const pm=F.pageMetrics.map(m=>`<div class="pm"><div class="pl">${m.l}${m.faq?`<a class="q" data-faq="${m.faq}">?</a>`:''}</div><div class="pv ${m.cls}">${m.v}${m.cls==='bad'?metaTag(m.meta):''}</div></div>`).join('');
+      const versoes=F.versoes.map(v=>{
+        const talk=v.conversamos.map(t=>`<div class="talk">${t}</div>`).join('');
+        const adj=v.ajustes.length?v.ajustes.map(a=>`<div class="adj"><div class="aw">${a.what}</div><div class="ag">${a.goal}</div>${a.ba&&a.ba!=='—'?`<div class="ab">${a.ba}</div>`:''}</div>`).join(''):`<div style="font-size:12.5px;color:var(--muted);padding:8px 0">sem ajustes registrados</div>`;
         return `<div class="ver ${v.status==='atual'?'atual':''}">
           <div class="ver-head"><span class="ver-name">${v.nome}</span><span class="ver-when">${v.when}</span><span class="ver-status ${v.status==='atual'?'vs-atual':'vs-anterior'}">${v.status==='atual'?'versão atual':'anterior'}</span></div>
-          <div class="ver-body">
-            <div class="ver-col"><h4>💬 O que conversamos</h4>${talk}</div>
-            <div class="ver-col"><h4>📐 O que ajustamos</h4>${adj}</div>
-          </div>
+          <div class="ver-body"><div class="ver-col"><h4>💬 O que conversamos</h4>${talk}</div><div class="ver-col"><h4>📐 O que ajustamos</h4>${adj}</div></div>
         </div>`;
       }).join('');
-      return kpiStrip(r) + `
-      <div class="section">
-        <div class="section-header"><div><div class="section-title">🚀 Campanhas do funil</div><div class="section-sub">${p?p.since+' → '+p.until:''}</div></div></div>
-        <div class="section-body" style="padding:0">${tabela(rows)}</div>
-      </div>
-      <div class="section">
-        <div class="section-header"><div><div class="section-title">🔮 Página de venda — ${F.page}</div><div class="section-sub">comportamento (Clarity) + auditoria</div></div></div>
-        <div class="section-body"><div class="page-metrics">${pm}</div></div>
-      </div>
-      <div class="section">
-        <div class="section-header"><div><div class="section-title">🧪 Histórico da página</div><div class="section-sub">cada versão nomeada, com o que conversamos e o que ajustamos</div></div></div>
-        <div class="section-body">${versoes}</div>
-      </div>`;
+      return kpiStrip(r)+`
+      <div class="section"><div class="section-header"><div><div class="section-title">🚀 Campanhas do funil</div><div class="section-sub">${p?p.since+' → '+p.until:''}</div></div></div><div class="section-body" style="padding:0">${tabela(rows)}</div></div>
+      <div class="section"><div class="section-header"><div><div class="section-title">🔮 Página de venda — ${F.page}</div><div class="section-sub">comportamento (Clarity) + auditoria</div></div></div><div class="section-body"><div class="page-metrics">${pm}</div></div></div>
+      <div class="section"><div class="section-header"><div><div class="section-title">🧪 Histórico da página</div><div class="section-sub">cada versão nomeada, com o que conversamos e o que ajustamos</div></div></div><div class="section-body">${versoes}</div></div>`;
     }
-
     function renderBanco() {
       const item=(id,t,body,src)=>`<details id="faq-${id}"><summary>${t}</summary><div class="ans">${body}${src?`<div><span class="src">${src}</span></div>`:''}</div></details>`;
-      return `<div class="section faq">
-        <div class="section-header"><div><div class="section-title">🗂️ Banco de dados &amp; métricas</div><div class="section-sub">o que cada número é e de onde ele vem</div></div></div>
-        <div class="section-body">
-          ${item('fontes','De onde vêm os dados (as 3 fontes)',`<div class="faq-src-grid"><span>🔵 <b>Meta (gerenciador)</b> — entrega, custo, cliques, frequência e retenção. Boa nisso, mas <b>superconta venda</b> (27–43%), então nunca decide corte.</span><span>🟣 <b>Greenn</b> (via Supabase) — a <b>venda e receita reais</b>, casadas por UTM. <b>Fonte de verdade</b> do ROAS.</span><span>🟢 <b>Clarity</b> — o <b>comportamento na página</b>. Instalado em todas.</span></div>`,'')}
-          ${item('roas','ROAS real / ROAS de mídia','Quanto voltou por real gasto: <b>receita líquida (Greenn) ÷ gasto (Meta)</b>. Meta ≥ <b>1,8</b>; abaixo de 1,3 com gasto = candidato a corte.','Greenn ÷ Meta')}
-          ${item('cpa','CPA — custo por venda','Gasto ÷ nº de vendas. Ideal ~<b>metade do ticket</b> (R$ 36).','Meta ÷ Greenn')}
-          ${item('freq','Frequência','Quantas vezes, em média, <b>a mesma pessoa viu</b> o anúncio na janela. Acima de <b>3</b> (acumulado) começa a cansar. ⚠️ freq de 7d é maior que a de 1 dia — olhar junto do período.','Meta')}
-          ${item('ctr','CTR (link)','De 100 que veem, quantos <b>clicam no link</b>. Bom acima de <b>1,3%</b>.','Meta')}
-          ${item('connect','Connect rate','Dos que clicam, quantos <b>carregam a página</b>. Abaixo de 80% = quebra técnica.','Meta')}
-          ${item('ida','Ida pro checkout <span style="color:var(--red);font-weight:700;font-size:11px">gargalo</span>','Dos que chegam na página, quantos vão pro checkout. <b>Maior buraco</b>: 9–13% contra <b>25%</b> ideal. Dobrar isso dobra a venda sem gastar mais.','Meta')}
-          ${item('receita','Receita líquida','O que <b>sobra da venda</b> depois da taxa. É esse valor que entra no ROAS.','Greenn')}
-          ${item('vendas','Vendas da mídia × fora da mídia','<b>Da mídia</b> = casaram com campanha por UTM. <b>Fora</b> = orgânico + resíduo de campanhas antigas.','Greenn (Supabase)')}
-          ${item('dead','Dead-clicks','Cliques em algo que <b>parece botão mas não é</b>. Alto = página confunde.','Clarity')}
-          ${item('rage','Rage click / Quickback','<b>Rage</b> = cliques de raiva no mesmo lugar. <b>Quickback</b> = entrou e voltou na hora. Frustração.','Clarity')}
-          ${item('scroll','Scroll médio','Quão <b>fundo</b> as pessoas rolam a página.','Clarity')}
-          ${item('hero','Passam do hero','% que passa da <b>1ª tela</b> (10% da página). Baixo = o topo não segura.','Clarity')}
-          ${item('lcp','LCP — velocidade','Tempo até o <b>maior elemento</b> carregar. Acima de <b>2,5s</b> = lento.','auditoria / PageSpeed')}
-        </div>
-      </div>`;
+      return `<div class="section faq"><div class="section-header"><div><div class="section-title">🗂️ Banco de dados &amp; métricas</div><div class="section-sub">o que cada número é e de onde ele vem</div></div></div><div class="section-body">
+          ${item('fontes','De onde vêm os dados (as 3 fontes)',`<div class="faq-src-grid"><span>🔵 <b>Meta</b> — entrega, custo, cliques, frequência, retenção. <b>Superconta venda</b> (27–43%), não decide corte.</span><span>🟣 <b>Greenn</b> (Supabase) — <b>venda e receita reais</b>, por UTM. <b>Verdade</b> do ROAS.</span><span>🟢 <b>Clarity</b> — <b>comportamento na página</b>.</span></div>`,'')}
+          ${item('roas','ROAS real / ROAS de mídia','Receita líquida (Greenn) ÷ gasto (Meta). Meta ≥ <b>1,8</b>; abaixo de 1,3 com gasto = candidato a corte.','Greenn ÷ Meta')}
+          ${item('cpa','CPA — custo por venda','Gasto ÷ vendas. Ideal ~<b>metade do ticket</b> (R$ 36).','Meta ÷ Greenn')}
+          ${item('freq','Frequência','Quantas vezes a <b>mesma pessoa viu</b> o anúncio na janela. Acima de <b>3</b> cansa. ⚠️ freq de 7d &gt; de 1 dia.','Meta')}
+          ${item('ctr','CTR (link)','De 100 que veem, quantos <b>clicam</b>. Bom &gt; <b>1,3%</b>.','Meta')}
+          ${item('connect','Connect rate','Dos que clicam, quantos <b>carregam a página</b>. &lt; 80% = quebra técnica.','Meta')}
+          ${item('ida','Ida pro checkout <span style="color:var(--red);font-weight:700;font-size:11px">gargalo</span>','Dos que chegam, quantos vão pro checkout. <b>9–13% contra 25%</b> ideal. Dobrar dobra a venda.','Meta')}
+          ${item('receita','Receita líquida','O que <b>sobra da venda</b> depois da taxa.','Greenn')}
+          ${item('vendas','Vendas da mídia × fora','<b>Da mídia</b> = casaram por UTM. <b>Fora</b> = orgânico + resíduo.','Greenn (Supabase)')}
+          ${item('dead','Dead-clicks','Cliques em algo que <b>parece botão mas não é</b>.','Clarity')}
+          ${item('rage','Rage / Quickback','Cliques de raiva / voltar na hora. Frustração.','Clarity')}
+          ${item('scroll','Scroll médio','Quão <b>fundo</b> rolam a página.','Clarity')}
+          ${item('hero','Passam do hero','% que passa da <b>1ª tela</b>. Baixo = topo fraco.','Clarity')}
+          ${item('lcp','LCP','Tempo até o <b>maior elemento</b> carregar. &gt; <b>2,5s</b> = lento.','auditoria')}
+        </div></div>`;
     }
-
     function render() {
-      const view = document.getElementById('view');
-      if (!DATA.periodos) { view.innerHTML = '<div class="empty" style="padding:60px">Sem dados. (snapshot não carregou)</div>'; return; }
-      if (state.tab==='geral') view.innerHTML = renderGeral();
-      else if (state.tab==='banco') view.innerHTML = renderBanco();
-      else view.innerHTML = renderFunil(state.tab);
-      const p = periodo();
-      document.getElementById('perHint').textContent = p ? (p.since==p.until ? p.since : p.dias+' dias') : '';
-      document.getElementById('gerado').textContent = DATA.gerado_em ? 'dados de ' + DATA.gerado_em.slice(0,16).replace('T',' ') : '';
+      const view=document.getElementById('view');
+      if(!DATA.periodos){ view.innerHTML='<div class="empty" style="padding:60px">Sem dados. (snapshot não carregou)</div>'; return; }
+      view.innerHTML = state.tab==='geral'?renderGeral():state.tab==='banco'?renderBanco():renderFunil(state.tab);
+      const p=periodo();
+      document.getElementById('perHint').textContent = p?(p.since==p.until?p.since:p.dias+' dias'):'';
+      document.getElementById('gerado').textContent = DATA.gerado_em?'dados de '+DATA.gerado_em.slice(0,16).replace('T',' '):'';
       wireQ();
     }
     function wireQ() {
-      document.querySelectorAll('.q').forEach(q => q.onclick = e => {
-        e.preventDefault();
-        state.tab = 'banco';
-        document.querySelectorAll('.subtab').forEach(t => t.classList.toggle('active', t.dataset.tab==='banco'));
+      document.querySelectorAll('.q').forEach(q=>q.onclick=e=>{
+        e.preventDefault(); state.tab='banco';
+        document.querySelectorAll('.subtab').forEach(t=>t.classList.toggle('active',t.dataset.tab==='banco'));
         render();
-        setTimeout(() => {
-          const d = document.getElementById('faq-' + q.dataset.faq);
-          if (d) { d.open = true; d.scrollIntoView({behavior:'smooth',block:'center'}); d.classList.add('flash'); setTimeout(()=>d.classList.remove('flash'),1300); }
-        }, 30);
+        setTimeout(()=>{ const d=document.getElementById('faq-'+q.dataset.faq); if(d){ d.open=true; d.scrollIntoView({behavior:'smooth',block:'center'}); d.classList.add('flash'); setTimeout(()=>d.classList.remove('flash'),1300);} },30);
       });
     }
+    document.querySelectorAll('.subtab').forEach(t=>t.onclick=()=>{ state.tab=t.dataset.tab; document.querySelectorAll('.subtab').forEach(x=>x.classList.toggle('active',x===t)); render(); });
+    document.querySelectorAll('.per').forEach(pp=>pp.onclick=()=>{ state.per=pp.dataset.per; document.querySelectorAll('.per').forEach(x=>x.classList.toggle('active',x===pp)); render(); });
+    document.getElementById('view').addEventListener('click',e=>{ const fp=e.target.closest('.fp'); if(!fp)return; fFiltro=fp.dataset.f; render(); });
 
-    document.querySelectorAll('.subtab').forEach(t => t.onclick = () => {
-      state.tab = t.dataset.tab;
-      document.querySelectorAll('.subtab').forEach(x => x.classList.toggle('active', x===t));
-      render();
-    });
-    document.querySelectorAll('.per').forEach(pp => pp.onclick = () => {
-      state.per = pp.dataset.per;
-      document.querySelectorAll('.per').forEach(x => x.classList.toggle('active', x===pp));
-      render();
-    });
-    document.getElementById('view').addEventListener('click', e => {
-      const fp = e.target.closest('.fp'); if (!fp) return;
-      fFiltro = fp.dataset.f; render();
-    });
-    // chat drawer
-    const dbg = document.getElementById('drawerBg'), dr = document.getElementById('drawer');
-    const openDrawer = o => { dbg.classList.toggle('open', o); dr.classList.toggle('open', o); };
-    document.getElementById('chatBtn').onclick = () => openDrawer(true);
-    document.getElementById('drawerX').onclick = () => openDrawer(false);
-    dbg.onclick = () => openDrawer(false);
+    // ---- CHAT (responde com os dados reais da tela; motor completo depois) ----
+    function responder(msg) {
+      const t=msg.toLowerCase(), p=periodo(); if(!p) return 'Sem dados carregados.';
+      const rows=p.campanhas.filter(c=>c.gasto>0), tot=resumo(rows,p);
+      if(!rows.length) return `No período <b>${state.per}</b> nenhuma campanha teve gasto. Troca o período aí em cima.`;
+      if(/roas|retorno|como.*(tá|ta|esta|vai)/.test(t)){
+        const ruins=rows.filter(c=>c.roas>0&&c.roas<1.3).map(c=>`${nomeCurto(c)} (${c.roas.toFixed(2)})`);
+        return `No <b>${state.per}</b>, o ROAS de mídia está em <b>${tot.roas.toFixed(2)}</b> (meta 1,8), com ${money(tot.gasto)} gastos e ${tot.vendas} vendas.` + (ruins.length?` Abaixo da linha: ${ruins.join(', ')}.`:' Tudo na meta. 👏');
+      }
+      if(/sangr|pior|corta|ruim|perdendo|preju/.test(t)){
+        const pior=[...rows].sort((a,b)=>a.roas-b.roas)[0];
+        return `A pior no <b>${state.per}</b> é <b>${nomeCurto(pior)}</b>: ${money(pior.gasto)} gastos, ${pior.vendas} vendas, ROAS ${pior.roas.toFixed(2)}. A régua diz <b>${pior.estado}</b>. (Quando meu motor completo estiver ligado, eu pauso pra você aqui mesmo.)`;
+      }
+      if(/melhor|winner|escala|top/.test(t)){
+        const best=[...rows].sort((a,b)=>b.roas-a.roas)[0];
+        return `A melhor no <b>${state.per}</b> é <b>${nomeCurto(best)}</b> — ROAS ${best.roas.toFixed(2)}, ${best.vendas} vendas. ${best.roas>=1.8?'Na meta.':'Ainda abaixo de 1,8.'}`;
+      }
+      if(/página|pagina|checkout|ida|converte/.test(t)) return 'O gargalo dos dois funis é a <b>ida pro checkout</b>: Pocket 12,7% e Quiz 9,9%, contra 25% ideal. É onde tem mais dinheiro parado — dobrar isso dobra a venda sem gastar mais. Abre a aba do funil pra ver.';
+      if(/quiz/.test(t)) return 'O funil <b>Quiz</b> está sem verba no período (nenhuma campanha ativa). Histórico e página dele estão na aba 🎯 Quiz Dream Baby.';
+      if(/oi|olá|ola|bom dia|boa|ajuda|pode|consegue|o que/.test(t)) return 'Posso te dizer o <b>ROAS</b> do período, qual campanha está <b>sangrando</b>, a <b>melhor</b>, e explicar qualquer métrica. Em breve, com o motor completo, eu também <b>executo</b> (pausa, verba) e <b>registro no histórico</b>.';
+      return 'Essa eu respondo de verdade quando o Bruno ligar meu motor completo (o Austin) — aí converso sobre qualquer coisa, executo e registro nossos ajustes no histórico. Por agora te ajudo com: <b>ROAS</b>, <b>pior/melhor campanha</b> e o <b>gargalo das páginas</b>.';
+    }
+    const msgs=document.getElementById('chatMsgs'), inp=document.getElementById('chatIn');
+    function addMsg(html,cls){ const d=document.createElement('div'); d.className='msg '+cls; d.innerHTML=html; msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight; }
+    function send(){ const v=inp.value.trim(); if(!v)return; addMsg(esc(v),'me'); inp.value=''; inp.style.height='auto'; setTimeout(()=>addMsg(responder(v),'bot'),260); }
+    document.getElementById('chatSend').onclick=send;
+    inp.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send(); } });
+    inp.addEventListener('input',()=>{ inp.style.height='auto'; inp.style.height=Math.min(inp.scrollHeight,100)+'px'; });
+    // toggle mobile
+    const chat=document.getElementById('chat'), cbg=document.getElementById('chatBg');
+    const openChat=o=>{ chat.classList.toggle('open',o); cbg.classList.toggle('open',o); };
+    document.getElementById('chatToggle').onclick=()=>openChat(true);
+    document.getElementById('chatX').onclick=()=>openChat(false);
+    cbg.onclick=()=>openChat(false);
 
     render();
+    addMsg('Oi! Sou o <b>Gestor</b>. Pergunta o que quiser sobre as campanhas — <i>"como tá o ROAS?"</i>, <i>"qual está sangrando?"</i>, <i>"e a página?"</i>. Respondo com os dados reais desta tela.','bot');
   </script>
 </body>
 </html>
