@@ -167,9 +167,15 @@
   }
   @media(max-width:640px){ .main{ padding:16px; } .header{ padding:11px 14px; } }
   footer { margin-top:30px; padding-top:16px; border-top:1px solid var(--border); color:var(--muted); font-size:11.5px; }
+  /* modo embed: dentro do dashboard (sem header/chat proprios) */
+  html[data-embed] .header, html[data-embed] .chat, html[data-embed] .chat-bg, html[data-embed] #chatToggle, html[data-embed] footer { display:none !important; }
+  html[data-embed] .leftcol { margin-right:0 !important; }
+  html[data-embed] .controls { top:0 !important; }
+  html[data-embed] body { background:transparent; }
 </style>
 </head>
 <body>
+  <script>if(location.search.indexOf('embed')>-1)document.documentElement.setAttribute('data-embed','1');</script>
   <div class="header">
     <div class="header-left">
       <span style="font-size:22px">🎛️</span>
