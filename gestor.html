@@ -7,129 +7,127 @@
 <title>Gestor de Tráfego — Dream Baby</title>
 <style>
   :root {
-    --bg:#0a0b15;
-    --card:rgba(22, 27, 41, 0.7);
-    --card2:#141a29;
-    --card-solid:#161b29;
-    --border:rgba(99, 102, 241, 0.18);
-    --border-hover:rgba(167, 139, 250, 0.4);
-    --text:#f0f1f7;
-    --muted:#9ca3b8;
-    --green:#4ade80;
-    --red:#f87171;
-    --yellow:#fbbf24;
-    --blue:#60a5fa;
-    --purple:#a78bfa; --purple-glow:rgba(167, 139, 250, 0.4);
-    --pink:#f472b6;
-    --cyan:#22d3ee;
-    --grad-vibrant:linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #22d3ee 100%);
+    --bg:#0a0b15; --card:rgba(22,27,41,.7); --card2:#141a29; --card-solid:#161b29;
+    --border:rgba(99,102,241,.18); --border-hover:rgba(167,139,250,.4);
+    --text:#f0f1f7; --muted:#9ca3b8;
+    --green:#4ade80; --red:#f87171; --yellow:#fbbf24; --blue:#60a5fa;
+    --purple:#a78bfa; --purple-glow:rgba(167,139,250,.4); --pink:#f472b6; --cyan:#22d3ee;
+    --grad-vibrant:linear-gradient(135deg,#a78bfa 0%,#f472b6 50%,#22d3ee 100%);
   }
   * { box-sizing:border-box; margin:0; padding:0; }
-  body {
-    background:var(--bg);
-    background-image:
-      radial-gradient(at 15% 0%, rgba(167,139,250,.18) 0px, transparent 50%),
-      radial-gradient(at 85% 0%, rgba(244,114,182,.12) 0px, transparent 50%),
-      radial-gradient(at 50% 50%, rgba(99,102,241,.08) 0px, transparent 50%),
-      radial-gradient(at 80% 100%, rgba(34,211,238,.08) 0px, transparent 50%);
-    background-attachment:fixed; color:var(--text);
-    font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size:14px; min-height:100vh;
-  }
+  body { background:var(--bg);
+    background-image:radial-gradient(at 15% 0%,rgba(167,139,250,.18) 0,transparent 50%),radial-gradient(at 85% 0%,rgba(244,114,182,.12) 0,transparent 50%),radial-gradient(at 50% 50%,rgba(99,102,241,.08) 0,transparent 50%),radial-gradient(at 80% 100%,rgba(34,211,238,.08) 0,transparent 50%);
+    background-attachment:fixed; color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-size:14px; min-height:100vh; }
   ::selection { background:var(--purple); color:var(--bg); }
-  body::-webkit-scrollbar { width:10px; }
-  body::-webkit-scrollbar-thumb { background:var(--border); border-radius:5px; }
+  body::-webkit-scrollbar { width:10px; } body::-webkit-scrollbar-thumb { background:var(--border); border-radius:5px; }
   .num { font-variant-numeric:tabular-nums; }
 
-  .header { background:rgba(15,17,30,.85); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); border-bottom:1px solid var(--border); padding:16px 24px; display:flex; align-items:center; justify-content:space-between; gap:12px; position:sticky; top:0; z-index:100; }
+  .header { background:rgba(15,17,30,.85); backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%); border-bottom:1px solid var(--border); padding:15px 24px; display:flex; align-items:center; justify-content:space-between; gap:12px; position:sticky; top:0; z-index:100; }
   .header::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--grad-vibrant); opacity:.7; }
-  .header-left { display:flex; align-items:center; gap:14px; }
-  .header h1 { font-size:19px; font-weight:800; letter-spacing:-.01em; background:var(--grad-vibrant); -webkit-background-clip:text; background-clip:text; color:transparent; }
-  .header-sub { font-size:12px; color:var(--muted); margin-top:3px; }
-  .btn { background:var(--card); backdrop-filter:blur(10px); border:1px solid var(--border); color:var(--text); padding:8px 16px; border-radius:10px; cursor:pointer; font-size:13px; font-weight:600; text-decoration:none; transition:all .2s; display:inline-flex; align-items:center; gap:7px; }
-  .btn:hover { background:rgba(99,102,241,.15); border-color:var(--border-hover); transform:translateY(-1px); }
+  .header-left { display:flex; align-items:center; gap:13px; }
+  .header h1 { font-size:18px; font-weight:800; letter-spacing:-.01em; background:var(--grad-vibrant); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .header-sub { font-size:11.5px; color:var(--muted); margin-top:2px; }
+  .btn { background:var(--card); border:1px solid var(--border); color:var(--text); padding:7px 14px; border-radius:10px; cursor:pointer; font-size:13px; font-weight:600; text-decoration:none; transition:all .2s; display:inline-flex; align-items:center; gap:6px; }
+  .btn:hover { background:rgba(99,102,241,.15); border-color:var(--border-hover); }
   .badge-db { padding:3px 11px; border-radius:14px; font-size:11px; font-weight:700; letter-spacing:.3px; background:rgba(167,139,250,.15); color:var(--purple); border:1px solid rgba(167,139,250,.3); }
 
-  .main { padding:24px; max-width:1080px; margin:0 auto; }
+  /* barra de controle: sub-abas + período */
+  .controls { position:sticky; top:64px; z-index:99; background:rgba(15,17,30,.72); backdrop-filter:blur(15px); border-bottom:1px solid var(--border); padding:10px 24px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
+  .subtabs { display:flex; gap:5px; flex-wrap:wrap; }
+  .subtab { padding:8px 15px; border-radius:10px; cursor:pointer; color:var(--muted); font-size:13px; font-weight:600; border:1px solid transparent; transition:all .18s; white-space:nowrap; }
+  .subtab:hover { color:var(--text); }
+  .subtab.active { color:#fff; background:var(--grad-vibrant); box-shadow:0 3px 14px var(--purple-glow); }
+  .periodo { display:flex; gap:3px; background:rgba(10,11,21,.6); border:1px solid var(--border); border-radius:11px; padding:3px; }
+  .per { padding:6px 13px; border-radius:8px; cursor:pointer; color:var(--muted); font-size:12.5px; font-weight:600; transition:all .15s; }
+  .per:hover { color:var(--text); }
+  .per.active { color:#fff; background:rgba(167,139,250,.22); box-shadow:inset 0 0 0 1px rgba(167,139,250,.4); }
+  .per-hint { font-size:11px; color:var(--muted); margin-left:8px; }
 
-  .draftbar { display:flex; gap:8px; align-items:center; background:rgba(167,139,250,.07); border:1px solid rgba(167,139,250,.22); border-radius:12px; padding:10px 15px; margin-bottom:22px; font-size:12.5px; color:var(--muted); }
-  .draftbar b { color:var(--purple); font-weight:600; }
+  .main { padding:22px 24px 60px; max-width:1160px; margin:0 auto; }
 
-  /* "?" — banco de dados & métricas */
-  .q { display:inline-flex; align-items:center; justify-content:center; width:15px; height:15px; border-radius:50%; border:1px solid var(--border); color:var(--muted); font-size:9.5px; font-weight:700; cursor:pointer; text-decoration:none; margin-left:5px; vertical-align:middle; transition:all .15s; flex:none; }
-  .q:hover { border-color:var(--purple); color:var(--purple); background:rgba(167,139,250,.14); }
+  /* summary strip */
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:11px; margin-bottom:20px; }
+  .kpi { background:var(--card); border:1px solid var(--border); border-radius:13px; padding:13px 15px; }
+  .kpi .l { font-size:11px; color:var(--muted); margin-bottom:5px; }
+  .kpi .v { font-size:21px; font-weight:800; letter-spacing:-.02em; }
+  .kpi .v small { font-size:11.5px; color:var(--muted); font-weight:600; }
 
-  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:22px; }
-  .kpi { background:var(--card); backdrop-filter:blur(20px) saturate(160%); border:1px solid var(--border); border-radius:14px; padding:15px 17px; }
-  .kpi .l { font-size:11.5px; color:var(--muted); margin-bottom:6px; display:flex; align-items:center; }
-  .kpi .v { font-size:23px; font-weight:800; letter-spacing:-.02em; }
-  .kpi .v small { font-size:12px; color:var(--muted); font-weight:600; }
-
-  .section { background:var(--card); backdrop-filter:blur(20px) saturate(160%); -webkit-backdrop-filter:blur(20px) saturate(160%); border:1px solid var(--border); border-radius:16px; margin-bottom:18px; overflow:hidden; }
-  .section-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:10px; }
-  .section-title { font-size:14px; font-weight:700; letter-spacing:-.01em; }
+  .section { background:var(--card); border:1px solid var(--border); border-radius:16px; margin-bottom:16px; overflow:hidden; }
+  .section-header { padding:14px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+  .section-title { font-size:13.5px; font-weight:700; }
   .section-sub { font-size:11px; color:var(--muted); margin-top:2px; }
-  .section-body { padding:16px 20px; }
+  .section-body { padding:16px 18px; }
 
-  .roas-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 11px; border-radius:8px; font-size:12px; font-weight:700; }
-  .roas-warn { background:rgba(251,191,36,.16); color:var(--yellow); }
-  .roas-bad  { background:rgba(248,113,113,.15); color:var(--red); }
+  /* funnel filter (pills) */
+  .fpills { display:flex; gap:5px; flex-wrap:wrap; }
+  .fp { padding:5px 12px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600; color:var(--muted); border:1px solid var(--border); transition:all .15s; }
+  .fp:hover { color:var(--text); border-color:var(--border-hover); }
+  .fp.active { color:#fff; background:rgba(167,139,250,.2); border-color:rgba(167,139,250,.45); }
 
-  .camprow { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
-  .campname { font-weight:700; font-size:15px; }
-  .metrics { display:grid; grid-template-columns:repeat(auto-fit,minmax(92px,1fr)); gap:14px 8px; margin-top:16px; padding-top:16px; border-top:1px solid var(--border); }
-  .m .ml { font-size:11px; color:var(--muted); margin-bottom:4px; display:flex; align-items:center; }
-  .m .mv { font-size:16px; font-weight:700; }
-  .ok { color:var(--green); } .bad { color:var(--red); }
-  .verdict { margin-top:16px; padding:11px 15px; background:rgba(251,191,36,.07); border-radius:10px; border-left:3px solid var(--yellow); font-size:13px; line-height:1.5; }
+  /* tabela horizontal */
+  .table-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:12.5px; white-space:nowrap; }
+  th { padding:9px 12px; text-align:right; font-size:10.5px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; border-bottom:1px solid var(--border); }
+  th.l, td.l { text-align:left; }
+  td { padding:10px 12px; text-align:right; border-bottom:1px solid var(--border); font-variant-numeric:tabular-nums; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:rgba(255,255,255,.02); }
+  .cname { font-weight:600; color:var(--text); max-width:230px; overflow:hidden; text-overflow:ellipsis; }
+  .fbadge { font-size:9.5px; padding:1px 7px; border-radius:6px; font-weight:700; letter-spacing:.3px; vertical-align:middle; margin-right:6px; }
+  .fb-pocket { background:rgba(96,165,250,.16); color:var(--blue); }
+  .fb-quiz { background:rgba(244,114,182,.16); color:var(--pink); }
+  .fb-outro { background:rgba(156,163,184,.14); color:var(--muted); }
+  .ok { color:var(--green); } .bad { color:var(--red); } .warn2 { color:var(--yellow); }
+  .estado { font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:7px; }
+  .e-MANTER { background:rgba(74,222,128,.15); color:var(--green); }
+  .e-OBSERVAR { background:rgba(251,191,36,.16); color:var(--yellow); }
+  .e-CORTAR { background:rgba(248,113,113,.16); color:var(--red); }
+  .e-AQUECENDO { background:rgba(156,163,184,.12); color:var(--muted); }
+  .q { display:inline-flex; align-items:center; justify-content:center; width:14px; height:14px; border-radius:50%; border:1px solid var(--border); color:var(--muted); font-size:9px; font-weight:700; cursor:pointer; text-decoration:none; margin-left:5px; vertical-align:middle; }
+  .q:hover { border-color:var(--purple); color:var(--purple); }
 
-  .empty { padding:28px 18px; text-align:center; color:var(--muted); }
-  .empty .big { font-size:15px; color:var(--text); font-weight:700; margin-bottom:6px; }
-  .cols { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:16px; }
+  .empty { padding:26px 18px; text-align:center; color:var(--muted); }
+  .empty .big { font-size:14.5px; color:var(--text); font-weight:700; margin-bottom:5px; }
+  .cols { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:14px; }
   .chip { font-size:11px; color:var(--muted); border:1px dashed var(--border); border-radius:7px; padding:4px 9px; }
 
-  .pagegrid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  @media(max-width:640px){ .pagegrid{ grid-template-columns:1fr; } .header{ padding:14px 16px; } .main{ padding:16px; } }
-  .pg h3 { margin:0 0 12px; font-size:14.5px; font-weight:700; display:flex; align-items:center; gap:8px; }
-  .barline { display:flex; justify-content:space-between; align-items:center; font-size:13px; padding:7px 0; border-bottom:1px solid var(--border); }
-  .barline:last-of-type { border-bottom:0; }
-  .barline .bl { color:var(--muted); display:flex; align-items:center; }
-  .barline .bv { font-weight:700; font-variant-numeric:tabular-nums; }
+  /* página do funil */
+  .page-metrics { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px; }
+  .pm { background:var(--card2); border:1px solid var(--border); border-radius:11px; padding:12px 14px; }
+  .pm .pl { font-size:11px; color:var(--muted); margin-bottom:5px; display:flex; align-items:center; }
+  .pm .pv { font-size:18px; font-weight:700; font-variant-numeric:tabular-nums; }
 
-  .change { display:grid; grid-template-columns:64px 1fr auto; gap:14px; align-items:start; padding:14px 0; border-bottom:1px solid var(--border); }
-  .change:last-child { border-bottom:0; }
-  .change .when { font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
-  .change .what b { font-weight:700; }
-  .change .what .goal { font-size:12.5px; color:var(--muted); margin-top:3px; }
-  .beforeafter { text-align:right; font-size:12px; white-space:nowrap; }
-  .beforeafter .ba { font-weight:700; font-variant-numeric:tabular-nums; }
-  .beforeafter .to { color:var(--muted); }
-  .tag-wait { display:inline-block; margin-top:7px; font-size:10.5px; padding:2px 8px; border-radius:8px; background:rgba(156,163,184,.12); color:var(--muted); }
+  .timeline .row { display:grid; grid-template-columns:70px 1fr auto; gap:14px; align-items:start; padding:13px 0; border-bottom:1px solid var(--border); }
+  .timeline .row:last-child { border-bottom:0; }
+  .timeline .when { font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
+  .timeline .what b { font-weight:700; } .timeline .what .goal { font-size:12px; color:var(--muted); margin-top:3px; }
+  .timeline .ba { text-align:right; font-size:12px; font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .tag-wait { font-size:10px; padding:2px 8px; border-radius:8px; background:rgba(156,163,184,.12); color:var(--muted); }
+  .tag-live { font-size:10px; padding:2px 8px; border-radius:8px; background:rgba(74,222,128,.14); color:var(--green); }
+  .verdict { margin-top:14px; padding:11px 14px; background:rgba(251,191,36,.07); border-radius:10px; border-left:3px solid var(--yellow); font-size:12.5px; line-height:1.5; }
+  .verdict b { color:var(--yellow); }
 
   /* FAQ */
-  .faq details { border:1px solid var(--border); border-radius:10px; margin-bottom:8px; overflow:hidden; background:rgba(255,255,255,.02); transition:border-color .2s, box-shadow .2s; scroll-margin-top:90px; }
-  .faq details.flash { border-color:var(--purple); box-shadow:0 0 0 1px var(--purple), 0 6px 20px rgba(167,139,250,.25); }
+  .faq details { border:1px solid var(--border); border-radius:10px; margin-bottom:8px; overflow:hidden; background:rgba(255,255,255,.02); transition:border-color .2s,box-shadow .2s; scroll-margin-top:130px; }
+  .faq details.flash { border-color:var(--purple); box-shadow:0 0 0 1px var(--purple),0 6px 20px rgba(167,139,250,.25); }
   .faq summary { padding:12px 15px; cursor:pointer; font-weight:600; font-size:13.5px; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:10px; }
   .faq summary::-webkit-details-marker { display:none; }
-  .faq summary::after { content:'+'; color:var(--muted); font-size:17px; line-height:1; }
+  .faq summary::after { content:'+'; color:var(--muted); font-size:17px; }
   .faq details[open] summary::after { content:'\2013'; }
   .faq details[open] summary { border-bottom:1px solid var(--border); }
   .faq .ans { padding:13px 15px; font-size:13px; color:var(--muted); line-height:1.6; }
   .src { display:inline-block; margin-top:9px; font-size:11px; padding:2px 9px; border-radius:7px; background:rgba(167,139,250,.12); color:var(--purple); font-weight:600; }
-  .faq-src-grid { display:grid; grid-template-columns:1fr; gap:6px; margin-top:6px; }
-  .faq-src-grid span { font-size:12.5px; }
+  .faq-src-grid { display:grid; gap:6px; margin-top:6px; } .faq-src-grid span { font-size:12.5px; }
 
-  footer { margin-top:36px; padding-top:18px; border-top:1px solid var(--border); color:var(--muted); font-size:12px; }
+  .hide { display:none; }
+  footer { margin-top:32px; padding-top:16px; border-top:1px solid var(--border); color:var(--muted); font-size:11.5px; }
 </style>
 </head>
 <body>
   <div class="header">
     <div class="header-left">
-      <span style="font-size:24px">🎛️</span>
-      <div>
-        <h1>Gestor de Tráfego</h1>
-        <div class="header-sub">O que a mídia entrega · o que os testes dizem · o que a página faz com quem chega</div>
-      </div>
+      <span style="font-size:22px">🎛️</span>
+      <div><h1>Gestor de Tráfego</h1><div class="header-sub">Direcionado por funil · dados reais · read-only</div></div>
     </div>
     <div style="display:flex; align-items:center; gap:10px">
       <span class="badge-db">DREAM BABY</span>
@@ -137,193 +135,514 @@
     </div>
   </div>
 
+  <div class="controls">
+    <div class="subtabs">
+      <div class="subtab active" data-tab="geral">Geral</div>
+      <div class="subtab" data-tab="pocket">👶 Dream Baby Pocket</div>
+      <div class="subtab" data-tab="quiz">🎯 Quiz Dream Baby</div>
+      <div class="subtab" data-tab="banco">🗂️ Banco de dados &amp; métricas</div>
+    </div>
+    <div style="display:flex; align-items:center">
+      <div class="periodo">
+        <div class="per" data-per="hoje">Hoje</div>
+        <div class="per" data-per="ontem">Ontem</div>
+        <div class="per" data-per="3d">3 dias</div>
+        <div class="per active" data-per="7d">7 dias</div>
+      </div>
+      <span class="per-hint" id="perHint"></span>
+    </div>
+  </div>
+
   <div class="main">
-    <div class="draftbar"><div>🎛️ <b>Rascunho</b> · dados reais, read-only · o Gestor não mexe em campanha · toque no <b>?</b> de cada dado pra ver o que é.</div></div>
-
-    <!-- KPIs -->
-    <div class="kpis">
-      <div class="kpi"><div class="l">Campanhas ativas</div><div class="v num">1</div></div>
-      <div class="kpi"><div class="l">Gasto de mídia<a class="q" data-faq="cpm" title="banco de dados & métricas">?</a></div><div class="v num">R$ 713</div></div>
-      <div class="kpi"><div class="l">Vendas da mídia<a class="q" data-faq="vendas" title="banco de dados & métricas">?</a></div><div class="v num">17 <small>· R$ 891</small></div></div>
-      <div class="kpi"><div class="l">ROAS de mídia<a class="q" data-faq="roas" title="banco de dados & métricas">?</a></div><div class="v num" style="color:var(--red)">1,25</div></div>
-      <div class="kpi"><div class="l">Vendas totais<a class="q" data-faq="vendas" title="banco de dados & métricas">?</a></div><div class="v num">60 <small>· 43 fora</small></div></div>
-    </div>
-
-    <!-- CAMPANHAS -->
-    <div class="section">
-      <div class="section-header">
-        <div><div class="section-title">🚀 Campanhas</div>
-          <div class="section-sub">janela 7d · 05→11 ago</div></div>
-      </div>
-      <div class="section-body">
-        <div class="camprow">
-          <div class="campname">[DREAM POCKET] [ABO] [RELIGAMENTO] 08/08</div>
-          <span class="roas-badge roas-warn">observar · você decide</span>
-        </div>
-        <div class="metrics">
-          <div class="m"><div class="ml">Gasto<a class="q" data-faq="cpm" title="banco de dados & métricas">?</a></div><div class="mv num">R$ 713</div></div>
-          <div class="m"><div class="ml">Vendas<a class="q" data-faq="vendas" title="banco de dados & métricas">?</a></div><div class="mv num">17</div></div>
-          <div class="m"><div class="ml">Receita líq.<a class="q" data-faq="receita" title="banco de dados & métricas">?</a></div><div class="mv num">R$ 891</div></div>
-          <div class="m"><div class="ml">ROAS real<a class="q" data-faq="roas" title="banco de dados & métricas">?</a></div><div class="mv num bad">1,25</div></div>
-          <div class="m"><div class="ml">CPA<a class="q" data-faq="cpa" title="banco de dados & métricas">?</a></div><div class="mv num">R$ 42</div></div>
-          <div class="m"><div class="ml">CTR link<a class="q" data-faq="ctr" title="banco de dados & métricas">?</a></div><div class="mv num ok">1,70%</div></div>
-          <div class="m"><div class="ml">Connect<a class="q" data-faq="connect" title="banco de dados & métricas">?</a></div><div class="mv num ok">94,5%</div></div>
-          <div class="m"><div class="ml">Ida checkout<a class="q" data-faq="ida" title="banco de dados & métricas">?</a></div><div class="mv num bad">9,5%</div></div>
-          <div class="m"><div class="ml">CPM<a class="q" data-faq="cpm" title="banco de dados & métricas">?</a></div><div class="mv num">R$ 23</div></div>
-        </div>
-        <div class="verdict"><b style="color:var(--yellow)">Leitura:</b> anúncio ótimo, o buraco é a página (ida pro checkout 9,5%). Única campanha ativa e religamento novo — segurar e observar 7d.</div>
-      </div>
-    </div>
-
-    <!-- TESTES -->
-    <div class="section">
-      <div class="section-header"><div><div class="section-title">🧪 Testes de criativo</div></div></div>
-      <div class="section-body">
-        <div class="empty">
-          <div class="big">Nenhum teste rodando agora.</div>
-          Quando você jogar criativos na pasta, cada teste aparece aqui com seu veredito.
-          <div class="cols">
-            <span class="chip">criativo</span><span class="chip">dias</span><span class="chip">gasto</span>
-            <span class="chip">retenção 3s / 25% / 50%</span><span class="chip">ROAS 7d</span>
-            <span class="chip">veredito</span><span class="chip">escala · 1-1-1 / 10X / Volume</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- PÁGINAS -->
-    <div class="section">
-      <div class="section-header"><div><div class="section-title">🔮 Análise das páginas</div></div></div>
-      <div class="section-body">
-        <div class="pagegrid">
-          <div>
-            <h3>Dream Baby Pocket <span class="roas-badge roas-bad">gargalo</span></h3>
-            <div class="barline"><span class="bl">Ida pro checkout<a class="q" data-faq="ida" title="banco de dados & métricas">?</a></span><span class="bv bad">12,7%</span></div>
-            <div class="barline"><span class="bl">Passam do hero<a class="q" data-faq="hero" title="banco de dados & métricas">?</a></span><span class="bv bad">31,5%</span></div>
-            <div class="barline"><span class="bl">Dead-clicks<a class="q" data-faq="dead" title="banco de dados & métricas">?</a></span><span class="bv">13,3%</span></div>
-            <div class="barline"><span class="bl">LCP<a class="q" data-faq="lcp" title="banco de dados & métricas">?</a></span><span class="bv bad">4,3s</span></div>
-            <div class="barline"><span class="bl">Mobile IG/FB</span><span class="bv">91%</span></div>
-          </div>
-          <div>
-            <h3>Quiz Perfis <span class="roas-badge roas-warn">observar</span></h3>
-            <div class="barline"><span class="bl">Ida pro checkout<a class="q" data-faq="ida" title="banco de dados & métricas">?</a></span><span class="bv bad">9,9%</span></div>
-            <div class="barline"><span class="bl">Scroll médio<a class="q" data-faq="scroll" title="banco de dados & métricas">?</a></span><span class="bv">70%</span></div>
-            <div class="barline"><span class="bl">Dead-click (sessões)<a class="q" data-faq="dead" title="banco de dados & métricas">?</a></span><span class="bv">50%</span></div>
-            <div class="barline"><span class="bl">Rage / quickback<a class="q" data-faq="rage" title="banco de dados & métricas">?</a></span><span class="bv ok">0%</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- MUDANÇAS DE LAYOUT -->
-    <div class="section">
-      <div class="section-header"><div><div class="section-title">📐 Mudanças de layout</div>
-        <div class="section-sub">cada ajuste com a métrica-alvo e o antes × depois</div></div></div>
-      <div class="section-body" style="padding-top:4px">
-        <div class="change">
-          <div class="when">25 jul</div>
-          <div class="what"><b>"30 minutos" deixou de parecer botão</b><div class="goal">alvo: derrubar dead-clicks no hero</div></div>
-          <div class="beforeafter"><div class="ba">13,3% → <span class="to">medindo</span></div><div><span class="tag-wait">em leitura 7d</span></div></div>
-        </div>
-        <div class="change">
-          <div class="when">25 jul</div>
-          <div class="what"><b>Preload do hero + fontes assíncronas</b><div class="goal">alvo: LCP 4,3s → menos de 2,5s</div></div>
-          <div class="beforeafter"><div class="ba">4,3s → <span class="to">medindo</span></div><div><span class="tag-wait">em leitura</span></div></div>
-        </div>
-        <div class="change">
-          <div class="when">25 jul</div>
-          <div class="what"><b>Headline do hero em CAIXA ALTA</b><div class="goal">alvo: prender na 1ª tela</div></div>
-          <div class="beforeafter"><div class="ba">31,5% → <span class="to">medindo</span></div><div><span class="tag-wait">em leitura</span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- FAQ -->
-    <div class="section faq" id="faq">
-      <div class="section-header"><div><div class="section-title">🗂️ Banco de dados & métricas</div>
-        <div class="section-sub">o que cada número é e de onde ele vem</div></div></div>
-      <div class="section-body">
-
-        <details id="faq-fontes"><summary>De onde vêm os dados (as 3 fontes)</summary>
-          <div class="ans">
-            <div class="faq-src-grid">
-              <span>🔵 <b>Meta (gerenciador)</b> — entrega, custo, cliques e retenção do anúncio. É boa nisso, mas <b>superconta venda</b> (27–43% a mais), então nunca usamos ela pra decidir corte.</span>
-              <span>🟣 <b>Greenn</b> (via Supabase) — a <b>venda e a receita reais</b>, casadas por UTM. É a <b>fonte de verdade</b> do ROAS.</span>
-              <span>🟢 <b>Clarity</b> — o <b>comportamento na página</b> (scroll, cliques, frustração). Instalado em todas as páginas.</span>
-            </div>
-          </div>
-        </details>
-
-        <details id="faq-roas"><summary>ROAS real / ROAS de mídia</summary>
-          <div class="ans">Quanto voltou pra cada real gasto. É a <b>receita líquida da Greenn ÷ o gasto na Meta</b>. Acima de <b>1,8</b> = saudável (nossa meta); abaixo de 1,3 com gasto suficiente = candidato a corte. Vem da <b>venda real</b>, não do pixel.<div><span class="src">Greenn ÷ Meta</span></div></div>
-        </details>
-
-        <details id="faq-cpa"><summary>CPA — custo por venda</summary>
-          <div class="ans">Quanto custou trazer <b>cada venda</b>: gasto ÷ nº de vendas. Ideal fica em torno de <b>metade do ticket</b> (~R$ 36).<div><span class="src">Meta ÷ Greenn</span></div></div>
-        </details>
-
-        <details id="faq-ctr"><summary>CTR (link)</summary>
-          <div class="ans">De cada 100 pessoas que veem o anúncio, quantas <b>clicam no link</b>. Bom acima de <b>1,3%</b>. Mede a qualidade do anúncio.<div><span class="src">Meta</span></div></div>
-        </details>
-
-        <details id="faq-connect"><summary>Connect rate</summary>
-          <div class="ans">Dos que clicam, quantos <b>realmente carregam a página</b>. Abaixo de <b>80%</b> costuma ser quebra técnica (página lenta, link ruim).<div><span class="src">Meta</span></div></div>
-        </details>
-
-        <details id="faq-ida"><summary>Ida pro checkout <span style="color:var(--red);font-weight:700;font-size:11px">nosso gargalo</span></summary>
-          <div class="ans">Dos que <b>chegam na página</b>, quantos seguem pro checkout. É o <b>maior buraco da operação</b>: fazemos 9–13% contra <b>25%</b> de referência. Dobrar isso dobra a venda sem gastar mais em mídia. Por isso a camada de página existe.<div><span class="src">Meta</span></div></div>
-        </details>
-
-        <details id="faq-cpm"><summary>CPM / Gasto</summary>
-          <div class="ans"><b>Gasto</b> = quanto a campanha consumiu no período. <b>CPM</b> = custo por mil vezes que o anúncio aparece. CPM alto sozinho <b>não</b> condena — não prevê venda.<div><span class="src">Meta</span></div></div>
-        </details>
-
-        <details id="faq-receita"><summary>Receita líquida</summary>
-          <div class="ans">O que <b>sobra da venda</b> depois da taxa da plataforma. É esse valor (não o bruto) que entra no cálculo do ROAS real.<div><span class="src">Greenn</span></div></div>
-        </details>
-
-        <details id="faq-vendas"><summary>Vendas da mídia × vendas totais</summary>
-          <div class="ans"><b>Da mídia</b> = vendas que casaram com uma campanha pela UTM. <b>Totais</b> inclui orgânico e resíduo de campanhas antigas. A diferença mostra o quanto a conta vive de fora da mídia.<div><span class="src">Greenn (Supabase)</span></div></div>
-        </details>
-
-        <details id="faq-dead"><summary>Dead-clicks</summary>
-          <div class="ans">Cliques em algo que <b>parece botão mas não é</b>. Alto = a página confunde. No dbpocket concentrava no "30 minutos" que tinha cara de botão.<div><span class="src">Clarity</span></div></div>
-        </details>
-
-        <details id="faq-rage"><summary>Rage click / Quickback</summary>
-          <div class="ans"><b>Rage</b> = cliques repetidos de raiva no mesmo lugar. <b>Quickback</b> = entrou e voltou na hora. Os dois são sinal de <b>frustração</b>.<div><span class="src">Clarity</span></div></div>
-        </details>
-
-        <details id="faq-scroll"><summary>Scroll médio</summary>
-          <div class="ans">Quão <b>fundo</b> as pessoas rolam a página, em média. Baixo pode significar que o conteúdo não prende — ou que decidem cedo.<div><span class="src">Clarity</span></div></div>
-        </details>
-
-        <details id="faq-hero"><summary>Passam do hero</summary>
-          <div class="ans">% de gente que passa da <b>primeira tela</b> (10% da página). Baixo = o topo não segura. No dbpocket só 31,5% passam — ~60% saem sem rolar.<div><span class="src">Clarity</span></div></div>
-        </details>
-
-        <details id="faq-lcp"><summary>LCP — velocidade</summary>
-          <div class="ans">Tempo até o <b>maior elemento</b> da página carregar. Acima de <b>2,5s</b> = lento (o Google pune). O dbpocket está em 4,3s — alavanca de correção.<div><span class="src">auditoria / PageSpeed</span></div></div>
-        </details>
-
-      </div>
-    </div>
-
-    <footer><b style="color:var(--text)">Painel Gestor</b> · read-only, sem execução · <a href="index.html" style="color:var(--purple)">voltar ao dashboard</a></footer>
+    <div id="view"></div>
+    <footer><b style="color:var(--text)">Painel Gestor</b> · read-only, sem execução · <span id="gerado"></span> · <a href="index.html" style="color:var(--purple)">voltar ao dashboard</a></footer>
   </div>
 
   <script>
-    document.querySelectorAll('.q').forEach(function(q){
-      q.addEventListener('click', function(e){
+    const DATA = {
+ "gerado_em": "2026-08-11T18:00:42.229Z",
+ "periodos": {
+  "hoje": {
+   "since": "2026-08-11",
+   "until": "2026-08-11",
+   "dias": 1,
+   "campanhas": [
+    {
+     "id": "120250176888580158",
+     "nome": "[DREAM POCKET] [ABO] [RELIGAMENTO] 08/08",
+     "funil": "pocket",
+     "gasto": 189.37,
+     "impressions": 6836,
+     "ctr": 1.73,
+     "cpm": 27.7,
+     "freq": 1.23,
+     "connect": 82.2,
+     "ida": 10.3,
+     "vendas": 2,
+     "receita": 134,
+     "roas": 0.71,
+     "cpa": 94.69,
+     "estado": "OBSERVAR",
+     "acao": "observar"
+    },
+    {
+     "id": "120249833994640158",
+     "nome": "[DREAM POCKET] [CPA] [1-1-1] MATHIAS 008 29/07",
+     "funil": "pocket",
+     "gasto": 0,
+     "impressions": 0,
+     "ctr": 0,
+     "cpm": 0,
+     "freq": 0,
+     "connect": null,
+     "ida": null,
+     "vendas": 0,
+     "receita": 0,
+     "roas": 0,
+     "cpa": null,
+     "estado": "AQUECENDO",
+     "acao": "esperar"
+    }
+   ],
+   "orfas": {
+    "n": 4,
+    "liq": 301.2
+   }
+  },
+  "ontem": {
+   "since": "2026-08-10",
+   "until": "2026-08-10",
+   "dias": 1,
+   "campanhas": [
+    {
+     "id": "120250176888580158",
+     "nome": "[DREAM POCKET] [ABO] [RELIGAMENTO] 08/08",
+     "funil": "pocket",
+     "gasto": 219.28,
+     "impressions": 9442,
+     "ctr": 1.74,
+     "cpm": 23.22,
+     "freq": 1.25,
+     "connect": 95.7,
+     "ida": 9.6,
+     "vendas": 3,
+     "receita": 153.9,
+     "roas": 0.7,
+     "cpa": 73.09,
+     "estado": "OBSERVAR",
+     "acao": "observar"
+    },
+    {
+     "id": "120249633031580158",
+     "nome": "[DREAM POCKET] [ABO] [AD+]",
+     "funil": "pocket",
+     "gasto": 0,
+     "impressions": 0,
+     "ctr": 0,
+     "cpm": 0,
+     "freq": 0,
+     "connect": null,
+     "ida": null,
+     "vendas": 0,
+     "receita": 0,
+     "roas": 0,
+     "cpa": null,
+     "estado": "AQUECENDO",
+     "acao": "esperar"
+    },
+    {
+     "id": "120249833994640158",
+     "nome": "[DREAM POCKET] [CPA] [1-1-1] MATHIAS 008 29/07",
+     "funil": "pocket",
+     "gasto": 0,
+     "impressions": 0,
+     "ctr": 0,
+     "cpm": 0,
+     "freq": 0,
+     "connect": null,
+     "ida": null,
+     "vendas": 0,
+     "receita": 0,
+     "roas": 0,
+     "cpa": null,
+     "estado": "AQUECENDO",
+     "acao": "esperar"
+    }
+   ],
+   "orfas": {
+    "n": 1,
+    "liq": 397
+   }
+  },
+  "3d": {
+   "since": "2026-08-09",
+   "until": "2026-08-11",
+   "dias": 3,
+   "campanhas": [
+    {
+     "id": "120250176888580158",
+     "nome": "[DREAM POCKET] [ABO] [RELIGAMENTO] 08/08",
+     "funil": "pocket",
+     "gasto": 644.02,
+     "impressions": 27407,
+     "ctr": 1.71,
+     "cpm": 23.5,
+     "freq": 1.56,
+     "connect": 96.6,
+     "ida": 10,
+     "vendas": 14,
+     "receita": 719.6,
+     "roas": 1.12,
+     "cpa": 46,
+     "estado": "OBSERVAR",
+     "acao": "observar"
+    },
+    {
+     "id": "120249633031580158",
+     "nome": "[DREAM POCKET] [ABO] [AD+]",
+     "funil": "pocket",
+     "gasto": 0,
+     "impressions": 0,
+     "ctr": 0,
+     "cpm": 0,
+     "freq": 0,
+     "connect": null,
+     "ida": null,
+     "vendas": 0,
+     "receita": 0,
+     "roas": 0,
+     "cpa": null,
+     "estado": "AQUECENDO",
+     "acao": "esperar"
+    },
+    {
+     "id": "120249833994640158",
+     "nome": "[DREAM POCKET] [CPA] [1-1-1] MATHIAS 008 29/07",
+     "funil": "pocket",
+     "gasto": 0,
+     "impressions": 0,
+     "ctr": 0,
+     "cpm": 0,
+     "freq": 0,
+     "connect": null,
+     "ida": null,
+     "vendas": 0,
+     "receita": 0,
+     "roas": 0,
+     "cpa": null,
+     "estado": "AQUECENDO",
+     "acao": "esperar"
+    }
+   ],
+   "orfas": {
+    "n": 10,
+    "liq": 1446.7
+   }
+  },
+  "7d": {
+   "since": "2026-08-05",
+   "until": "2026-08-11",
+   "dias": 7,
+   "campanhas": [
+    {
+     "id": "120249633031580158",
+     "nome": "[DREAM POCKET] [ABO] [AD+]",
+     "funil": "pocket",
+     "gasto": 1096.1,
+     "impressions": 40715,
+     "ctr": 1.68,
+     "cpm": 26.92,
+     "freq": 2.24,
+     "connect": 94.6,
+     "ida": 12.7,
+     "vendas": 5,
+     "receita": 287.9,
+     "roas": 0.26,
+     "cpa": 219.22,
+     "estado": "CORTAR",
+     "acao": "pausar"
+    },
+    {
+     "id": "120250176888580158",
+     "nome": "[DREAM POCKET] [ABO] [RELIGAMENTO] 08/08",
+     "funil": "pocket",
+     "gasto": 745,
+     "impressions": 31933,
+     "ctr": 1.69,
+     "cpm": 23.33,
+     "freq": 1.65,
+     "connect": 93.9,
+     "ida": 9.6,
+     "vendas": 17,
+     "receita": 890.6,
+     "roas": 1.2,
+     "cpa": 43.82,
+     "estado": "CORTAR",
+     "acao": "pausar"
+    },
+    {
+     "id": "120249833994640158",
+     "nome": "[DREAM POCKET] [CPA] [1-1-1] MATHIAS 008 29/07",
+     "funil": "pocket",
+     "gasto": 218.75,
+     "impressions": 7743,
+     "ctr": 2.65,
+     "cpm": 28.25,
+     "freq": 1.25,
+     "connect": 93.7,
+     "ida": 6.3,
+     "vendas": 3,
+     "receita": 171,
+     "roas": 0.78,
+     "cpa": 72.92,
+     "estado": "CORTAR",
+     "acao": "pausar"
+    },
+    {
+     "id": "120249833878160158",
+     "nome": "[DREAM POCKET] [CPA] [1-1-1] MATHIAS 010 - 29/07",
+     "funil": "pocket",
+     "gasto": 0,
+     "impressions": 0,
+     "ctr": 0,
+     "cpm": 0,
+     "freq": 0,
+     "connect": null,
+     "ida": null,
+     "vendas": 0,
+     "receita": 0,
+     "roas": 0,
+     "cpa": null,
+     "estado": "AQUECENDO",
+     "acao": "esperar"
+    },
+    {
+     "id": "120249961222060158",
+     "nome": "[ENGAJAMENTO 90D] [ABO] 02/08",
+     "funil": "outro",
+     "gasto": 0,
+     "impressions": 0,
+     "ctr": 0,
+     "cpm": 0,
+     "freq": 0,
+     "connect": null,
+     "ida": null,
+     "vendas": 0,
+     "receita": 0,
+     "roas": 0,
+     "cpa": null,
+     "estado": "AQUECENDO",
+     "acao": "esperar"
+    }
+   ],
+   "orfas": {
+    "n": 35,
+    "liq": 3308.87
+   }
+  }
+ }
+};
+
+    // registro de funis (o que a gente "cadastra")
+    const FUNIS = {
+      pocket: {
+        nome:'Dream Baby Pocket', icon:'👶', tag:'[DREAM POCKET]',
+        page:'dbpocket.manualdorecemnascido.com.br',
+        pageMetrics:[
+          {l:'Ida pro checkout', v:'12,7%', cls:'bad', faq:'ida'},
+          {l:'Passam do hero', v:'31,5%', cls:'bad', faq:'hero'},
+          {l:'Dead-clicks', v:'13,3%', cls:'', faq:'dead'},
+          {l:'LCP', v:'4,3s', cls:'bad', faq:'lcp'},
+          {l:'Mobile IG/FB', v:'91%', cls:'', faq:''},
+        ],
+        versoes:[
+          {when:'20 jul', what:'v2 — clara verde (atual)', goal:'funil separado do quiz, foco em sono', tag:'live'},
+          {when:'—', what:'v1 — noturna (roxo/Cardo)', goal:'estilo perfis · substituída', tag:'wait'},
+        ],
+        ajustes:[
+          {when:'25 jul', what:'"30 minutos" deixou de parecer botão', goal:'derrubar dead-clicks no hero', ba:'13,3% → medindo'},
+          {when:'25 jul', what:'Preload do hero + fontes assíncronas', goal:'LCP 4,3s → menos de 2,5s', ba:'4,3s → medindo'},
+          {when:'25 jul', what:'Headline do hero em CAIXA ALTA', goal:'prender na 1ª tela', ba:'31,5% → medindo'},
+          {when:'21 jul', what:'Seed fbp/fbc + repasse de UTM pro checkout', goal:'parar de perder atribuição', ba:'—'},
+        ],
+      },
+      quiz: {
+        nome:'Quiz Dream Baby', icon:'🎯', tag:'[QUIZ POCKET]',
+        page:'perfis.manualdorecemnascido.com.br',
+        pageMetrics:[
+          {l:'Ida pro checkout', v:'9,9%', cls:'bad', faq:'ida'},
+          {l:'Scroll médio', v:'70%', cls:'', faq:'scroll'},
+          {l:'Dead-click (sessões)', v:'50%', cls:'', faq:'dead'},
+          {l:'Rage / quickback', v:'0%', cls:'ok', faq:'rage'},
+        ],
+        versoes:[
+          {when:'atual', what:'Quiz 5 perguntas → página do perfil (5 bichos)', goal:'loading ~3s, redirect por perfil', tag:'live'},
+        ],
+        ajustes:[
+          {when:'—', what:'Filtro anti-bot no "iniciar quiz"', goal:'parar de inflar "iniciaram"', ba:'—'},
+          {when:'—', what:'CAPI própria server-side (Lead/ViewContent)', goal:'recuperar evento cortado no navegador', ba:'—'},
+        ],
+      },
+    };
+
+    const state = { tab:'geral', per:'7d' };
+    const money = n => 'R$ ' + Math.round(n).toLocaleString('pt-BR');
+    const fb = f => `<span class="fbadge fb-${f}">${f==='pocket'?'POCKET':f==='quiz'?'QUIZ':'OUTRO'}</span>`;
+
+    function periodo() { return DATA.periodos ? DATA.periodos[state.per] : null; }
+    function campanhasComGasto(filtroFunil) {
+      const p = periodo(); if (!p) return [];
+      return p.campanhas.filter(c => c.gasto > 0 && (!filtroFunil || filtroFunil==='todos' || c.funil===filtroFunil));
+    }
+    function resumo(rows, p) {
+      const gasto = rows.reduce((s,c)=>s+c.gasto,0), vendas = rows.reduce((s,c)=>s+c.vendas,0), rec = rows.reduce((s,c)=>s+c.receita,0);
+      return { gasto, vendas, rec, roas: gasto>0 ? rec/gasto : 0, orfas: p ? p.orfas : {n:0} };
+    }
+
+    function tabela(rows) {
+      if (!rows.length) return `<div class="empty"><div class="big">Nenhuma campanha com gasto nesse período.</div>Troque o período acima, ou este funil está sem verba agora.</div>`;
+      const tr = rows.map(c => `<tr>
+        <td class="l"><span class="cname">${fb(c.funil)}${c.nome}</span></td>
+        <td>${money(c.gasto)}</td>
+        <td class="${c.freq>=3?'bad':c.freq>=2?'warn2':''}">${c.freq||'—'}</td>
+        <td class="${c.ctr>=1.3?'ok':c.ctr?'':''}">${c.ctr?c.ctr+'%':'—'}</td>
+        <td>${c.connect!=null?c.connect+'%':'—'}</td>
+        <td class="${c.ida!=null&&c.ida<15?'bad':''}">${c.ida!=null?c.ida+'%':'—'}</td>
+        <td>${c.vendas}</td>
+        <td>${c.receita?money(c.receita):'—'}</td>
+        <td class="${c.roas>=1.8?'ok':c.roas>=1.3?'warn2':c.roas?'bad':''}">${c.roas?c.roas.toFixed(2):'—'}</td>
+        <td>${c.cpa?money(c.cpa):'—'}</td>
+        <td><span class="estado e-${c.estado}">${c.estado}</span></td>
+      </tr>`).join('');
+      return `<div class="table-wrap"><table>
+        <thead><tr>
+          <th class="l">Campanha</th><th>Gasto</th><th>Freq<a class="q" data-faq="freq">?</a></th>
+          <th>CTR<a class="q" data-faq="ctr">?</a></th><th>Connect<a class="q" data-faq="connect">?</a></th>
+          <th>Ida ckt<a class="q" data-faq="ida">?</a></th><th>Vendas<a class="q" data-faq="vendas">?</a></th>
+          <th>Receita<a class="q" data-faq="receita">?</a></th><th>ROAS<a class="q" data-faq="roas">?</a></th>
+          <th>CPA<a class="q" data-faq="cpa">?</a></th><th>Estado</th>
+        </tr></thead><tbody>${tr}</tbody></table></div>`;
+    }
+
+    function kpiStrip(r) {
+      return `<div class="kpis">
+        <div class="kpi"><div class="l">Gasto de mídia</div><div class="v num">${money(r.gasto)}</div></div>
+        <div class="kpi"><div class="l">Vendas da mídia</div><div class="v num">${r.vendas} <small>· ${money(r.rec)}</small></div></div>
+        <div class="kpi"><div class="l">ROAS de mídia</div><div class="v num" style="color:${r.roas>=1.8?'var(--green)':r.roas>=1.3?'var(--yellow)':'var(--red)'}">${r.roas?r.roas.toFixed(2):'—'}</div></div>
+        <div class="kpi"><div class="l">Vendas fora da mídia</div><div class="v num">${r.orfas.n}</div></div>
+      </div>`;
+    }
+
+    let fFiltro = 'todos';
+    function renderGeral() {
+      const p = periodo();
+      const rows = campanhasComGasto(fFiltro);
+      const r = resumo(rows, p);
+      return kpiStrip(r) + `
+      <div class="section">
+        <div class="section-header">
+          <div><div class="section-title">🚀 Campanhas</div><div class="section-sub">${p?p.since+' → '+p.until:''} · todas as campanhas com gasto no período</div></div>
+          <div class="fpills">
+            <div class="fp ${fFiltro==='todos'?'active':''}" data-f="todos">Todos</div>
+            <div class="fp ${fFiltro==='pocket'?'active':''}" data-f="pocket">👶 Pocket</div>
+            <div class="fp ${fFiltro==='quiz'?'active':''}" data-f="quiz">🎯 Quiz</div>
+            <div class="fp ${fFiltro==='outro'?'active':''}" data-f="outro">Outro</div>
+          </div>
+        </div>
+        <div class="section-body" style="padding:0">${tabela(rows)}</div>
+      </div>`;
+    }
+
+    function renderFunil(fkey) {
+      const F = FUNIS[fkey]; const p = periodo();
+      const rows = campanhasComGasto(fkey); const r = resumo(rows, p);
+      const pm = F.pageMetrics.map(m=>`<div class="pm"><div class="pl">${m.l}${m.faq?`<a class="q" data-faq="${m.faq}">?</a>`:''}</div><div class="pv ${m.cls}">${m.v}</div></div>`).join('');
+      const versoes = F.versoes.map(v=>`<div class="row"><div class="when">${v.when}</div><div class="what"><b>${v.what}</b><div class="goal">${v.goal}</div></div><div><span class="${v.tag==='live'?'tag-live':'tag-wait'}">${v.tag==='live'?'no ar':'histórico'}</span></div></div>`).join('');
+      const ajustes = F.ajustes.map(a=>`<div class="row"><div class="when">${a.when}</div><div class="what"><b>${a.what}</b><div class="goal">${a.goal}</div></div><div class="ba">${a.ba}</div></div>`).join('');
+      return kpiStrip(r) + `
+      <div class="section">
+        <div class="section-header"><div><div class="section-title">🚀 Campanhas do funil</div><div class="section-sub">${p?p.since+' → '+p.until:''}</div></div></div>
+        <div class="section-body" style="padding:0">${tabela(rows)}</div>
+      </div>
+      <div class="section">
+        <div class="section-header"><div><div class="section-title">🔮 Página de venda — ${F.page}</div><div class="section-sub">comportamento (Clarity) + auditoria</div></div></div>
+        <div class="section-body"><div class="page-metrics">${pm}</div></div>
+      </div>
+      <div class="section">
+        <div class="section-header"><div><div class="section-title">🧪 Páginas testadas</div><div class="section-sub">versões da página de venda que rodamos</div></div></div>
+        <div class="section-body timeline" style="padding-top:2px">${versoes}</div>
+      </div>
+      <div class="section">
+        <div class="section-header"><div><div class="section-title">📐 Histórico de ajustes</div><div class="section-sub">cada mudança com a métrica-alvo e o antes × depois</div></div></div>
+        <div class="section-body timeline" style="padding-top:2px">${ajustes}</div>
+      </div>`;
+    }
+
+    function renderBanco() {
+      const item=(id,t,body,src)=>`<details id="faq-${id}"><summary>${t}</summary><div class="ans">${body}${src?`<div><span class="src">${src}</span></div>`:''}</div></details>`;
+      return `<div class="section faq">
+        <div class="section-header"><div><div class="section-title">🗂️ Banco de dados &amp; métricas</div><div class="section-sub">o que cada número é e de onde ele vem</div></div></div>
+        <div class="section-body">
+          ${item('fontes','De onde vêm os dados (as 3 fontes)',`<div class="faq-src-grid"><span>🔵 <b>Meta (gerenciador)</b> — entrega, custo, cliques, frequência e retenção. Boa nisso, mas <b>superconta venda</b> (27–43%), então nunca decide corte.</span><span>🟣 <b>Greenn</b> (via Supabase) — a <b>venda e receita reais</b>, casadas por UTM. <b>Fonte de verdade</b> do ROAS.</span><span>🟢 <b>Clarity</b> — o <b>comportamento na página</b>. Instalado em todas.</span></div>`,'')}
+          ${item('roas','ROAS real / ROAS de mídia','Quanto voltou por real gasto: <b>receita líquida (Greenn) ÷ gasto (Meta)</b>. Meta ≥ <b>1,8</b>; abaixo de 1,3 com gasto = candidato a corte.','Greenn ÷ Meta')}
+          ${item('cpa','CPA — custo por venda','Gasto ÷ nº de vendas. Ideal ~<b>metade do ticket</b> (R$ 36).','Meta ÷ Greenn')}
+          ${item('freq','Frequência','Quantas vezes, em média, <b>a mesma pessoa viu</b> o anúncio na janela. Acima de <b>3</b> (acumulado) começa a cansar. ⚠️ frequência de 7d é maior que a de 1 dia — sempre olhar junto do período.','Meta')}
+          ${item('ctr','CTR (link)','De 100 que veem, quantos <b>clicam no link</b>. Bom acima de <b>1,3%</b>.','Meta')}
+          ${item('connect','Connect rate','Dos que clicam, quantos <b>carregam a página</b>. Abaixo de 80% = quebra técnica.','Meta')}
+          ${item('ida','Ida pro checkout <span style="color:var(--red);font-weight:700;font-size:11px">gargalo</span>','Dos que chegam na página, quantos vão pro checkout. <b>Maior buraco</b>: 9–13% contra <b>25%</b> ideal. Dobrar isso dobra a venda sem gastar mais.','Meta')}
+          ${item('receita','Receita líquida','O que <b>sobra da venda</b> depois da taxa. É esse valor que entra no ROAS.','Greenn')}
+          ${item('vendas','Vendas da mídia × fora da mídia','<b>Da mídia</b> = casaram com campanha por UTM. <b>Fora</b> = orgânico + resíduo de campanhas antigas.','Greenn (Supabase)')}
+          ${item('dead','Dead-clicks','Cliques em algo que <b>parece botão mas não é</b>. Alto = página confunde.','Clarity')}
+          ${item('rage','Rage click / Quickback','<b>Rage</b> = cliques de raiva no mesmo lugar. <b>Quickback</b> = entrou e voltou na hora. Frustração.','Clarity')}
+          ${item('scroll','Scroll médio','Quão <b>fundo</b> as pessoas rolam a página.','Clarity')}
+          ${item('hero','Passam do hero','% que passa da <b>1ª tela</b> (10% da página). Baixo = o topo não segura.','Clarity')}
+          ${item('lcp','LCP — velocidade','Tempo até o <b>maior elemento</b> carregar. Acima de <b>2,5s</b> = lento.','auditoria / PageSpeed')}
+        </div>
+      </div>`;
+    }
+
+    function render() {
+      const view = document.getElementById('view');
+      if (!DATA.periodos) { view.innerHTML = '<div class="empty" style="padding:60px">Sem dados. (snapshot não carregou)</div>'; return; }
+      if (state.tab==='geral') view.innerHTML = renderGeral();
+      else if (state.tab==='banco') view.innerHTML = renderBanco();
+      else view.innerHTML = renderFunil(state.tab);
+      const p = periodo();
+      document.getElementById('perHint').textContent = p ? `${p.since==p.until?p.since:p.dias+' dias'}` : '';
+      document.getElementById('gerado').textContent = DATA.gerado_em ? 'dados de ' + DATA.gerado_em.slice(0,16).replace('T',' ') : '';
+      wireQ();
+    }
+
+    function wireQ() {
+      document.querySelectorAll('.q').forEach(q => q.onclick = e => {
         e.preventDefault();
-        var d = document.getElementById('faq-' + q.dataset.faq);
-        if(!d) return;
-        d.open = true;
-        d.scrollIntoView({behavior:'smooth', block:'center'});
-        d.classList.add('flash');
-        setTimeout(function(){ d.classList.remove('flash'); }, 1300);
+        state.tab = 'banco';
+        document.querySelectorAll('.subtab').forEach(t => t.classList.toggle('active', t.dataset.tab==='banco'));
+        render();
+        setTimeout(() => {
+          const d = document.getElementById('faq-' + q.dataset.faq);
+          if (d) { d.open = true; d.scrollIntoView({behavior:'smooth',block:'center'}); d.classList.add('flash'); setTimeout(()=>d.classList.remove('flash'),1300); }
+        }, 30);
       });
+    }
+
+    document.querySelectorAll('.subtab').forEach(t => t.onclick = () => {
+      state.tab = t.dataset.tab;
+      document.querySelectorAll('.subtab').forEach(x => x.classList.toggle('active', x===t));
+      render();
     });
+    document.querySelectorAll('.per').forEach(pp => pp.onclick = () => {
+      state.per = pp.dataset.per;
+      document.querySelectorAll('.per').forEach(x => x.classList.toggle('active', x===pp));
+      render();
+    });
+    // delega o clique dos pills de funil (recriados a cada render)
+    document.getElementById('view').addEventListener('click', e => {
+      const fp = e.target.closest('.fp'); if (!fp) return;
+      fFiltro = fp.dataset.f; render();
+    });
+
+    render();
   </script>
 </body>
 </html>
