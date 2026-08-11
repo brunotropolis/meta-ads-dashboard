@@ -168,7 +168,7 @@
   @media(max-width:640px){ .main{ padding:16px; } .header{ padding:11px 14px; } }
   footer { margin-top:30px; padding-top:16px; border-top:1px solid var(--border); color:var(--muted); font-size:11.5px; }
   /* modo embed: dentro do dashboard (sem header/chat proprios) */
-  html[data-embed] .header, html[data-embed] .chat, html[data-embed] .chat-bg, html[data-embed] #chatToggle, html[data-embed] footer { display:none !important; }
+  html[data-embed] .header, html[data-embed] .chat, html[data-embed] .chat-bg, html[data-embed] #chatToggle, html[data-embed] footer, html[data-embed] .periodo-wrap { display:none !important; }
   html[data-embed] .leftcol { margin-right:0 !important; }
   html[data-embed] .controls { top:0 !important; }
   html[data-embed] body { background:transparent; }
@@ -783,6 +783,10 @@
     document.getElementById('chatToggle').onclick=()=>openChat(true);
     document.getElementById('chatX').onclick=()=>openChat(false);
     cbg.onclick=()=>openChat(false);
+
+    // período vindo do menu principal do dash (modo embed) — via URL no load e via postMessage depois
+    (function(){ const p=new URLSearchParams(location.search).get('periodo'); if(p && DATA.periodos && DATA.periodos[p]){ state.per=p; document.querySelectorAll('.per').forEach(x=>x.classList.toggle('active',x.dataset.per===p)); } })();
+    window.addEventListener('message', function(e){ if(e.data && e.data.type==='gestorPeriodo'){ const p=e.data.value; if(DATA.periodos && DATA.periodos[p]){ state.per=p; document.querySelectorAll('.per').forEach(x=>x.classList.toggle('active',x.dataset.per===p)); render(); } } });
 
     render();
     addMsg('Oi! Sou o <b>Gestor</b>. Pergunta o que quiser sobre as campanhas — <i>"como tá o ROAS?"</i>, <i>"qual está sangrando?"</i>, <i>"e a página?"</i>. Respondo com os dados reais desta tela.','bot');
