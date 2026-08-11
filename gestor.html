@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Gestor de Tráfego — Dream Baby</title>
+<style>
+  :root {
+    --bg:#0a0b15;
+    --bg-grad-1:#0a0b15;
+    --card:rgba(22, 27, 41, 0.7);
+    --card2:#141a29;
+    --card-solid:#161b29;
+    --border:rgba(99, 102, 241, 0.18);
+    --border-hover:rgba(167, 139, 250, 0.4);
+    --text:#f0f1f7;
+    --muted:#9ca3b8;
+    --green:#4ade80; --green-glow:rgba(74, 222, 128, 0.35);
+    --red:#f87171;
+    --yellow:#fbbf24;
+    --blue:#60a5fa;
+    --purple:#a78bfa; --purple-glow:rgba(167, 139, 250, 0.4);
+    --pink:#f472b6; --pink-glow:rgba(244, 114, 182, 0.4);
+    --cyan:#22d3ee;
+    --orange:#fb923c;
+    --accent:#8b5cf6;
+    --grad-vibrant:linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #22d3ee 100%);
+    --grad-purple:linear-gradient(135deg, #6366f1 0%, #a78bfa 100%);
+    --grad-pink:linear-gradient(135deg, #f472b6 0%, #a78bfa 100%);
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    background:var(--bg);
+    background-image:
+      radial-gradient(at 15% 0%, rgba(167,139,250,.18) 0px, transparent 50%),
+      radial-gradient(at 85% 0%, rgba(244,114,182,.12) 0px, transparent 50%),
+      radial-gradient(at 50% 50%, rgba(99,102,241,.08) 0px, transparent 50%),
+      radial-gradient(at 80% 100%, rgba(34,211,238,.08) 0px, transparent 50%);
+    background-attachment:fixed;
+    color:var(--text);
+    font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size:14px; min-height:100vh;
+  }
+  ::selection { background:var(--purple); color:var(--bg); }
+  body::-webkit-scrollbar { width:10px; }
+  body::-webkit-scrollbar-thumb { background:var(--border); border-radius:5px; }
+  .num { font-variant-numeric:tabular-nums; }
+
+  /* Header (idêntico ao dash) */
+  .header {
+    background:rgba(15,17,30,.85); backdrop-filter:blur(20px) saturate(180%);
+    -webkit-backdrop-filter:blur(20px) saturate(180%);
+    border-bottom:1px solid var(--border); padding:16px 24px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    position:sticky; top:0; z-index:100;
+  }
+  .header::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--grad-vibrant); opacity:.7; }
+  .header-left { display:flex; align-items:center; gap:14px; }
+  .header h1 { font-size:19px; font-weight:800; letter-spacing:-.01em; background:var(--grad-vibrant); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .header-sub { font-size:12px; color:var(--muted); margin-top:3px; }
+  .btn {
+    background:var(--card); backdrop-filter:blur(10px); border:1px solid var(--border);
+    color:var(--text); padding:8px 16px; border-radius:10px; cursor:pointer;
+    font-size:13px; font-weight:600; text-decoration:none; transition:all .2s; display:inline-flex; align-items:center; gap:7px;
+  }
+  .btn:hover { background:rgba(99,102,241,.15); border-color:var(--border-hover); transform:translateY(-1px); }
+  .badge-db { padding:3px 11px; border-radius:14px; font-size:11px; font-weight:700; letter-spacing:.3px; background:rgba(167,139,250,.15); color:var(--purple); border:1px solid rgba(167,139,250,.3); }
+
+  .main { padding:24px; max-width:1080px; margin:0 auto; }
+
+  .draftbar {
+    display:flex; gap:10px; align-items:flex-start; background:rgba(167,139,250,.08);
+    border:1px solid rgba(167,139,250,.28); border-radius:14px; padding:13px 16px; margin-bottom:22px; font-size:13px;
+  }
+  .draftbar b { color:var(--purple); }
+
+  /* KPI strip */
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:22px; }
+  .kpi { background:var(--card); backdrop-filter:blur(20px) saturate(160%); border:1px solid var(--border); border-radius:14px; padding:15px 17px; }
+  .kpi .l { font-size:11.5px; color:var(--muted); margin-bottom:6px; }
+  .kpi .v { font-size:23px; font-weight:800; letter-spacing:-.02em; }
+  .kpi .v small { font-size:12px; color:var(--muted); font-weight:600; }
+
+  /* Section / card (idêntico ao dash) */
+  .section { background:var(--card); backdrop-filter:blur(20px) saturate(160%); -webkit-backdrop-filter:blur(20px) saturate(160%); border:1px solid var(--border); border-radius:16px; margin-bottom:18px; overflow:hidden; }
+  .section-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .section-title { font-size:14px; font-weight:700; letter-spacing:-.01em; }
+  .section-sub { font-size:11px; color:var(--muted); margin-top:2px; }
+  .section-body { padding:16px 20px; }
+
+  .roas-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 11px; border-radius:8px; font-size:12px; font-weight:700; }
+  .roas-great { background:rgba(74,222,128,.15); color:var(--green); }
+  .roas-good  { background:rgba(96,165,250,.15); color:var(--blue); }
+  .roas-warn  { background:rgba(251,191,36,.16); color:var(--yellow); }
+  .roas-bad   { background:rgba(248,113,113,.15); color:var(--red); }
+
+  .camprow { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+  .campname { font-weight:700; font-size:15px; }
+  .metrics { display:grid; grid-template-columns:repeat(auto-fit,minmax(88px,1fr)); gap:14px 8px; margin-top:16px; padding-top:16px; border-top:1px solid var(--border); }
+  .m .ml { font-size:11px; color:var(--muted); margin-bottom:4px; }
+  .m .mv { font-size:16px; font-weight:700; }
+  .ok { color:var(--green); } .bad { color:var(--red); }
+  .reading { margin-top:16px; padding:13px 15px; background:rgba(251,191,36,.07); border-radius:10px; border-left:3px solid var(--yellow); font-size:13.5px; line-height:1.55; }
+  .reading b { color:var(--yellow); }
+
+  .empty { padding:28px 18px; text-align:center; color:var(--muted); }
+  .empty .big { font-size:15px; color:var(--text); font-weight:700; margin-bottom:6px; }
+  .cols { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:16px; }
+  .chip { font-size:11px; color:var(--muted); border:1px dashed var(--border); border-radius:7px; padding:4px 9px; }
+
+  .pagegrid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media(max-width:640px){ .pagegrid{ grid-template-columns:1fr; } .header{ padding:14px 16px; } .main{ padding:16px; } }
+  .pg h3 { margin:0; font-size:14.5px; font-weight:700; display:flex; align-items:center; gap:8px; }
+  .pg .url { font-size:11.5px; color:var(--muted); margin:3px 0 12px; }
+  .barline { display:flex; justify-content:space-between; align-items:center; font-size:13px; padding:7px 0; border-bottom:1px solid var(--border); }
+  .barline:last-of-type { border-bottom:0; }
+  .barline .bl { color:var(--muted); }
+  .barline .bv { font-weight:700; font-variant-numeric:tabular-nums; }
+  .diag { margin-top:12px; font-size:12.5px; background:rgba(248,113,113,.09); border-radius:9px; padding:10px 12px; line-height:1.5; }
+
+  .change { display:grid; grid-template-columns:64px 1fr auto; gap:14px; align-items:start; padding:14px 0; border-bottom:1px solid var(--border); }
+  .change:last-child { border-bottom:0; }
+  .change .when { font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
+  .change .what b { font-weight:700; }
+  .change .what .goal { font-size:12.5px; color:var(--muted); margin-top:3px; }
+  .beforeafter { text-align:right; font-size:12px; white-space:nowrap; }
+  .beforeafter .ba { font-weight:700; font-variant-numeric:tabular-nums; }
+  .beforeafter .from { color:var(--text); } .beforeafter .to { color:var(--muted); }
+  .tag-wait { display:inline-block; margin-top:7px; font-size:10.5px; padding:2px 8px; border-radius:8px; background:rgba(156,163,184,.12); color:var(--muted); }
+
+  footer { margin-top:36px; padding-top:18px; border-top:1px solid var(--border); color:var(--muted); font-size:12px; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <span style="font-size:24px">🎛️</span>
+      <div>
+        <h1>Gestor de Tráfego</h1>
+        <div class="header-sub">O que a mídia entrega · o que os testes dizem · o que a página faz com quem chega</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px">
+      <span class="badge-db">DREAM BABY</span>
+      <a class="btn" href="index.html">← Dashboard</a>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="draftbar">
+      <div>🎛️ <b>Rascunho da tela pra você reagir.</b> Os números são reais (Meta + venda Greenn + Clarity), mas <b>nada aqui atualiza sozinho ainda</b> e o Gestor <b>não mexe em campanha</b> — só mostra e sugere. Quem decide é você.</div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpis">
+      <div class="kpi"><div class="l">Campanhas ativas</div><div class="v num">1</div></div>
+      <div class="kpi"><div class="l">Gasto de mídia (7d)</div><div class="v num">R$ 713</div></div>
+      <div class="kpi"><div class="l">Vendas da mídia</div><div class="v num">17 <small>· R$ 891</small></div></div>
+      <div class="kpi"><div class="l">ROAS de mídia</div><div class="v num" style="color:var(--red)">1,25 <small>meta 1,8</small></div></div>
+      <div class="kpi"><div class="l">Vendas totais</div><div class="v num">60 <small>· 43 fora</small></div></div>
+    </div>
+
+    <!-- 1. CAMPANHAS -->
+    <div class="section">
+      <div class="section-header">
+        <div><div class="section-title">🚀 Campanhas — o que o gerenciador mostra</div>
+          <div class="section-sub">Meta Graph + venda real da Greenn · janela 7d (05→11 ago)</div></div>
+      </div>
+      <div class="section-body">
+        <div class="camprow">
+          <div><div class="campname">[DREAM POCKET] [ABO] [RELIGAMENTO] 08/08</div>
+            <div class="section-sub">religamento · começou 08/08 · provável ainda em aprendizado</div></div>
+          <span class="roas-badge roas-warn">observar · você decide</span>
+        </div>
+        <div class="metrics">
+          <div class="m"><div class="ml">Gasto</div><div class="mv num">R$ 713</div></div>
+          <div class="m"><div class="ml">Vendas</div><div class="mv num">17</div></div>
+          <div class="m"><div class="ml">Receita líq.</div><div class="mv num">R$ 891</div></div>
+          <div class="m"><div class="ml">ROAS real</div><div class="mv num bad">1,25</div></div>
+          <div class="m"><div class="ml">CPA</div><div class="mv num">R$ 42</div></div>
+          <div class="m"><div class="ml">CTR link ✓</div><div class="mv num ok">1,70%</div></div>
+          <div class="m"><div class="ml">Connect ✓</div><div class="mv num ok">94,5%</div></div>
+          <div class="m"><div class="ml">Ida checkout ✗</div><div class="mv num bad">9,5%</div></div>
+          <div class="m"><div class="ml">CPM</div><div class="mv num">R$ 23</div></div>
+        </div>
+        <div class="reading">
+          <b>Leitura do Gestor:</b> pela régua da casa, ROAS 1,25 &lt; 1,3 → cortaria. <b>Mas não no automático:</b>
+          é a única campanha de pé (pausar apaga a conta), o anúncio está ótimo (CTR e connect passam folgado) e o buraco
+          é a <b>ida pro checkout (9,5%)</b> — problema de <b>página</b>, não de mídia. É religamento novo, pode ser fase
+          de aprendizado. Recomendação: <b>segurar e observar 7d</b>, e atacar a página.
+        </div>
+        <div class="section-sub" style="margin-top:14px">43 das 60 vendas do período vieram de <b style="color:var(--text)">fora da mídia ativa</b> — 23 orgânico, o resto de campanhas já pausadas ainda atribuindo. A conta está muito apoiada em orgânico + resíduo.</div>
+      </div>
+    </div>
+
+    <!-- 2. TESTES -->
+    <div class="section">
+      <div class="section-header">
+        <div><div class="section-title">🧪 Testes de criativo</div>
+          <div class="section-sub">esteira: pasta Drive → teste padrão → veredito em 7d → escala ponderada</div></div>
+      </div>
+      <div class="section-body">
+        <div class="empty">
+          <div class="big">Nenhum teste rodando agora.</div>
+          Quando você jogar criativos na pasta, cada teste aparece aqui com seu veredito.
+          <div class="cols">
+            <span class="chip">criativo</span><span class="chip">dias no ar</span><span class="chip">gasto</span>
+            <span class="chip">retenção 3s / 25% / 50%</span><span class="chip">ROAS 7d</span>
+            <span class="chip">veredito</span><span class="chip">escala sugerida · 1-1-1 / 10X / Volume</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. PÁGINAS -->
+    <div class="section">
+      <div class="section-header">
+        <div><div class="section-title">🔮 Análise das páginas</div>
+          <div class="section-sub">Clarity (comportamento) + auditoria · a maior alavanca da operação</div></div>
+      </div>
+      <div class="section-body">
+        <div class="pagegrid">
+          <div>
+            <h3>Dream Baby Pocket <span class="roas-badge roas-bad">gargalo</span></h3>
+            <div class="url">dbpocket.manualdorecemnascido.com.br</div>
+            <div class="barline"><span class="bl">Ida pro checkout</span><span class="bv bad">12,7% <span style="color:var(--muted);font-weight:400">/25</span></span></div>
+            <div class="barline"><span class="bl">Passam do hero (10%)</span><span class="bv bad">31,5%</span></div>
+            <div class="barline"><span class="bl">Dead-clicks</span><span class="bv">13,3%</span></div>
+            <div class="barline"><span class="bl">LCP (carregamento)</span><span class="bv bad">4,3s</span></div>
+            <div class="barline"><span class="bl">Mobile IG/FB</span><span class="bv">91%</span></div>
+            <div class="diag">~60% saem na 1ª tela; dead-click concentrava no botão-fantasma "30 min". Alavanca: hero + subir o CTA.</div>
+          </div>
+          <div>
+            <h3>Quiz Perfis <span class="roas-badge roas-warn">observar</span></h3>
+            <div class="url">perfis.manualdorecemnascido.com.br</div>
+            <div class="barline"><span class="bl">Ida pro checkout</span><span class="bv bad">9,9% <span style="color:var(--muted);font-weight:400">/25</span></span></div>
+            <div class="barline"><span class="bl">Scroll médio (Clarity 3d)</span><span class="bv">70%</span></div>
+            <div class="barline"><span class="bl">Dead-click (sessões)</span><span class="bv">50%</span></div>
+            <div class="barline"><span class="bl">Rage / quickback</span><span class="bv ok">0%</span></div>
+            <div class="diag">Perda escondida entre terminar o quiz e ver a oferta. Scroll bom, mas metade das sessões tem clique morto — investigar onde.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. MUDANÇAS DE LAYOUT -->
+    <div class="section">
+      <div class="section-header">
+        <div><div class="section-title">📐 Mudanças de layout — o que ajustamos e o resultado</div>
+          <div class="section-sub">cada ajuste com a métrica-alvo e o antes × depois</div></div>
+      </div>
+      <div class="section-body" style="padding-top:4px">
+        <div class="change">
+          <div class="when">25 jul</div>
+          <div class="what"><b>"30 minutos" deixou de parecer botão</b><div class="goal">alvo: derrubar dead-clicks no hero</div></div>
+          <div class="beforeafter"><div class="ba"><span class="from">13,3%</span> → <span class="to">medindo</span></div><div><span class="tag-wait">em leitura 7d</span></div></div>
+        </div>
+        <div class="change">
+          <div class="when">25 jul</div>
+          <div class="what"><b>Preload do hero + fontes assíncronas</b><div class="goal">alvo: LCP 4,3s → menos de 2,5s</div></div>
+          <div class="beforeafter"><div class="ba"><span class="from">4,3s</span> → <span class="to">medindo</span></div><div><span class="tag-wait">em leitura</span></div></div>
+        </div>
+        <div class="change">
+          <div class="when">25 jul</div>
+          <div class="what"><b>Headline do hero em CAIXA ALTA</b><div class="goal">alvo: prender na 1ª tela (bounce)</div></div>
+          <div class="beforeafter"><div class="ba"><span class="from">31,5%</span> → <span class="to">medindo</span></div><div><span class="tag-wait">em leitura</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <b style="color:var(--text)">Painel Gestor</b> · dados: Meta Graph + Greenn (Supabase) + Clarity · read-only, sem execução · <a href="index.html" style="color:var(--purple)">voltar ao dashboard</a>
+    </footer>
+  </div>
+</body>
+</html>
