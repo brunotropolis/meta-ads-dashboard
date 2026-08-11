@@ -2541,20 +2541,6 @@ function renderOverview() {
   const bill = (DATA.billing || []).filter(b => b.conta);
   document.getElementById('metricsRow').innerHTML = `
     <div class="metric-card">
-      <div class="metric-label">👁 Impressões</div>
-      <div class="metric-value" style="color:var(--blue)">${fmtN(r.impressoes)}</div>
-      <div class="metric-sub">CPM: R$ ${fmt(gHoje / Math.max(parseInt(r.impressoes||1), 1) * 1000)}</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">🖱 Cliques</div>
-      <div class="metric-value" style="color:var(--purple)">${fmtN(r.cliques)}</div>
-      <div class="metric-sub">CTR: ${ctrNum.toFixed(2)}%</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">💵 CPC Médio</div>
-      <div class="metric-value" style="color:var(--orange)">R$ ${fmt(r.cpc)}</div>
-    </div>
-    <div class="metric-card">
       <div class="metric-label">🔄 Conversões</div>
       <div class="metric-value" style="color:var(--green)">${r.conversoes || 0}</div>
       <div class="metric-sub">R$ ${fmt(convVal)} receita</div>
