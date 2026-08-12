@@ -439,7 +439,13 @@
       view.innerHTML = state.tab==='geral'?renderGeral():state.tab==='banco'?renderBanco():renderFunil(state.tab);
       const p=periodo();
       document.getElementById('perHint').textContent = p?(p.since==p.until?p.since:p.dias+' dias'):'';
-      document.getElementById('gerado').textContent = DATA.gerado_em?'dados de '+DATA.gerado_em.slice(0,16).replace('T',' '):'';
+      const gEl=document.getElementById('gerado');
+      if(DATA.gerado_em){
+        const ageMin=Math.round((Date.now()-new Date(DATA.gerado_em).getTime())/60000);
+        const velho=ageMin>120;
+        const quando=ageMin<60?ageMin+' min atrás':(ageMin/60).toFixed(1)+'h atrás';
+        gEl.innerHTML='dados de '+DATA.gerado_em.slice(0,16).replace('T',' ')+' ('+quando+')'+(velho?' <b style="color:var(--red)">⚠ desatualizado, o snapshot não rodou</b>':'');
+      } else gEl.textContent='';
       wireQ();
     }
     function wireQ() {
