@@ -80,6 +80,11 @@
   .fb-pocket { background:rgba(96,165,250,.16); color:var(--blue); }
   .fb-quiz { background:rgba(244,114,182,.16); color:var(--pink); }
   .fb-guia { background:rgba(52,211,153,.16); color:var(--green); }
+  .stdot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+  .stdot.on { background:var(--green); box-shadow:0 0 6px var(--green); }
+  .stpill { display:inline-block; font-size:9px; font-weight:700; letter-spacing:.3px; text-transform:uppercase; padding:1px 6px; border-radius:6px; margin-right:6px; background:rgba(156,163,184,.16); color:var(--muted); vertical-align:middle; }
+  .row-paused { opacity:.5; }
+  .row-paused:hover { opacity:.8; }
   .fb-outro { background:rgba(156,163,184,.14); color:var(--muted); }
   .ok { color:var(--green); } .bad { color:var(--red); } .warn2 { color:var(--yellow); }
   .meta-tag { font-size:9.5px; color:var(--muted); font-weight:600; margin-left:5px; }
@@ -303,8 +308,11 @@
       if (!rows.length) return `<div class="empty"><div class="big">Nenhuma campanha com gasto nesse período.</div>Troque o período acima, ou este funil está sem verba agora.</div>`;
       const tr = rows.map(c => {
         const roasBad=c.roas>0&&c.roas<1.3, idaBad=c.ida!=null&&c.ida<15, freqBad=c.freq>=3;
-        return `<tr>
-        <td class="l"><span class="cname">${fb(c.funil)}${esc(c.nome)}</span></td>
+        const paused = c.ativa===false;
+        const stb = c.ativa===true ? `<span class="stdot on" title="ativa agora"></span>`
+                  : paused ? `<span class="stpill" title="${esc(c.status||'pausada')}">pausada</span>` : '';
+        return `<tr class="${paused?'row-paused':''}">
+        <td class="l"><span class="cname">${stb}${fb(c.funil)}${esc(c.nome)}</span></td>
         <td>${money(c.gasto)}</td>
         <td class="${freqBad?'bad':c.freq>=2?'warn2':''}">${c.freq||'—'}${freqBad?metaTag('máx 2'):''}</td>
         <td class="${c.ctr>=1.3?'ok':''}">${c.ctr?c.ctr+'%':'—'}</td>
