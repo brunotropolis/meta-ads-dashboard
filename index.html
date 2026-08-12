@@ -3434,6 +3434,7 @@ window.startDashboard = startDashboard;
 (function(){
   const AUSTIN_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/gestor-chat';
   const EXECUTE_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/austin-execute';
+  const CREATE_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/gestor-criar-campanha';
   // Proteção contra scans/abusos. Pra auth real (login), mover dashboard pra Cloudflare Access.
   // Override local: localStorage.setItem('austin-webhook-secret', '...')
   const WEBHOOK_SECRET = localStorage.getItem('austin-webhook-secret') || '06Md1TX1ifVnBev22UxZ-7qE88TMa9b-yozNECMZtp4';
@@ -3502,10 +3503,15 @@ window.startDashboard = startDashboard;
           btn.disabled = true;
           btn.innerHTML = renderLabel() + '<div style="margin-top:6px;color:#fbbf24;">⏳ Executando...</div>';
           try {
-            const res = await fetch(EXECUTE_URL, {
+            const criar = a.tipo === 'criar_campanha_teste';
+            const url = criar ? CREATE_URL : EXECUTE_URL;
+            const body = criar
+              ? { nome: a.nome || a.alvo, alvo: a.alvo, funil: a.funil, verba_dia: a.verba_dia, criativos: a.criativos || [] }
+              : { session_id: sessionId, action: a };
+            const res = await fetch(url, {
               method: 'POST',
               headers: {'Content-Type':'application/json','X-Webhook-Secret':WEBHOOK_SECRET},
-              body: JSON.stringify({ session_id: sessionId, action: a }),
+              body: JSON.stringify(body),
             });
             const data = await res.json();
             const ok = data.status === 'OK';
