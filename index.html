@@ -1383,7 +1383,7 @@ async function populateData(btn) {
 // ─── SWITCH TAB ─────────────────────────────────────────────────────────────
 // mapeia o período do menu principal pro filtro do Gestor (que tem hoje/ontem/3d/7d)
 function gestorPer() {
-  return ({ hoje:'hoje', ontem:'ontem', '3dias':'3d', semana:'7d', mes:'7d', personalizado:'7d' })[currentPeriodo] || '7d';
+  return ({ hoje:'hoje', ontem:'ontem', '3dias':'3d', semana:'7d', mes:'mes', personalizado:'mes' })[currentPeriodo] || '7d';
 }
 function switchTab(name) {
   activeTab = name;
