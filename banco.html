@@ -59,6 +59,16 @@
   .chkitem b { color:var(--text); }
   .chkitem .sub { color:var(--muted); }
   .empty { padding:40px 18px; text-align:center; color:var(--muted); }
+  /* medidores (gauge cards) */
+  .medgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:11px; margin-bottom:14px; }
+  .med { background:var(--card2); border:1px solid var(--border); border-left:3px solid var(--muted); border-radius:12px; padding:11px 13px; }
+  .med.g { border-left-color:var(--green); } .med.b { border-left-color:var(--red); } .med.n { border-left-color:var(--muted); }
+  .med .mrot { font-size:11px; color:var(--muted); font-weight:600; }
+  .med .mval { font-size:23px; font-weight:800; line-height:1.2; margin:3px 0; }
+  .med.g .mval { color:var(--green); } .med.b .mval { color:var(--red); } .med.n .mval { color:var(--text); }
+  .med .mref { font-size:10.5px; color:var(--muted); } .med .mref b { color:var(--text); }
+  .fcard { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:15px 17px; margin-bottom:16px; }
+  .fcard .ftitle { font-size:15px; font-weight:800; display:flex; align-items:center; gap:9px; margin-bottom:12px; }
 </style>
 </head>
 <body>
@@ -103,8 +113,22 @@
   const fmtVal=(v,f)=>{ if(v==null) return '—'; if(f==='pct') return v.toFixed(1)+'%'; if(f==='rs') return 'R$ '+(v<10?v.toFixed(2):Math.round(v)); if(f==='num') return v.toFixed(2); return String(v); };
   const parseMedia=s=>{ const n=parseFloat(String(s).replace(/[^\d,.-]/g,'').replace('.','').replace(',','.')); return isNaN(n)?null:n; };
 
+  // medidores (destaques) por funil
+  const MED = ['roas','ida','ctr','connect','cpa'];
   function tabelaFunil(fkey){
     const B=BASELINE[fkey], ag=aggFunil(fkey);
+    // medidores
+    let meds='';
+    if(!ag.vazio){
+      meds='<div class="medgrid">'+MED.map(k=>{
+        const l=B.linhas.find(x=>x.k===k); if(!l) return '';
+        const v=ag[k], mv=parseMedia(l.media);
+        let st='n'; if(v!=null && mv!=null && l.dir) st=(l.dir==='up'?v>=mv:v<=mv)?'g':'b';
+        return '<div class="med '+st+'"><div class="mrot">'+l.m+(l.gargalo?' ⭐':'')+'</div><div class="mval">'+fmtVal(v,l.f)+'</div><div class="mref">média <b>'+l.media+'</b> · ideal '+l.ideal+'</div></div>';
+      }).join('')+'</div>';
+    } else {
+      meds='<div class="empty" style="padding:22px">Sem campanha com gasto neste funil no período. A coluna "Atual" e os medidores aparecem quando houver gasto.</div>';
+    }
     const linhas=B.linhas.map(l=>{
       let atual='—', cls='atual';
       if(!ag.vazio && l.k){
@@ -114,9 +138,10 @@
       }
       return '<tr><td class="l">'+l.m+(l.gargalo?'<span class="gtag">GARGALO</span>':'')+'</td><td>'+l.ideal+'</td><td>'+l.media+'</td><td class="'+cls+'">'+atual+'</td></tr>';
     }).join('');
-    const semdados = ag.vazio ? '<div class="section-sub" style="padding:0 18px 12px">Sem campanha com gasto neste funil no período — a coluna "Atual" fica vazia.</div>' : '';
-    return '<div class="section"><div class="section-header"><div class="section-title fhead"><span class="fbadge '+B.badge+'">'+fkey.toUpperCase()+'</span> '+B.nome+'</div><div class="section-sub">verde = melhor que a nossa média · vermelho = pior · gargalo marcado</div></div>'+semdados+
-      '<div class="section-body" style="padding:0"><div class="table-wrap"><table class="cmp"><thead><tr><th class="l">Métrica</th><th>Ideal (curso)</th><th>Nossa média</th><th>Atual ('+PER+')</th></tr></thead><tbody>'+linhas+'</tbody></table></div></div></div>';
+    return '<div class="fcard"><div class="ftitle"><span class="fbadge '+B.badge+'">'+fkey.toUpperCase()+'</span> '+B.nome+'</div>'+
+      meds+
+      '<div class="table-wrap"><table class="cmp"><thead><tr><th class="l">Métrica</th><th>Ideal (curso)</th><th>Nossa média</th><th>Atual ('+PER+')</th></tr></thead><tbody>'+linhas+'</tbody></table></div>'+
+      '<div style="font-size:10.5px;color:var(--muted);margin-top:9px">⭐ gargalo · verde = melhor que a nossa média · vermelho = pior</div></div>';
   }
 
   const REGUAS = [
@@ -161,7 +186,7 @@
   function cmpBlocks(){
     return '<div class="section-header" style="border:0;padding:2px 2px 8px"><div class="section-title">📊 Comparativo por funil</div><div class="section-sub">como estamos × o ideal × o atual do período</div></div>'+
       tabelaFunil('pocket')+tabelaFunil('quiz')+
-      '<div class="section"><div class="section-header"><div class="section-title fhead"><span class="fbadge fb-guia">GUIA</span> Guia da Pega</div><div class="section-sub">baseline em breve — funil novo, ainda sem campanha paga rodando</div></div></div>';
+      '<div class="fcard"><div class="ftitle"><span class="fbadge fb-guia">GUIA</span> Guia da Pega</div><div class="empty" style="padding:22px">Baseline em breve — funil novo, ainda sem campanha paga rodando pra medir.</div></div>';
   }
   function glossBlocks(){
     const reguas='<div class="section"><div class="section-header"><div class="section-title">📏 Réguas de decisão</div><div class="section-sub">os limiares que o Austin aplica pra manter, observar, cortar e escalar</div></div><div class="section-body"><div class="gloss">'+
