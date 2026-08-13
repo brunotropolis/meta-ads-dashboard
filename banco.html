@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Banco de dados & métricas — Dream Baby</title>
+<style>
+  :root {
+    --bg:#0a0b15; --card:rgba(22,27,41,.7); --card2:#141a29;
+    --border:rgba(99,102,241,.18); --border-hover:rgba(167,139,250,.4);
+    --text:#f0f1f7; --muted:#9ca3b8;
+    --green:#4ade80; --red:#f87171; --yellow:#fbbf24; --blue:#60a5fa;
+    --purple:#a78bfa; --purple-glow:rgba(167,139,250,.4); --pink:#f472b6; --cyan:#22d3ee;
+    --grad-vibrant:linear-gradient(135deg,#a78bfa 0%,#f472b6 50%,#22d3ee 100%);
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg);
+    background-image:radial-gradient(at 15% 0%,rgba(167,139,250,.18) 0,transparent 50%),radial-gradient(at 85% 0%,rgba(244,114,182,.12) 0,transparent 50%),radial-gradient(at 80% 100%,rgba(34,211,238,.08) 0,transparent 50%);
+    background-attachment:fixed; color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-size:14px; min-height:100vh; }
+  ::-webkit-scrollbar { width:9px; height:9px; } ::-webkit-scrollbar-thumb { background:var(--border); border-radius:5px; }
+  .main { padding:18px 22px 60px; max-width:1080px; margin:0 auto; }
+  .intro { font-size:12.5px; color:var(--muted); line-height:1.6; margin-bottom:16px; background:rgba(167,139,250,.06); border:1px solid var(--border); border-radius:12px; padding:12px 15px; }
+  .intro b { color:var(--text); }
+  .section { background:var(--card); border:1px solid var(--border); border-radius:16px; margin-bottom:16px; overflow:hidden; }
+  .section-header { padding:14px 18px; border-bottom:1px solid var(--border); }
+  .section-title { font-size:14px; font-weight:700; }
+  .section-sub { font-size:11px; color:var(--muted); margin-top:2px; }
+  .section-body { padding:14px 18px; }
+  .table-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:12.5px; }
+  th { padding:9px 10px; text-align:right; font-size:10.5px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.3px; border-bottom:1px solid var(--border); white-space:nowrap; }
+  th.l, td.l { text-align:left; }
+  td { padding:9px 10px; text-align:right; border-bottom:1px solid var(--border); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  tr:last-child td { border-bottom:none; }
+  .cmp td.l { font-weight:600; color:var(--text); }
+  .cmp .melhor { color:var(--green); font-weight:700; }
+  .cmp .pior { color:var(--red); font-weight:700; }
+  .cmp .atual { font-weight:700; }
+  .gtag { font-size:9px; font-weight:800; letter-spacing:.4px; background:rgba(248,113,113,.16); color:var(--red); padding:1px 6px; border-radius:6px; margin-left:7px; vertical-align:middle; }
+  .fhead { display:inline-flex; align-items:center; gap:8px; }
+  .fbadge { font-size:10px; padding:2px 9px; border-radius:7px; font-weight:700; }
+  .fb-pocket { background:rgba(96,165,250,.16); color:var(--blue); }
+  .fb-quiz { background:rgba(244,114,182,.16); color:var(--pink); }
+  .fb-guia { background:rgba(52,211,153,.16); color:var(--green); }
+  /* glossario */
+  .gloss { display:grid; gap:11px; }
+  .gcard { border:1px solid var(--border); border-radius:12px; padding:13px 15px; background:rgba(10,11,21,.35); }
+  .gcard .gname { font-size:13px; font-weight:800; color:var(--text); display:flex; align-items:center; gap:8px; }
+  .gchip { font-size:10px; font-weight:800; letter-spacing:.4px; text-transform:uppercase; padding:2px 9px; border-radius:20px; background:var(--grad-vibrant); color:#fff; }
+  .gcard .gdesc { font-size:12.5px; color:var(--muted); line-height:1.55; margin-top:6px; }
+  .gcard .gdesc b { color:var(--text); }
+  .gmeta { display:flex; flex-wrap:wrap; gap:6px; margin-top:9px; }
+  .gpill { font-size:11px; font-weight:600; color:var(--text); background:rgba(99,102,241,.12); border:1px solid var(--border); border-radius:8px; padding:4px 9px; }
+  .gpill span { color:var(--muted); }
+  .chk { display:grid; gap:8px; }
+  .chkitem { display:flex; gap:11px; align-items:flex-start; font-size:12.5px; line-height:1.5; }
+  .chknum { flex:none; width:22px; height:22px; border-radius:7px; background:rgba(167,139,250,.16); color:var(--purple); font-weight:800; font-size:11px; display:flex; align-items:center; justify-content:center; }
+  .chkitem b { color:var(--text); }
+  .chkitem .sub { color:var(--muted); }
+  .empty { padding:40px 18px; text-align:center; color:var(--muted); }
+</style>
+</head>
+<body>
+<div class="main" id="main"></div>
+<script>
+  let DATA = {};
+  const PER = new URLSearchParams(location.search).get('periodo') || '7d';
+  const periodo = () => (DATA.periodos && DATA.periodos[PER]) ? DATA.periodos[PER] : null;
+
+  const BASELINE = {
+    pocket:{ nome:'Dream Baby Pocket', badge:'fb-pocket', linhas:[
+      {m:'CTR (link)', ideal:'1,3%', media:'1,71%', k:'ctr', f:'pct', dir:'up'},
+      {m:'Connect rate', ideal:'80%', media:'94%', k:'connect', f:'pct', dir:'up'},
+      {m:'Ida pro checkout', ideal:'25%', media:'12,7%', k:'ida', f:'pct', dir:'up', gargalo:true},
+      {m:'Conversão do checkout', ideal:'40%', media:'26%', k:null, f:'pct'},
+      {m:'CPM', ideal:'—', media:'R$ 27', k:'cpm', f:'rs', dir:'down'},
+      {m:'CPA (real)', ideal:'R$ 36', media:'R$ 50', k:'cpa', f:'rs', dir:'down'},
+      {m:'ROAS real', ideal:'2,0', media:'1,45', k:'roas', f:'num', dir:'up'},
+      {m:'Frequência', ideal:'2-3', media:'~2,0', k:'freq', f:'num'},
+      {m:'Ticket médio', ideal:'—', media:'R$ 73', k:null, f:'rs'},
+    ]},
+    quiz:{ nome:'Quiz Dream Baby', badge:'fb-quiz', linhas:[
+      {m:'CTR (link)', ideal:'1,3%', media:'1,46%', k:'ctr', f:'pct', dir:'up'},
+      {m:'Connect rate', ideal:'80%', media:'98%', k:'connect', f:'pct', dir:'up'},
+      {m:'Ida pro checkout', ideal:'25%', media:'9,9%', k:'ida', f:'pct', dir:'up', gargalo:true},
+      {m:'Conversão do checkout', ideal:'40%', media:'42%', k:null, f:'pct'},
+      {m:'CPM', ideal:'—', media:'R$ 29', k:'cpm', f:'rs', dir:'down'},
+      {m:'CPA (real)', ideal:'R$ 36', media:'R$ 49', k:'cpa', f:'rs', dir:'down'},
+      {m:'ROAS real', ideal:'2,0', media:'1,47', k:'roas', f:'num', dir:'up'},
+      {m:'Frequência', ideal:'2-3', media:'~2,0', k:'freq', f:'num'},
+      {m:'Ticket médio', ideal:'—', media:'R$ 72', k:null, f:'rs'},
+    ]},
+  };
+  function aggFunil(fkey){
+    const p=periodo(); if(!p) return {vazio:true};
+    const rows=(p.campanhas||[]).filter(c=>c.gasto>0 && c.funil===fkey);
+    if(!rows.length) return {vazio:true};
+    const gasto=rows.reduce((s,c)=>s+c.gasto,0), vendas=rows.reduce((s,c)=>s+c.vendas,0), receita=rows.reduce((s,c)=>s+c.receita,0);
+    const w=k=>{ let n=0,d=0; rows.forEach(c=>{ if(c[k]!=null){ n+=c[k]*c.gasto; d+=c.gasto; } }); return d?n/d:null; };
+    return { gasto, vendas, receita, roas:gasto?receita/gasto:0, cpa:vendas?gasto/vendas:null, ctr:w('ctr'), connect:w('connect'), ida:w('ida'), cpm:w('cpm'), freq:w('freq') };
+  }
+  const fmtVal=(v,f)=>{ if(v==null) return '—'; if(f==='pct') return v.toFixed(1)+'%'; if(f==='rs') return 'R$ '+(v<10?v.toFixed(2):Math.round(v)); if(f==='num') return v.toFixed(2); return String(v); };
+  const parseMedia=s=>{ const n=parseFloat(String(s).replace(/[^\d,.-]/g,'').replace('.','').replace(',','.')); return isNaN(n)?null:n; };
+
+  function tabelaFunil(fkey){
+    const B=BASELINE[fkey], ag=aggFunil(fkey);
+    const linhas=B.linhas.map(l=>{
+      let atual='—', cls='atual';
+      if(!ag.vazio && l.k){
+        const v=ag[l.k]; atual=fmtVal(v,l.f);
+        const mv=parseMedia(l.media);
+        if(v!=null && mv!=null && l.dir){ cls='atual '+((l.dir==='up'?v>=mv:v<=mv)?'melhor':'pior'); }
+      }
+      return '<tr><td class="l">'+l.m+(l.gargalo?'<span class="gtag">GARGALO</span>':'')+'</td><td>'+l.ideal+'</td><td>'+l.media+'</td><td class="'+cls+'">'+atual+'</td></tr>';
+    }).join('');
+    const semdados = ag.vazio ? '<div class="section-sub" style="padding:0 18px 12px">Sem campanha com gasto neste funil no período — a coluna "Atual" fica vazia.</div>' : '';
+    return '<div class="section"><div class="section-header"><div class="section-title fhead"><span class="fbadge '+B.badge+'">'+fkey.toUpperCase()+'</span> '+B.nome+'</div><div class="section-sub">verde = melhor que a nossa média · vermelho = pior · gargalo marcado</div></div>'+semdados+
+      '<div class="section-body" style="padding:0"><div class="table-wrap"><table class="cmp"><thead><tr><th class="l">Métrica</th><th>Ideal (curso)</th><th>Nossa média</th><th>Atual ('+PER+')</th></tr></thead><tbody>'+linhas+'</tbody></table></div></div></div>';
+  }
+
+  const REGUAS = [
+    {n:'ROAS meta de mídia', v:'1,8', d:'Alvo de retorno sobre o gasto de anúncio (só receita de campanha ÷ gasto Meta).'},
+    {n:'CORTAR', v:'pausa', d:'ROAS < 1,3 com R$ 60+ gastos, OU passou de R$ 72 (1 ticket) sem 1 venda. Daí em diante é prejuízo garantido.'},
+    {n:'OBSERVAR', v:'zona cinza', d:'ROAS entre 1,3 e 1,8 — não corta, acompanha a tendência.'},
+    {n:'AQUECENDO', v:'< R$ 60', d:'Menos de R$ 60 gastos na janela: sem base pra julgar, deixa rodar.'},
+    {n:'WINNER', v:'escalar', d:'ROAS ≥ 2 com 50+ vendas. Só aí vira candidato a escala.'},
+    {n:'Janela que decide', v:'7 dias', d:'O diário só serve pra ver o que quebrou; quem decide corte/escala é a janela de 7 dias.'},
+    {n:'Ticket médio', v:'R$ 72', d:'Ticket médio dos funis Pocket/Quiz. É o limiar do "gastou 1 ticket sem vender".'},
+  ];
+  const MODELOS = [
+    {n:'Teste', c:'validar criativo', d:'1 campanha → 1 conjunto Advantage+ → <b>5 a 20 criativos</b> competindo entre si.', meta:[['Verba','nº criativos × ~R$ 36'],['Quando','testar criativos novos']]},
+    {n:'1-1-1', c:'1 winner', d:'1 campanha → 1 conjunto → <b>1 criativo</b>. Só quando existe UM winner com ROAS 2 consistente em 7d.', meta:[['Verba','5-10× ticket (~R$ 360-720)'],['Quando','só na terça · repetir muito sobe o CPM']]},
+    {n:'10X', c:'2+ winners', d:'1 campanha Advantage+ com <b>todos os winners juntos</b>.', meta:[['Verba','10× ticket (~R$ 720)'],['Quando','tem 2+ winners validados']]},
+    {n:'Volume', c:'muito volume', d:'<b>3 a 5 criativos</b> com 20+ vendas em 7d, ignorando o ROAS — o que vale é o nº de clientes.', meta:[['Verba','5-10× ticket'],['Quando','vários criativos vendendo em volume']]},
+  ];
+  const CHECKLIST = [
+    {n:'0', t:'A campanha está ATIVA ou PAUSADA agora?', s:'Gasto no período NÃO quer dizer que está rodando. Nunca elogiar pausada como winner, nunca sugerir pausar o que já está pausado.'},
+    {n:'1', t:'A composição mudou entre os períodos?', s:'Quais funis/campanhas rodavam em cada um — o mix pode enganar a média.'},
+    {n:'2', t:'Os dias estão fechados?', s:'Dado do dia corrente não entra em conclusão.'},
+    {n:'3', t:'A métrica é diária ou acumulada?', s:'Declarar a janela junto do número (freq diária 1,4-1,7 vs 7d 2,6-3,9).'},
+    {n:'4', t:'Os números vieram do mesmo nível?', s:'Não somar conta com conjunto com anúncio.'},
+    {n:'5', t:'Dá pra chegar no número por outro caminho?', s:'Pixel × Greenn · nível conta × soma dos conjuntos.'},
+    {n:'6', t:'Quantas vendas sustentam isso?', s:'Abaixo de 10 vendas = amostra frágil, dizer explicitamente.'},
+    {n:'7', t:'Testei a hipótese contra TODOS os casos?', s:'Ou só contra o que a confirma? (o erro do "cost cap é bom" veio de 1 caso favorável).'},
+    {n:'★', t:'Gerenciador × Dashboard', s:'Gerenciador mede entrega/custo · Dashboard/Greenn mede venda/ROAS/origem. ROAS de mídia = só canais pagos ÷ gasto.'},
+    {n:'★', t:'Janela de atribuição de 7 dias', s:'Venda de link-da-bio aparece no dash/Greenn ANTES de aparecer atribuída no gerenciador. Olhar só o gerenciador subestima e corta campanha boa.'},
+  ];
+
+  function render(){
+    const el=document.getElementById('main');
+    const intro='<div class="intro"><b>Esta é a base de referência que o Austin usa pra decidir.</b> Só consulta — se quiser mudar algum número, me pede direto no chat. '+
+      '<b>Ideal</b> = referência do curso ProAlt · <b>Nossa média</b> = medido na conta (01/06–07/08) · <b>Atual</b> = agregado do período do menu. '+
+      'Fontes: entrega/custo = Meta · venda e ROAS = Greenn (nunca o pixel) · comportamento da página = Clarity.</div>';
+    if(!DATA.periodos){
+      el.innerHTML=intro+cmpBlocks(true)+glossBlocks();
+      return;
+    }
+    el.innerHTML=intro+cmpBlocks(false)+glossBlocks();
+  }
+  function cmpBlocks(){
+    return '<div class="section-header" style="border:0;padding:2px 2px 8px"><div class="section-title">📊 Comparativo por funil</div><div class="section-sub">como estamos × o ideal × o atual do período</div></div>'+
+      tabelaFunil('pocket')+tabelaFunil('quiz')+
+      '<div class="section"><div class="section-header"><div class="section-title fhead"><span class="fbadge fb-guia">GUIA</span> Guia da Pega</div><div class="section-sub">baseline em breve — funil novo, ainda sem campanha paga rodando</div></div></div>';
+  }
+  function glossBlocks(){
+    const reguas='<div class="section"><div class="section-header"><div class="section-title">📏 Réguas de decisão</div><div class="section-sub">os limiares que o Austin aplica pra manter, observar, cortar e escalar</div></div><div class="section-body"><div class="gloss">'+
+      REGUAS.map(r=>'<div class="gcard"><div class="gname">'+r.n+' <span class="gchip">'+r.v+'</span></div><div class="gdesc">'+r.d+'</div></div>').join('')+'</div></div></div>';
+    const modelos='<div class="section"><div class="section-header"><div class="section-title">🧪 Modelos de campanha</div><div class="section-sub">o termo de cada um, pra saber qual usar na hora de subir</div></div><div class="section-body"><div class="gloss">'+
+      MODELOS.map(m=>'<div class="gcard"><div class="gname">'+m.n+' <span class="gchip">'+m.c+'</span></div><div class="gdesc">'+m.d+'</div><div class="gmeta">'+m.meta.map(x=>'<span class="gpill"><span>'+x[0]+':</span> '+x[1]+'</span>').join('')+'</div></div>').join('')+'</div></div></div>';
+    const chk='<div class="section"><div class="section-header"><div class="section-title">✅ Checklist de análise</div><div class="section-sub">tudo que o Austin confere ANTES de opinar ou sugerir um corte</div></div><div class="section-body"><div class="chk">'+
+      CHECKLIST.map(c=>'<div class="chkitem"><div class="chknum">'+c.n+'</div><div><b>'+c.t+'</b><br><span class="sub">'+c.s+'</span></div></div>').join('')+'</div></div></div>';
+    return reguas+modelos+chk;
+  }
+
+  fetch('snapshot.json?cb='+Date.now()).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }).then(function(d){ DATA=d; render(); }).catch(function(e){ window.__snapErr=String(e&&e.message||e); render(); });
+</script>
+</body>
+</html>
