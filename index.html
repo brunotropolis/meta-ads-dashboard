@@ -3432,12 +3432,11 @@ window.startDashboard = startDashboard;
 
 <script>
 (function(){
-  const AUSTIN_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/gestor-chat';
-  const EXECUTE_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/austin-execute';
-  const CREATE_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/gestor-criar-campanha';
-  // Proteção contra scans/abusos. Pra auth real (login), mover dashboard pra Cloudflare Access.
-  // Override local: localStorage.setItem('austin-webhook-secret', '...')
-  const WEBHOOK_SECRET = localStorage.getItem('austin-webhook-secret') || '06Md1TX1ifVnBev22UxZ-7qE88TMa9b-yozNECMZtp4';
+  // Chamam o Worker (mesma origem, atrás do login), que adiciona o segredo server-side.
+  // Nenhum segredo fica no código público.
+  const AUSTIN_URL = '/api/chat';
+  const EXECUTE_URL = '/api/execute';
+  const CREATE_URL = '/api/create';
   const SESSION_KEY = 'austin-session-id';
   const HISTORY_KEY = 'austin-history-v1';
 
@@ -3510,7 +3509,7 @@ window.startDashboard = startDashboard;
               : { session_id: sessionId, action: a };
             const res = await fetch(url, {
               method: 'POST',
-              headers: {'Content-Type':'application/json','X-Webhook-Secret':WEBHOOK_SECRET},
+              headers: {'Content-Type':'application/json'},
               body: JSON.stringify(body),
             });
             const data = await res.json();
