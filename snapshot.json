@@ -1,5 +1,5 @@
 {
- "gerado_em": "2026-08-13T19:44:47.066Z",
+ "gerado_em": "2026-08-13T20:02:05.196Z",
  "criativos": [
   {
    "creative_id": "1352935193039731",
@@ -34,7 +34,8 @@
    "ctr": 1.93,
    "compras_meta": 59,
    "cpa_meta": 33.84,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2445279292587064"
   },
   {
    "ad_id": "120248948452740158",
@@ -46,7 +47,8 @@
    "ctr": 1.35,
    "compras_meta": 54,
    "cpa_meta": 29.24,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1063673113008050"
   },
   {
    "ad_id": "120249635467640158",
@@ -58,7 +60,8 @@
    "ctr": 1.91,
    "compras_meta": 60,
    "cpa_meta": 23.19,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1028295390174470"
   },
   {
    "ad_id": "120249189220060158",
@@ -70,7 +73,8 @@
    "ctr": 1.17,
    "compras_meta": 33,
    "cpa_meta": 34.59,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2216686729172030"
   },
   {
    "ad_id": "120251047682080785",
@@ -82,7 +86,8 @@
    "ctr": 1.84,
    "compras_meta": 20,
    "cpa_meta": 47.1,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2040548949879756"
   },
   {
    "ad_id": "120248036455280158",
@@ -94,7 +99,8 @@
    "ctr": 1.18,
    "compras_meta": 27,
    "cpa_meta": 27.98,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1340488284190778"
   },
   {
    "ad_id": "120247682472920158",
@@ -106,7 +112,8 @@
    "ctr": 1.37,
    "compras_meta": 20,
    "cpa_meta": 37.24,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1364472032411632"
   },
   {
    "ad_id": "120249833996310158",
@@ -118,7 +125,8 @@
    "ctr": 2.43,
    "compras_meta": 24,
    "cpa_meta": 29.85,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "943196571514120"
   },
   {
    "ad_id": "120251047586440785",
@@ -130,7 +138,8 @@
    "ctr": 1.46,
    "compras_meta": 17,
    "cpa_meta": 41.38,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1556957809562250"
   },
   {
    "ad_id": "120249635420940158",
@@ -142,7 +151,8 @@
    "ctr": 1.35,
    "compras_meta": 21,
    "cpa_meta": 31.43,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2885003968510238"
   },
   {
    "ad_id": "120250176891960158",
@@ -154,7 +164,8 @@
    "ctr": 1.66,
    "compras_meta": 11,
    "cpa_meta": 57.7,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1604079607957480"
   },
   {
    "ad_id": "120248265009870158",
@@ -166,7 +177,8 @@
    "ctr": 1.95,
    "compras_meta": 13,
    "cpa_meta": 42.37,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2445279292587064"
   },
   {
    "ad_id": "120249635423910158",
@@ -178,7 +190,8 @@
    "ctr": 1.44,
    "compras_meta": 14,
    "cpa_meta": 36.55,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1561242792109077"
   },
   {
    "ad_id": "120249524976940158",
@@ -190,7 +203,8 @@
    "ctr": 1.67,
    "compras_meta": 19,
    "cpa_meta": 23.77,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1017155244279644"
   },
   {
    "ad_id": "120249524675580158",
@@ -202,7 +216,8 @@
    "ctr": 1.71,
    "compras_meta": 13,
    "cpa_meta": 34.53,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1727536765255072"
   },
   {
    "ad_id": "120248834860260158",
@@ -214,7 +229,8 @@
    "ctr": 1.02,
    "compras_meta": 11,
    "cpa_meta": 40.65,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2455186568292424"
   },
   {
    "ad_id": "120249833919730158",
@@ -226,7 +242,8 @@
    "ctr": 1.77,
    "compras_meta": 12,
    "cpa_meta": 36.88,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1604079607957480"
   },
   {
    "ad_id": "120249633782490158",
@@ -238,7 +255,8 @@
    "ctr": 1.44,
    "compras_meta": 12,
    "cpa_meta": 36.34,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2249696432539878"
   },
   {
    "ad_id": "120249834023060158",
@@ -250,7 +268,8 @@
    "ctr": 1.41,
    "compras_meta": 9,
    "cpa_meta": 44.68,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2554085005062525"
   },
   {
    "ad_id": "120249865185340158",
@@ -262,7 +281,8 @@
    "ctr": 1.46,
    "compras_meta": 13,
    "cpa_meta": 30.53,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2100618397472633"
   },
   {
    "ad_id": "120251218297410785",
@@ -274,7 +294,8 @@
    "ctr": 1.93,
    "compras_meta": 4,
    "cpa_meta": 96.78,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2262212617648399"
   },
   {
    "ad_id": "120251047716030785",
@@ -286,7 +307,8 @@
    "ctr": 2.01,
    "compras_meta": 8,
    "cpa_meta": 47.39,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1952932385401992"
   },
   {
    "ad_id": "120249580137230158",
@@ -298,7 +320,8 @@
    "ctr": 1.98,
    "compras_meta": 4,
    "cpa_meta": 87.92,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1081432367541513"
   },
   {
    "ad_id": "120249865185300158",
@@ -310,7 +333,8 @@
    "ctr": 1.22,
    "compras_meta": 10,
    "cpa_meta": 32,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1267999501929865"
   },
   {
    "ad_id": "120249635294860158",
@@ -322,7 +346,8 @@
    "ctr": 1.34,
    "compras_meta": 8,
    "cpa_meta": 38.63,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1047139324430479"
   },
   {
    "ad_id": "120248434378780158",
@@ -334,7 +359,8 @@
    "ctr": 1.38,
    "compras_meta": 6,
    "cpa_meta": 46.35,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2513391209179525"
   },
   {
    "ad_id": "120249524329330158",
@@ -346,7 +372,8 @@
    "ctr": 1.07,
    "compras_meta": 5,
    "cpa_meta": 50.87,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1337813407949349"
   },
   {
    "ad_id": "120247682569600158",
@@ -358,7 +385,8 @@
    "ctr": 1.3,
    "compras_meta": 5,
    "cpa_meta": 48.61,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2262135297858501"
   },
   {
    "ad_id": "120249635476820158",
@@ -370,7 +398,8 @@
    "ctr": 1.3,
    "compras_meta": 8,
    "cpa_meta": 26.3,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1935950007092406"
   },
   {
    "ad_id": "120248149374830158",
@@ -382,7 +411,8 @@
    "ctr": 2.08,
    "compras_meta": 6,
    "cpa_meta": 34.21,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1460744022471219"
   },
   {
    "ad_id": "120248149438370158",
@@ -394,7 +424,8 @@
    "ctr": 1.28,
    "compras_meta": 6,
    "cpa_meta": 34.08,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "851160874354203"
   },
   {
    "ad_id": "120248149361120158",
@@ -406,7 +437,8 @@
    "ctr": 2.33,
    "compras_meta": 8,
    "cpa_meta": 25.47,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1444644327430501"
   },
   {
    "ad_id": "120249068443180158",
@@ -418,7 +450,8 @@
    "ctr": 1.12,
    "compras_meta": 4,
    "cpa_meta": 47.85,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1667112471256427"
   },
   {
    "ad_id": "120249833530070158",
@@ -430,7 +463,8 @@
    "ctr": 1.46,
    "compras_meta": 4,
    "cpa_meta": 42.27,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1581504283605468"
   },
   {
    "ad_id": "120247682569590158",
@@ -442,7 +476,8 @@
    "ctr": 1.55,
    "compras_meta": 3,
    "cpa_meta": 50.67,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2677818492620786"
   },
   {
    "ad_id": "120248285478110158",
@@ -454,7 +489,8 @@
    "ctr": 1.96,
    "compras_meta": 2,
    "cpa_meta": 74.67,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1037696885673881"
   },
   {
    "ad_id": "120249635378790158",
@@ -466,7 +502,8 @@
    "ctr": 1.63,
    "compras_meta": 2,
    "cpa_meta": 73.22,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2270628133750306"
   },
   {
    "ad_id": "120249635427480158",
@@ -478,7 +515,8 @@
    "ctr": 2.58,
    "compras_meta": 6,
    "cpa_meta": 23.96,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2185002492347254"
   },
   {
    "ad_id": "120249833969700158",
@@ -490,7 +528,8 @@
    "ctr": 2.05,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1352935193039731"
   },
   {
    "ad_id": "120251646688770785",
@@ -502,7 +541,8 @@
    "ctr": 1.74,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1952932385401992"
   },
   {
    "ad_id": "120250791462480785",
@@ -514,7 +554,8 @@
    "ctr": 1.92,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "946958311640587"
   },
   {
    "ad_id": "120248149479010158",
@@ -526,7 +567,8 @@
    "ctr": 1.41,
    "compras_meta": 3,
    "cpa_meta": 41.94,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "36448350261446584"
   },
   {
    "ad_id": "120249189366330158",
@@ -538,7 +580,8 @@
    "ctr": 1.13,
    "compras_meta": 3,
    "cpa_meta": 41.14,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2393711717761435"
   },
   {
    "ad_id": "120249961231130158",
@@ -550,7 +593,8 @@
    "ctr": 2.01,
    "compras_meta": 3,
    "cpa_meta": 40.95,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1604079607957480"
   },
   {
    "ad_id": "120248149490300158",
@@ -562,7 +606,8 @@
    "ctr": 1.12,
    "compras_meta": 2,
    "cpa_meta": 60.93,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1720286895650334"
   },
   {
    "ad_id": "120249524357980158",
@@ -574,7 +619,8 @@
    "ctr": 1.31,
    "compras_meta": 2,
    "cpa_meta": 60.7,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2489389741503575"
   },
   {
    "ad_id": "120249580137240158",
@@ -586,7 +632,8 @@
    "ctr": 1.47,
    "compras_meta": 5,
    "cpa_meta": 23.61,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1910485852967229"
   },
   {
    "ad_id": "120249833588220158",
@@ -598,7 +645,8 @@
    "ctr": 1.63,
    "compras_meta": 3,
    "cpa_meta": 39.35,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1056866743540333"
   },
   {
    "ad_id": "120249625760970158",
@@ -610,7 +658,8 @@
    "ctr": 1.5,
    "compras_meta": 2,
    "cpa_meta": 52.75,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1039737718804223"
   },
   {
    "ad_id": "120248149206940158",
@@ -622,7 +671,8 @@
    "ctr": 1.55,
    "compras_meta": 4,
    "cpa_meta": 26.33,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2098557477757489"
   },
   {
    "ad_id": "120247408284000158",
@@ -634,7 +684,8 @@
    "ctr": 13.13,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2150363739075299"
   },
   {
    "ad_id": "120247408133960158",
@@ -646,7 +697,8 @@
    "ctr": 5.36,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "4343183095929995"
   },
   {
    "ad_id": "120247407391990158",
@@ -658,7 +710,8 @@
    "ctr": 5.55,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1609992580092423"
   },
   {
    "ad_id": "120247408764090158",
@@ -670,7 +723,8 @@
    "ctr": 4.1,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "907889952322008"
   },
   {
    "ad_id": "120247408114230158",
@@ -682,7 +736,8 @@
    "ctr": 10.3,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "26893037083724893"
   },
   {
    "ad_id": "120247408794400158",
@@ -694,7 +749,8 @@
    "ctr": 3.69,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1009986848069756"
   },
   {
    "ad_id": "120247408824430158",
@@ -706,7 +762,8 @@
    "ctr": 10.16,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1627272529405036"
   },
   {
    "ad_id": "120250028949620158",
@@ -718,7 +775,8 @@
    "ctr": 2.21,
    "compras_meta": 3,
    "cpa_meta": 32.86,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1284958636857555"
   },
   {
    "ad_id": "120248948307330158",
@@ -730,7 +788,8 @@
    "ctr": 0.97,
    "compras_meta": 1,
    "cpa_meta": 97.51,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2393711717761435"
   },
   {
    "ad_id": "120249865185290158",
@@ -742,7 +801,8 @@
    "ctr": 1.09,
    "compras_meta": 2,
    "cpa_meta": 48.2,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "918738291270871"
   },
   {
    "ad_id": "120251218232690785",
@@ -754,7 +814,8 @@
    "ctr": 2.06,
    "compras_meta": 4,
    "cpa_meta": 23.93,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "4578402359152159"
   },
   {
    "ad_id": "120249635350870158",
@@ -766,7 +827,8 @@
    "ctr": 0.8,
    "compras_meta": 1,
    "cpa_meta": 93.7,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "870055002531464"
   },
   {
    "ad_id": "120248149128570158",
@@ -778,7 +840,8 @@
    "ctr": 2.1,
    "compras_meta": 3,
    "cpa_meta": 30.17,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "36552466127731228"
   },
   {
    "ad_id": "120249767448500158",
@@ -790,7 +853,8 @@
    "ctr": 1.03,
    "compras_meta": 2,
    "cpa_meta": 43.47,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2498495000923538"
   },
   {
    "ad_id": "120248148555470158",
@@ -802,7 +866,8 @@
    "ctr": 1.96,
    "compras_meta": 3,
    "cpa_meta": 28.93,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1737719794244838"
   },
   {
    "ad_id": "120250176892690158",
@@ -814,7 +879,8 @@
    "ctr": 2.14,
    "compras_meta": 6,
    "cpa_meta": 14.27,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "943196571514120"
   },
   {
    "ad_id": "120249865185320158",
@@ -826,7 +892,8 @@
    "ctr": 1.32,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1339578861642420"
   },
   {
    "ad_id": "120249834094450158",
@@ -838,7 +905,21 @@
    "ctr": 1.64,
    "compras_meta": 1,
    "cpa_meta": 82.26,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1545665596997351"
+  },
+  {
+   "ad_id": "120250290229260158",
+   "ad": "Mathias 003",
+   "campanha": "[DREAM POCKET] [1-1-1] MATHIAS 003 12/08",
+   "funil": "pocket",
+   "conta": "db",
+   "gasto": 79.45,
+   "ctr": 1.25,
+   "compras_meta": 5,
+   "cpa_meta": 15.89,
+   "ativo": true,
+   "creative_id": "1352935193039731"
   },
   {
    "ad_id": "120249633703410158",
@@ -850,19 +931,8 @@
    "ctr": 1,
    "compras_meta": 1,
    "cpa_meta": 77.9,
-   "ativo": false
-  },
-  {
-   "ad_id": "120250290229260158",
-   "ad": "Mathias 003",
-   "campanha": "[DREAM POCKET] [1-1-1] MATHIAS 003 12/08",
-   "funil": "pocket",
-   "conta": "db",
-   "gasto": 76.56,
-   "ctr": 1.29,
-   "compras_meta": 5,
-   "cpa_meta": 15.31,
-   "ativo": true
+   "ativo": false,
+   "creative_id": "1762807451738569"
   },
   {
    "ad_id": "120249865165250158",
@@ -874,7 +944,21 @@
    "ctr": 1.74,
    "compras_meta": 1,
    "cpa_meta": 76.41,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1587796959715501"
+  },
+  {
+   "ad_id": "120250290121520158",
+   "ad": "DB 101",
+   "campanha": "[DREAM POCKET] [1-1-1] DB 101 12/08",
+   "funil": "pocket",
+   "conta": "db",
+   "gasto": 75.2,
+   "ctr": 1.34,
+   "compras_meta": 3,
+   "cpa_meta": 25.07,
+   "ativo": true,
+   "creative_id": "2100618397472633"
   },
   {
    "ad_id": "120249758153800158",
@@ -886,19 +970,8 @@
    "ctr": 0.98,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
-  },
-  {
-   "ad_id": "120250290121520158",
-   "ad": "DB 101",
-   "campanha": "[DREAM POCKET] [1-1-1] DB 101 12/08",
-   "funil": "pocket",
-   "conta": "db",
-   "gasto": 74.62,
-   "ctr": 1.36,
-   "compras_meta": 3,
-   "cpa_meta": 24.87,
-   "ativo": true
+   "ativo": false,
+   "creative_id": "3563687163785751"
   },
   {
    "ad_id": "120250911567510785",
@@ -910,7 +983,8 @@
    "ctr": 2,
    "compras_meta": 1,
    "cpa_meta": 73.42,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1740716690683427"
   },
   {
    "ad_id": "120249767346120158",
@@ -922,7 +996,8 @@
    "ctr": 1.61,
    "compras_meta": 1,
    "cpa_meta": 72.61,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "27666082999723827"
   },
   {
    "ad_id": "120250792022490785",
@@ -934,7 +1009,8 @@
    "ctr": 1.17,
    "compras_meta": 2,
    "cpa_meta": 35.98,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "846861821548383"
   },
   {
    "ad_id": "120248948525360158",
@@ -946,7 +1022,8 @@
    "ctr": 1.01,
    "compras_meta": 1,
    "cpa_meta": 71.8,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1319280356957914"
   },
   {
    "ad_id": "120248948401320158",
@@ -958,7 +1035,8 @@
    "ctr": 1.18,
    "compras_meta": 1,
    "cpa_meta": 71.44,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2489389741503575"
   },
   {
    "ad_id": "120250290226280158",
@@ -970,7 +1048,8 @@
    "ctr": 1.75,
    "compras_meta": 2,
    "cpa_meta": 35.49,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1604079607957480"
   },
   {
    "ad_id": "120248148746800158",
@@ -982,7 +1061,21 @@
    "ctr": 1.26,
    "compras_meta": 1,
    "cpa_meta": 68.76,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "893925536320045"
+  },
+  {
+   "ad_id": "120250290233460158",
+   "ad": "DB 109",
+   "campanha": "[DREAM POCKET] [1-1-1] DB 109 12/08",
+   "funil": "pocket",
+   "conta": "db",
+   "gasto": 65.92,
+   "ctr": 0.77,
+   "compras_meta": 1,
+   "cpa_meta": 65.92,
+   "ativo": true,
+   "creative_id": "2554085005062525"
   },
   {
    "ad_id": "120250290119090158",
@@ -994,7 +1087,8 @@
    "ctr": 1.23,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1267999501929865"
   },
   {
    "ad_id": "120249767402620158",
@@ -1006,19 +1100,8 @@
    "ctr": 1.22,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
-  },
-  {
-   "ad_id": "120250290233460158",
-   "ad": "DB 109",
-   "campanha": "[DREAM POCKET] [1-1-1] DB 109 12/08",
-   "funil": "pocket",
-   "conta": "db",
-   "gasto": 63.73,
-   "ctr": 0.74,
-   "compras_meta": 1,
-   "cpa_meta": 63.73,
-   "ativo": true
+   "ativo": false,
+   "creative_id": "1015883964556003"
   },
   {
    "ad_id": "120249068393340158",
@@ -1030,7 +1113,8 @@
    "ctr": 1.3,
    "compras_meta": 1,
    "cpa_meta": 63.4,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2455186568292424"
   },
   {
    "ad_id": "120250290116700158",
@@ -1038,11 +1122,12 @@
    "campanha": "[DREAM POCKET] [1-1-1] MATHIAS 008 12/08",
    "funil": "pocket",
    "conta": "db",
-   "gasto": 62.99,
+   "gasto": 63.01,
    "ctr": 2.44,
    "compras_meta": 1,
-   "cpa_meta": 62.99,
-   "ativo": false
+   "cpa_meta": 63.01,
+   "ativo": false,
+   "creative_id": "943196571514120"
   },
   {
    "ad_id": "120248423353710158",
@@ -1054,7 +1139,8 @@
    "ctr": 1.52,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "986464087600730"
   },
   {
    "ad_id": "120249068494050158",
@@ -1066,7 +1152,8 @@
    "ctr": 1.77,
    "compras_meta": 1,
    "cpa_meta": 61.45,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1031167012625726"
   },
   {
    "ad_id": "120249833577890158",
@@ -1078,7 +1165,8 @@
    "ctr": 1.31,
    "compras_meta": 1,
    "cpa_meta": 61.25,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1544041783373155"
   },
   {
    "ad_id": "120249525008360158",
@@ -1090,7 +1178,8 @@
    "ctr": 1.4,
    "compras_meta": 1,
    "cpa_meta": 60.6,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "985860427763392"
   },
   {
    "ad_id": "120249524891270158",
@@ -1102,7 +1191,8 @@
    "ctr": 1.96,
    "compras_meta": 1,
    "cpa_meta": 59.75,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2159810784578196"
   },
   {
    "ad_id": "120250791462490785",
@@ -1114,7 +1204,8 @@
    "ctr": 0.95,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1324508359296830"
   },
   {
    "ad_id": "120250791462510785",
@@ -1126,7 +1217,8 @@
    "ctr": 1.34,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2488699794984228"
   },
   {
    "ad_id": "120249625699220158",
@@ -1138,7 +1230,8 @@
    "ctr": 1.34,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1004621235778871"
   },
   {
    "ad_id": "120249524944060158",
@@ -1150,7 +1243,8 @@
    "ctr": 1.62,
    "compras_meta": 1,
    "cpa_meta": 58.04,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1730748021394345"
   },
   {
    "ad_id": "120249758079460158",
@@ -1162,7 +1256,8 @@
    "ctr": 1.22,
    "compras_meta": 1,
    "cpa_meta": 57.78,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "4516833635259075"
   },
   {
    "ad_id": "120249833858780158",
@@ -1174,7 +1269,8 @@
    "ctr": 1.71,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2146169069273857"
   },
   {
    "ad_id": "120248149158690158",
@@ -1186,7 +1282,8 @@
    "ctr": 3.8,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1567347134954022"
   },
   {
    "ad_id": "120250791462500785",
@@ -1198,7 +1295,8 @@
    "ctr": 1.24,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1327782802836413"
   },
   {
    "ad_id": "120249635446700158",
@@ -1210,7 +1308,8 @@
    "ctr": 2.94,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1284958636857555"
   },
   {
    "ad_id": "120248149119510158",
@@ -1222,7 +1321,8 @@
    "ctr": 1.04,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1761049045270449"
   },
   {
    "ad_id": "120249961227130158",
@@ -1234,7 +1334,8 @@
    "ctr": 1.11,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1581504283605468"
   },
   {
    "ad_id": "120248149115430158",
@@ -1246,7 +1347,8 @@
    "ctr": 1.38,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1037099812221586"
   },
   {
    "ad_id": "120248148821980158",
@@ -1258,7 +1360,8 @@
    "ctr": 1.05,
    "compras_meta": 1,
    "cpa_meta": 49.94,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "27081336674851339"
   },
   {
    "ad_id": "120248425481610158",
@@ -1270,7 +1373,8 @@
    "ctr": 1.48,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "4399318873659863"
   },
   {
    "ad_id": "120248148713920158",
@@ -1282,7 +1386,8 @@
    "ctr": 1.23,
    "compras_meta": 1,
    "cpa_meta": 48.37,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1686779835728563"
   },
   {
    "ad_id": "120249758094080158",
@@ -1294,7 +1399,8 @@
    "ctr": 0.77,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1823657485465866"
   },
   {
    "ad_id": "120251358536390785",
@@ -1306,7 +1412,8 @@
    "ctr": 0.7,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2170550340391379"
   },
   {
    "ad_id": "120249635279590158",
@@ -1318,7 +1425,8 @@
    "ctr": 1.63,
    "compras_meta": 1,
    "cpa_meta": 47.32,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1401907465136225"
   },
   {
    "ad_id": "120249833956580158",
@@ -1330,7 +1438,8 @@
    "ctr": 1.74,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1686529915946227"
   },
   {
    "ad_id": "120250911567480785",
@@ -1342,7 +1451,8 @@
    "ctr": 1.5,
    "compras_meta": 1,
    "cpa_meta": 46.49,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1708772670426097"
   },
   {
    "ad_id": "120249767448480158",
@@ -1354,7 +1464,8 @@
    "ctr": 1.59,
    "compras_meta": 1,
    "cpa_meta": 46.22,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "2242499433164707"
   },
   {
    "ad_id": "120248424080730158",
@@ -1366,7 +1477,8 @@
    "ctr": 1.42,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1037696885673881"
   },
   {
    "ad_id": "120250028962260158",
@@ -1378,7 +1490,8 @@
    "ctr": 1.03,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1686529915946227"
   },
   {
    "ad_id": "120249833555500158",
@@ -1390,7 +1503,8 @@
    "ctr": 2.07,
    "compras_meta": 1,
    "cpa_meta": 45.31,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1320764959803756"
   },
   {
    "ad_id": "120251781775800785",
@@ -1402,7 +1516,8 @@
    "ctr": 2.2,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1073663648952920"
   },
   {
    "ad_id": "120250911567550785",
@@ -1414,7 +1529,8 @@
    "ctr": 1.77,
    "compras_meta": 1,
    "cpa_meta": 42.26,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1319492673183372"
   },
   {
    "ad_id": "120248423175840158",
@@ -1426,7 +1542,8 @@
    "ctr": 0.88,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1524125126174955"
   },
   {
    "ad_id": "120248149472490158",
@@ -1438,7 +1555,8 @@
    "ctr": 0.95,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "898077493373418"
   },
   {
    "ad_id": "120249525025930158",
@@ -1450,7 +1568,8 @@
    "ctr": 1.16,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1652295636902309"
   },
   {
    "ad_id": "120249793197650158",
@@ -1462,7 +1581,8 @@
    "ctr": 1.05,
    "compras_meta": 0,
    "cpa_meta": null,
-   "ativo": false
+   "ativo": false,
+   "creative_id": "1577952500588440"
   }
  ],
  "clarity": {
@@ -1513,11 +1633,11 @@
      "conta": "db",
      "ativa": true,
      "status": "ACTIVE",
-     "gasto": 31.23,
-     "impressions": 1043,
-     "ctr": 0.77,
-     "cpm": 29.94,
-     "freq": 1.14,
+     "gasto": 31.81,
+     "impressions": 1070,
+     "ctr": 0.75,
+     "cpm": 29.73,
+     "freq": 1.17,
      "ic": 2,
      "lpv": 7,
      "connect": 87.5,
@@ -1539,21 +1659,21 @@
      "conta": "db",
      "ativa": true,
      "status": "ACTIVE",
-     "gasto": 28.41,
-     "impressions": 1048,
-     "ctr": 1.81,
-     "cpm": 27.11,
-     "freq": 1.09,
+     "gasto": 31.3,
+     "impressions": 1142,
+     "ctr": 1.66,
+     "cpm": 27.41,
+     "freq": 1.1,
      "ic": 3,
      "lpv": 11,
      "connect": 57.9,
      "ida": 27.3,
      "meta_compras": 1,
-     "meta_cpa": 28.41,
+     "meta_cpa": 31.3,
      "vendas": 2,
      "receita": 134,
-     "roas": 4.72,
-     "cpa": 14.21,
+     "roas": 4.28,
+     "cpa": 15.65,
      "estado": "AQUECENDO",
      "acao": "esperar",
      "tend": "estavel"
@@ -1565,24 +1685,24 @@
      "conta": "db",
      "ativa": true,
      "status": "ACTIVE",
-     "gasto": 22.84,
-     "impressions": 610,
-     "ctr": 0.49,
-     "cpm": 37.44,
+     "gasto": 25.03,
+     "impressions": 660,
+     "ctr": 0.61,
+     "cpm": 37.92,
      "freq": 1.15,
      "ic": 0,
      "lpv": 3,
-     "connect": 100,
+     "connect": 75,
      "ida": null,
      "meta_compras": 0,
      "meta_cpa": null,
-     "vendas": 0,
-     "receita": 0,
-     "roas": 0,
-     "cpa": null,
+     "vendas": 1,
+     "receita": 67,
+     "roas": 2.68,
+     "cpa": 25.03,
      "estado": "AQUECENDO",
      "acao": "esperar",
-     "tend": "novo"
+     "tend": "estavel"
     },
     {
      "id": "120250290223940158",
@@ -1643,8 +1763,8 @@
      "conta": "db",
      "ativa": false,
      "status": "PAUSED",
-     "gasto": 14.98,
-     "impressions": 621,
+     "gasto": 15,
+     "impressions": 622,
      "ctr": 1.61,
      "cpm": 24.12,
      "freq": 1.04,
@@ -1695,8 +1815,8 @@
      "r": 723
     },
     "pago_pocket": {
-     "n": 2,
-     "r": 134
+     "n": 3,
+     "r": 201
     },
     "organico": {
      "n": 1,
@@ -1720,8 +1840,8 @@
    "funil_conv": {
     "pocket": {
      "ic": 8,
-     "compras": 2,
-     "conv_checkout": 25
+     "compras": 3,
+     "conv_checkout": 37.5
     },
     "quiz": {
      "ic": 0,
@@ -1894,7 +2014,7 @@
      "cpa": null,
      "estado": "AQUECENDO",
      "acao": "esperar",
-     "tend": "novo"
+     "tend": "estavel"
     },
     {
      "id": "120249633031580158",
@@ -2037,21 +2157,21 @@
      "conta": "db",
      "ativa": true,
      "status": "ACTIVE",
-     "gasto": 76.56,
-     "impressions": 2786,
-     "ctr": 1.29,
-     "cpm": 27.48,
-     "freq": 1.18,
+     "gasto": 79.45,
+     "impressions": 2880,
+     "ctr": 1.25,
+     "cpm": 27.59,
+     "freq": 1.19,
      "ic": 8,
      "lpv": 25,
      "connect": 69.4,
      "ida": 32,
      "meta_compras": 5,
-     "meta_cpa": 15.31,
+     "meta_cpa": 15.89,
      "vendas": 5,
      "receita": 335,
-     "roas": 4.38,
-     "cpa": 15.31,
+     "roas": 4.22,
+     "cpa": 15.89,
      "estado": "MANTER",
      "acao": "manter",
      "tend": "estavel"
@@ -2063,21 +2183,21 @@
      "conta": "db",
      "ativa": true,
      "status": "ACTIVE",
-     "gasto": 74.62,
-     "impressions": 2286,
-     "ctr": 1.36,
-     "cpm": 32.64,
-     "freq": 1.28,
+     "gasto": 75.2,
+     "impressions": 2313,
+     "ctr": 1.34,
+     "cpm": 32.51,
+     "freq": 1.29,
      "ic": 13,
      "lpv": 28,
      "connect": 90.3,
      "ida": 46.4,
      "meta_compras": 3,
-     "meta_cpa": 24.87,
+     "meta_cpa": 25.07,
      "vendas": 3,
      "receita": 201,
-     "roas": 2.69,
-     "cpa": 24.87,
+     "roas": 2.67,
+     "cpa": 25.07,
      "estado": "MANTER",
      "acao": "manter",
      "tend": "estavel"
@@ -2109,6 +2229,32 @@
      "tend": "estavel"
     },
     {
+     "id": "120250290230740158",
+     "nome": "[DREAM POCKET] [1-1-1] DB 109 12/08",
+     "funil": "pocket",
+     "conta": "db",
+     "ativa": true,
+     "status": "ACTIVE",
+     "gasto": 65.92,
+     "impressions": 2206,
+     "ctr": 0.77,
+     "cpm": 29.88,
+     "freq": 1.22,
+     "ic": 1,
+     "lpv": 14,
+     "connect": 82.4,
+     "ida": 7.1,
+     "meta_compras": 1,
+     "meta_cpa": 65.92,
+     "vendas": 1,
+     "receita": 67,
+     "roas": 1.02,
+     "cpa": 65.92,
+     "estado": "OBSERVAR",
+     "acao": "observar",
+     "tend": "estavel"
+    },
+    {
      "id": "120250290116960158",
      "nome": "[DREAM POCKET] [1-1-1] DB041 12/08",
      "funil": "pocket",
@@ -2135,40 +2281,14 @@
      "tend": "novo"
     },
     {
-     "id": "120250290230740158",
-     "nome": "[DREAM POCKET] [1-1-1] DB 109 12/08",
-     "funil": "pocket",
-     "conta": "db",
-     "ativa": true,
-     "status": "ACTIVE",
-     "gasto": 63.73,
-     "impressions": 2156,
-     "ctr": 0.74,
-     "cpm": 29.56,
-     "freq": 1.21,
-     "ic": 1,
-     "lpv": 14,
-     "connect": 87.5,
-     "ida": 7.1,
-     "meta_compras": 1,
-     "meta_cpa": 63.73,
-     "vendas": 0,
-     "receita": 0,
-     "roas": 0,
-     "cpa": null,
-     "estado": "OBSERVAR",
-     "acao": "observar",
-     "tend": "novo"
-    },
-    {
      "id": "120250290111250158",
      "nome": "[DREAM POCKET] [1-1-1] MATHIAS 008 12/08",
      "funil": "pocket",
      "conta": "db",
      "ativa": false,
      "status": "PAUSED",
-     "gasto": 62.99,
-     "impressions": 2748,
+     "gasto": 63.01,
+     "impressions": 2749,
      "ctr": 2.44,
      "cpm": 22.92,
      "freq": 1.12,
@@ -2177,7 +2297,7 @@
      "connect": 95.5,
      "ida": 7.8,
      "meta_compras": 1,
-     "meta_cpa": 62.99,
+     "meta_cpa": 63.01,
      "vendas": 0,
      "receita": 0,
      "roas": 0,
@@ -2253,8 +2373,8 @@
      "r": 325
     },
     "pago_pocket": {
-     "n": 12,
-     "r": 804
+     "n": 13,
+     "r": 871
     },
     "guia_organico": {
      "n": 1,
@@ -2278,8 +2398,8 @@
    "funil_conv": {
     "pocket": {
      "ic": 53,
-     "compras": 12,
-     "conv_checkout": 22.6
+     "compras": 13,
+     "conv_checkout": 24.5
     },
     "quiz": {
      "ic": 0,
@@ -2357,21 +2477,21 @@
      "conta": "db",
      "ativa": true,
      "status": "ACTIVE",
-     "gasto": 76.56,
-     "impressions": 2786,
-     "ctr": 1.29,
-     "cpm": 27.48,
-     "freq": 1.18,
+     "gasto": 79.45,
+     "impressions": 2880,
+     "ctr": 1.25,
+     "cpm": 27.59,
+     "freq": 1.19,
      "ic": 8,
      "lpv": 25,
      "connect": 69.4,
      "ida": 32,
      "meta_compras": 5,
-     "meta_cpa": 15.31,
+     "meta_cpa": 15.89,
      "vendas": 5,
      "receita": 335,
-     "roas": 4.38,
-     "cpa": 15.31,
+     "roas": 4.22,
+     "cpa": 15.89,
      "estado": "MANTER",
      "acao": "manter",
      "tend": "estavel"
@@ -2383,21 +2503,21 @@
      "conta": "db",
      "ativa": true,
      "status": "ACTIVE",
-     "gasto": 74.62,
-     "impressions": 2286,
-     "ctr": 1.36,
-     "cpm": 32.64,
-     "freq": 1.28,
+     "gasto": 75.2,
+     "impressions": 2313,
+     "ctr": 1.34,
+     "cpm": 32.51,
+     "freq": 1.29,
      "ic": 13,
      "lpv": 28,
      "connect": 90.3,
      "ida": 46.4,
      "meta_compras": 3,
-     "meta_cpa": 24.87,
+     "meta_cpa": 25.07,
      "vendas": 3,
      "receita": 201,
-     "roas": 2.69,
-     "cpa": 24.87,
+     "roas": 2.67,
+     "cpa": 25.07,
      "estado": "MANTER",
      "acao": "manter",
      "tend": "estavel"
@@ -2429,6 +2549,32 @@
      "tend": "estavel"
     },
     {
+     "id": "120250290230740158",
+     "nome": "[DREAM POCKET] [1-1-1] DB 109 12/08",
+     "funil": "pocket",
+     "conta": "db",
+     "ativa": true,
+     "status": "ACTIVE",
+     "gasto": 65.92,
+     "impressions": 2206,
+     "ctr": 0.77,
+     "cpm": 29.88,
+     "freq": 1.22,
+     "ic": 1,
+     "lpv": 14,
+     "connect": 82.4,
+     "ida": 7.1,
+     "meta_compras": 1,
+     "meta_cpa": 65.92,
+     "vendas": 1,
+     "receita": 67,
+     "roas": 1.02,
+     "cpa": 65.92,
+     "estado": "CORTAR",
+     "acao": "pausar",
+     "tend": "estavel"
+    },
+    {
      "id": "120250290116960158",
      "nome": "[DREAM POCKET] [1-1-1] DB041 12/08",
      "funil": "pocket",
@@ -2455,40 +2601,14 @@
      "tend": "novo"
     },
     {
-     "id": "120250290230740158",
-     "nome": "[DREAM POCKET] [1-1-1] DB 109 12/08",
-     "funil": "pocket",
-     "conta": "db",
-     "ativa": true,
-     "status": "ACTIVE",
-     "gasto": 63.73,
-     "impressions": 2156,
-     "ctr": 0.74,
-     "cpm": 29.56,
-     "freq": 1.21,
-     "ic": 1,
-     "lpv": 14,
-     "connect": 87.5,
-     "ida": 7.1,
-     "meta_compras": 1,
-     "meta_cpa": 63.73,
-     "vendas": 0,
-     "receita": 0,
-     "roas": 0,
-     "cpa": null,
-     "estado": "CORTAR",
-     "acao": "pausar",
-     "tend": "novo"
-    },
-    {
      "id": "120250290111250158",
      "nome": "[DREAM POCKET] [1-1-1] MATHIAS 008 12/08",
      "funil": "pocket",
      "conta": "db",
      "ativa": false,
      "status": "PAUSED",
-     "gasto": 62.99,
-     "impressions": 2748,
+     "gasto": 63.01,
+     "impressions": 2749,
      "ctr": 2.44,
      "cpm": 22.92,
      "freq": 1.12,
@@ -2497,7 +2617,7 @@
      "connect": 95.5,
      "ida": 7.8,
      "meta_compras": 1,
-     "meta_cpa": 62.99,
+     "meta_cpa": 63.01,
      "vendas": 0,
      "receita": 0,
      "roas": 0,
@@ -2587,8 +2707,8 @@
    ],
    "canais": {
     "pago_pocket": {
-     "n": 28,
-     "r": 1658
+     "n": 29,
+     "r": 1725
     },
     "outros_produtos": {
      "n": 17,
@@ -2624,8 +2744,8 @@
    "funil_conv": {
     "pocket": {
      "ic": 115,
-     "compras": 28,
-     "conv_checkout": 24.3
+     "compras": 29,
+     "conv_checkout": 25.2
     },
     "quiz": {
      "ic": 0,
@@ -3243,6 +3363,32 @@
      "tend": "novo"
     },
     {
+     "id": "120250290226800158",
+     "nome": "[DREAM POCKET] [1-1-1] MATHIAS 003 12/08",
+     "funil": "pocket",
+     "conta": "db",
+     "ativa": true,
+     "status": "ACTIVE",
+     "gasto": 79.45,
+     "impressions": 2880,
+     "ctr": 1.25,
+     "cpm": 27.59,
+     "freq": 1.19,
+     "ic": 8,
+     "lpv": 25,
+     "connect": 69.4,
+     "ida": 32,
+     "meta_compras": 5,
+     "meta_cpa": 15.89,
+     "vendas": 5,
+     "receita": 335,
+     "roas": 4.22,
+     "cpa": 15.89,
+     "estado": "MANTER",
+     "acao": "manter",
+     "tend": "estavel"
+    },
+    {
      "id": "120249793128230158",
      "nome": "[QUIZ POCKET] [CBO] [AD+] [CPA] [IG] 27/07",
      "funil": "quiz",
@@ -3267,32 +3413,6 @@
      "estado": "CORTAR",
      "acao": "pausar",
      "tend": "novo"
-    },
-    {
-     "id": "120250290226800158",
-     "nome": "[DREAM POCKET] [1-1-1] MATHIAS 003 12/08",
-     "funil": "pocket",
-     "conta": "db",
-     "ativa": true,
-     "status": "ACTIVE",
-     "gasto": 76.56,
-     "impressions": 2786,
-     "ctr": 1.29,
-     "cpm": 27.48,
-     "freq": 1.18,
-     "ic": 8,
-     "lpv": 25,
-     "connect": 69.4,
-     "ida": 32,
-     "meta_compras": 5,
-     "meta_cpa": 15.31,
-     "vendas": 5,
-     "receita": 335,
-     "roas": 4.38,
-     "cpa": 15.31,
-     "estado": "MANTER",
-     "acao": "manter",
-     "tend": "estavel"
     },
     {
      "id": "120249865165240158",
@@ -3327,21 +3447,21 @@
      "conta": "db",
      "ativa": true,
      "status": "ACTIVE",
-     "gasto": 74.62,
-     "impressions": 2286,
-     "ctr": 1.36,
-     "cpm": 32.64,
-     "freq": 1.28,
+     "gasto": 75.2,
+     "impressions": 2313,
+     "ctr": 1.34,
+     "cpm": 32.51,
+     "freq": 1.29,
      "ic": 13,
      "lpv": 28,
      "connect": 90.3,
      "ida": 46.4,
      "meta_compras": 3,
-     "meta_cpa": 24.87,
+     "meta_cpa": 25.07,
      "vendas": 3,
      "receita": 201,
-     "roas": 2.69,
-     "cpa": 24.87,
+     "roas": 2.67,
+     "cpa": 25.07,
      "estado": "MANTER",
      "acao": "manter",
      "tend": "estavel"
@@ -3373,6 +3493,32 @@
      "tend": "estavel"
     },
     {
+     "id": "120250290230740158",
+     "nome": "[DREAM POCKET] [1-1-1] DB 109 12/08",
+     "funil": "pocket",
+     "conta": "db",
+     "ativa": true,
+     "status": "ACTIVE",
+     "gasto": 65.92,
+     "impressions": 2206,
+     "ctr": 0.77,
+     "cpm": 29.88,
+     "freq": 1.22,
+     "ic": 1,
+     "lpv": 14,
+     "connect": 82.4,
+     "ida": 7.1,
+     "meta_compras": 1,
+     "meta_cpa": 65.92,
+     "vendas": 1,
+     "receita": 67,
+     "roas": 1.02,
+     "cpa": 65.92,
+     "estado": "CORTAR",
+     "acao": "pausar",
+     "tend": "estavel"
+    },
+    {
      "id": "120250290116960158",
      "nome": "[DREAM POCKET] [1-1-1] DB041 12/08",
      "funil": "pocket",
@@ -3399,40 +3545,14 @@
      "tend": "novo"
     },
     {
-     "id": "120250290230740158",
-     "nome": "[DREAM POCKET] [1-1-1] DB 109 12/08",
-     "funil": "pocket",
-     "conta": "db",
-     "ativa": true,
-     "status": "ACTIVE",
-     "gasto": 63.73,
-     "impressions": 2156,
-     "ctr": 0.74,
-     "cpm": 29.56,
-     "freq": 1.21,
-     "ic": 1,
-     "lpv": 14,
-     "connect": 87.5,
-     "ida": 7.1,
-     "meta_compras": 1,
-     "meta_cpa": 63.73,
-     "vendas": 0,
-     "receita": 0,
-     "roas": 0,
-     "cpa": null,
-     "estado": "CORTAR",
-     "acao": "pausar",
-     "tend": "novo"
-    },
-    {
      "id": "120250290111250158",
      "nome": "[DREAM POCKET] [1-1-1] MATHIAS 008 12/08",
      "funil": "pocket",
      "conta": "db",
      "ativa": false,
      "status": "PAUSED",
-     "gasto": 62.99,
-     "impressions": 2748,
+     "gasto": 63.01,
+     "impressions": 2749,
      "ctr": 2.44,
      "cpm": 22.92,
      "freq": 1.12,
@@ -3441,7 +3561,7 @@
      "connect": 95.5,
      "ida": 7.8,
      "meta_compras": 1,
-     "meta_cpa": 62.99,
+     "meta_cpa": 63.01,
      "vendas": 0,
      "receita": 0,
      "roas": 0,
@@ -3741,8 +3861,8 @@
      "r": 1602
     },
     "pago_pocket": {
-     "n": 230,
-     "r": 13675
+     "n": 231,
+     "r": 13742
     }
    },
    "orfas": {
@@ -3762,8 +3882,8 @@
    "funil_conv": {
     "pocket": {
      "ic": 672,
-     "compras": 230,
-     "conv_checkout": 34.2
+     "compras": 231,
+     "conv_checkout": 34.4
     },
     "quiz": {
      "ic": 210,
@@ -4927,6 +5047,32 @@
      "tend": "novo"
     },
     {
+     "id": "120250290226800158",
+     "nome": "[DREAM POCKET] [1-1-1] MATHIAS 003 12/08",
+     "funil": "pocket",
+     "conta": "db",
+     "ativa": true,
+     "status": "ACTIVE",
+     "gasto": 79.45,
+     "impressions": 2880,
+     "ctr": 1.25,
+     "cpm": 27.59,
+     "freq": 1.19,
+     "ic": 8,
+     "lpv": 25,
+     "connect": 69.4,
+     "ida": 32,
+     "meta_compras": 5,
+     "meta_cpa": 15.89,
+     "vendas": 5,
+     "receita": 335,
+     "roas": 4.22,
+     "cpa": 15.89,
+     "estado": "MANTER",
+     "acao": "manter",
+     "tend": "estavel"
+    },
+    {
      "id": "120249793128230158",
      "nome": "[QUIZ POCKET] [CBO] [AD+] [CPA] [IG] 27/07",
      "funil": "quiz",
@@ -4951,32 +5097,6 @@
      "estado": "CORTAR",
      "acao": "pausar",
      "tend": "novo"
-    },
-    {
-     "id": "120250290226800158",
-     "nome": "[DREAM POCKET] [1-1-1] MATHIAS 003 12/08",
-     "funil": "pocket",
-     "conta": "db",
-     "ativa": true,
-     "status": "ACTIVE",
-     "gasto": 76.56,
-     "impressions": 2786,
-     "ctr": 1.29,
-     "cpm": 27.48,
-     "freq": 1.18,
-     "ic": 8,
-     "lpv": 25,
-     "connect": 69.4,
-     "ida": 32,
-     "meta_compras": 5,
-     "meta_cpa": 15.31,
-     "vendas": 5,
-     "receita": 335,
-     "roas": 4.38,
-     "cpa": 15.31,
-     "estado": "MANTER",
-     "acao": "manter",
-     "tend": "estavel"
     },
     {
      "id": "120249865165240158",
@@ -5011,21 +5131,21 @@
      "conta": "db",
      "ativa": true,
      "status": "ACTIVE",
-     "gasto": 74.62,
-     "impressions": 2286,
-     "ctr": 1.36,
-     "cpm": 32.64,
-     "freq": 1.28,
+     "gasto": 75.2,
+     "impressions": 2313,
+     "ctr": 1.34,
+     "cpm": 32.51,
+     "freq": 1.29,
      "ic": 13,
      "lpv": 28,
      "connect": 90.3,
      "ida": 46.4,
      "meta_compras": 3,
-     "meta_cpa": 24.87,
+     "meta_cpa": 25.07,
      "vendas": 3,
      "receita": 201,
-     "roas": 2.69,
-     "cpa": 24.87,
+     "roas": 2.67,
+     "cpa": 25.07,
      "estado": "MANTER",
      "acao": "manter",
      "tend": "estavel"
@@ -5109,6 +5229,32 @@
      "tend": "estavel"
     },
     {
+     "id": "120250290230740158",
+     "nome": "[DREAM POCKET] [1-1-1] DB 109 12/08",
+     "funil": "pocket",
+     "conta": "db",
+     "ativa": true,
+     "status": "ACTIVE",
+     "gasto": 65.92,
+     "impressions": 2206,
+     "ctr": 0.77,
+     "cpm": 29.88,
+     "freq": 1.22,
+     "ic": 1,
+     "lpv": 14,
+     "connect": 82.4,
+     "ida": 7.1,
+     "meta_compras": 1,
+     "meta_cpa": 65.92,
+     "vendas": 1,
+     "receita": 67,
+     "roas": 1.02,
+     "cpa": 65.92,
+     "estado": "CORTAR",
+     "acao": "pausar",
+     "tend": "estavel"
+    },
+    {
      "id": "120250290116960158",
      "nome": "[DREAM POCKET] [1-1-1] DB041 12/08",
      "funil": "pocket",
@@ -5135,40 +5281,14 @@
      "tend": "novo"
     },
     {
-     "id": "120250290230740158",
-     "nome": "[DREAM POCKET] [1-1-1] DB 109 12/08",
-     "funil": "pocket",
-     "conta": "db",
-     "ativa": true,
-     "status": "ACTIVE",
-     "gasto": 63.73,
-     "impressions": 2156,
-     "ctr": 0.74,
-     "cpm": 29.56,
-     "freq": 1.21,
-     "ic": 1,
-     "lpv": 14,
-     "connect": 87.5,
-     "ida": 7.1,
-     "meta_compras": 1,
-     "meta_cpa": 63.73,
-     "vendas": 0,
-     "receita": 0,
-     "roas": 0,
-     "cpa": null,
-     "estado": "CORTAR",
-     "acao": "pausar",
-     "tend": "novo"
-    },
-    {
      "id": "120250290111250158",
      "nome": "[DREAM POCKET] [1-1-1] MATHIAS 008 12/08",
      "funil": "pocket",
      "conta": "db",
      "ativa": false,
      "status": "PAUSED",
-     "gasto": 62.99,
-     "impressions": 2748,
+     "gasto": 63.01,
+     "impressions": 2749,
      "ctr": 2.44,
      "cpm": 22.92,
      "freq": 1.12,
@@ -5177,7 +5297,7 @@
      "connect": 95.5,
      "ida": 7.8,
      "meta_compras": 1,
-     "meta_cpa": 62.99,
+     "meta_cpa": 63.01,
      "vendas": 0,
      "receita": 0,
      "roas": 0,
@@ -5867,8 +5987,8 @@
      "r": 3053
     },
     "pago_pocket": {
-     "n": 235,
-     "r": 14164
+     "n": 236,
+     "r": 14231
     },
     "direto": {
      "n": 2,
@@ -5892,8 +6012,8 @@
    "funil_conv": {
     "pocket": {
      "ic": 672,
-     "compras": 235,
-     "conv_checkout": 35
+     "compras": 236,
+     "conv_checkout": 35.1
     },
     "quiz": {
      "ic": 609,
