@@ -842,6 +842,7 @@
     <div class="tab" onclick="switchTab('vendas')" id="tabVendas"><span class="tab-icon">💎</span> Vendas</div>
     <div class="tab" onclick="switchTab('analise')" style="display:none"><span class="tab-icon">🔮</span> Análise & Baseline</div>
     <div class="tab" onclick="switchTab('gestor')"><span class="tab-icon">🕵️</span> Austin</div>
+    <div class="tab" onclick="switchTab('banco')"><span class="tab-icon">🗂️</span> Base &amp; métricas</div>
   </div>
   <div id="periodSelector" style="display:flex;align-items:center;flex-wrap:wrap">
     <span>⏱ Período</span>
@@ -866,6 +867,11 @@
   <!-- TAB: GESTOR (embed) -->
   <div class="tab-content" id="tab-gestor">
     <iframe id="gestorFrame" src="gestor.html?embed=1" title="Gestor de Tráfego" style="width:100%;height:calc(100vh - 176px);min-height:640px;border:0;border-radius:14px;background:transparent"></iframe>
+  </div>
+
+  <!-- TAB: BASE & MÉTRICAS (embed) -->
+  <div class="tab-content" id="tab-banco">
+    <iframe id="bancoFrame" src="about:blank" title="Base & métricas" style="width:100%;height:calc(100vh - 176px);min-height:640px;border:0;border-radius:14px;background:transparent"></iframe>
   </div>
 
   <!-- TAB: OVERVIEW -->
@@ -1231,6 +1237,10 @@ function setPeriodo(periodo) {
     const f = document.getElementById('gestorFrame');
     if (f && f.contentWindow) f.contentWindow.postMessage({ type:'gestorPeriodo', value: gestorPer() }, '*');
   }
+  if (activeTab === 'banco') {
+    const f = document.getElementById('bancoFrame');
+    if (f) f.src = 'banco.html?embed=1&periodo=' + gestorPer();
+  }
 
   if (periodo !== 'personalizado') {
     loadData();
@@ -1387,7 +1397,7 @@ function gestorPer() {
 }
 function switchTab(name) {
   activeTab = name;
-  const names = ['overview','funis','campanhas','vendas','analise','gestor'];
+  const names = ['overview','funis','campanhas','vendas','analise','gestor','banco'];
   document.querySelectorAll('.tab').forEach((t, i) => {
     t.classList.toggle('active', names[i] === name);
   });
@@ -1396,6 +1406,10 @@ function switchTab(name) {
   if (name === 'gestor') {
     const f = document.getElementById('gestorFrame');
     if (f) f.src = 'gestor.html?embed=1&periodo=' + gestorPer();
+  }
+  if (name === 'banco') {
+    const f = document.getElementById('bancoFrame');
+    if (f) f.src = 'banco.html?embed=1&periodo=' + gestorPer();
   }
   if (name === 'analise' && DATA) {
     renderAnalise();
