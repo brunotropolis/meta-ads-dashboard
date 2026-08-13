@@ -435,7 +435,7 @@
     }
     function render() {
       const view=document.getElementById('view');
-      if(!DATA.periodos){ view.innerHTML='<div class="empty" style="padding:60px">Sem dados. (snapshot não carregou)</div>'; return; }
+      if(!DATA.periodos){ view.innerHTML='<div class="empty" style="padding:60px">Sem dados. (snapshot não carregou)<br><small style="opacity:.6">'+(window.__snapErr?('motivo: '+window.__snapErr):'sem erro reportado')+'</small></div>'; return; }
       view.innerHTML = state.tab==='geral'?renderGeral():state.tab==='banco'?renderBanco():renderFunil(state.tab);
       const p=periodo();
       document.getElementById('perHint').textContent = p?(p.since==p.until?p.since:p.dias+' dias'):'';
@@ -537,7 +537,7 @@
       if(p && DATA.periodos && DATA.periodos[p]){ state.per=p; document.querySelectorAll('.per').forEach(x=>x.classList.toggle('active',x.dataset.per===p)); }
       render();
     }
-    fetch('snapshot.json?cb='+Date.now()).then(function(r){return r.json();}).then(function(d){ DATA=d; initGestor(); }).catch(function(){ initGestor(); });
+    fetch('snapshot.json?cb='+Date.now()).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status+' ('+(r.headers.get('content-type')||'?')+')'); return r.json(); }).then(function(d){ DATA=d; window.__snapErr=null; initGestor(); }).catch(function(e){ window.__snapErr=String(e&&e.message||e); initGestor(); });
     addMsg('Oi! Sou o <b>Gestor</b>. Pergunta o que quiser sobre as campanhas — <i>"como tá o ROAS?"</i>, <i>"qual está sangrando?"</i>, <i>"e a página?"</i>. Respondo com os dados reais desta tela.','bot');
   </script>
 </body>
