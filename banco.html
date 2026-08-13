@@ -59,13 +59,16 @@
   .chkitem b { color:var(--text); }
   .chkitem .sub { color:var(--muted); }
   .empty { padding:40px 18px; text-align:center; color:var(--muted); }
+  /* escala de 5 niveis: vermelho -> laranja -> amarelo -> verde claro -> verde escuro */
+  :root { --c1:#f87171; --c2:#fb923c; --c3:#fbbf24; --c4:#a3e635; --c5:#22c55e; }
+  .n1{color:var(--c1)!important} .n2{color:var(--c2)!important} .n3{color:var(--c3)!important} .n4{color:var(--c4)!important} .n5{color:var(--c5)!important}
   /* medidores (gauge cards) */
   .medgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:11px; margin-bottom:14px; }
   .med { background:var(--card2); border:1px solid var(--border); border-left:3px solid var(--muted); border-radius:12px; padding:11px 13px; }
-  .med.g { border-left-color:var(--green); } .med.b { border-left-color:var(--red); } .med.n { border-left-color:var(--muted); }
+  .med.v1{border-left-color:var(--c1)} .med.v2{border-left-color:var(--c2)} .med.v3{border-left-color:var(--c3)} .med.v4{border-left-color:var(--c4)} .med.v5{border-left-color:var(--c5)} .med.n{border-left-color:var(--muted)}
   .med .mrot { font-size:11px; color:var(--muted); font-weight:600; }
-  .med .mval { font-size:23px; font-weight:800; line-height:1.2; margin:3px 0; }
-  .med.g .mval { color:var(--green); } .med.b .mval { color:var(--red); } .med.n .mval { color:var(--text); }
+  .med .mval { font-size:23px; font-weight:800; line-height:1.2; margin:3px 0; color:var(--text); }
+  .med.v1 .mval{color:var(--c1)} .med.v2 .mval{color:var(--c2)} .med.v3 .mval{color:var(--c3)} .med.v4 .mval{color:var(--c4)} .med.v5 .mval{color:var(--c5)}
   .med .mref { font-size:10.5px; color:var(--muted); } .med .mref b { color:var(--text); }
   .fcard { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:15px 17px; margin-bottom:16px; }
   .fcard .ftitle { font-size:15px; font-weight:800; display:flex; align-items:center; gap:9px; margin-bottom:12px; }
@@ -113,6 +116,17 @@
   const fmtVal=(v,f)=>{ if(v==null) return '—'; if(f==='pct') return v.toFixed(1)+'%'; if(f==='rs') return 'R$ '+(v<10?v.toFixed(2):Math.round(v)); if(f==='num') return v.toFixed(2); return String(v); };
   const parseMedia=s=>{ const n=parseFloat(String(s).replace(/[^\d,.-]/g,'').replace('.','').replace(',','.')); return isNaN(n)?null:n; };
 
+  // nível de cor (5 faixas) do atual vs a nossa média. dir='up' maior=melhor, 'down' menor=melhor.
+  function nivel(v, mediaStr, dir){
+    if(v==null || !dir) return 'n';
+    const m=parseMedia(mediaStr); if(m==null || m===0) return 'n';
+    const r = dir==='up' ? v/m : m/v; // >1 = acima da nossa média
+    if(r < 0.75) return 'v1';   // bem abaixo → vermelho
+    if(r < 0.92) return 'v2';   // abaixo → laranja
+    if(r < 1.05) return 'v3';   // na média → amarelo
+    if(r < 1.25) return 'v4';   // acima → verde claro
+    return 'v5';                // bem acima / rumo ao ideal → verde escuro
+  }
   // medidores (destaques) por funil
   const MED = ['roas','ida','ctr','connect','cpa'];
   function tabelaFunil(fkey){
@@ -122,8 +136,8 @@
     if(!ag.vazio){
       meds='<div class="medgrid">'+MED.map(k=>{
         const l=B.linhas.find(x=>x.k===k); if(!l) return '';
-        const v=ag[k], mv=parseMedia(l.media);
-        let st='n'; if(v!=null && mv!=null && l.dir) st=(l.dir==='up'?v>=mv:v<=mv)?'g':'b';
+        const v=ag[k];
+        const st=nivel(v, l.media, l.dir);
         return '<div class="med '+st+'"><div class="mrot">'+l.m+(l.gargalo?' ⭐':'')+'</div><div class="mval">'+fmtVal(v,l.f)+'</div><div class="mref">média <b>'+l.media+'</b> · ideal '+l.ideal+'</div></div>';
       }).join('')+'</div>';
     } else {
@@ -133,15 +147,15 @@
       let atual='—', cls='atual';
       if(!ag.vazio && l.k){
         const v=ag[l.k]; atual=fmtVal(v,l.f);
-        const mv=parseMedia(l.media);
-        if(v!=null && mv!=null && l.dir){ cls='atual '+((l.dir==='up'?v>=mv:v<=mv)?'melhor':'pior'); }
+        const st=nivel(v, l.media, l.dir);
+        if(st!=='n') cls='atual '+st.replace('v','n');
       }
       return '<tr><td class="l">'+l.m+(l.gargalo?'<span class="gtag">GARGALO</span>':'')+'</td><td>'+l.ideal+'</td><td>'+l.media+'</td><td class="'+cls+'">'+atual+'</td></tr>';
     }).join('');
     return '<div class="fcard"><div class="ftitle"><span class="fbadge '+B.badge+'">'+fkey.toUpperCase()+'</span> '+B.nome+'</div>'+
       meds+
       '<div class="table-wrap"><table class="cmp"><thead><tr><th class="l">Métrica</th><th>Ideal (curso)</th><th>Nossa média</th><th>Atual ('+PER+')</th></tr></thead><tbody>'+linhas+'</tbody></table></div>'+
-      '<div style="font-size:10.5px;color:var(--muted);margin-top:9px">⭐ gargalo · verde = melhor que a nossa média · vermelho = pior</div></div>';
+      '<div style="font-size:10.5px;color:var(--muted);margin-top:9px">⭐ gargalo · cor pela distância da <b>nossa média</b>: <span class="n1">vermelho bem abaixo</span> · <span class="n2">laranja abaixo</span> · <span class="n3">amarelo na média</span> · <span class="n4">verde claro acima</span> · <span class="n5">verde escuro bem acima</span></div></div>';
   }
 
   const REGUAS = [
