@@ -1817,7 +1817,50 @@ function renderFunisPocket(f) {
       <div style="font-size:12px;color:var(--muted,#8a8a9a);padding:4px 6px 10px">Este funil é só tráfego por enquanto, mas ${O.comprou} venda${O.comprou!==1?'s':''} da oferta chegou sem tag de tráfego (R$ ${fmt(O.receita_total)}) — mostrado aqui pra nada se perder.</div>
     </div>` : '';
 
-  body.innerHTML = blocoTudo + blocoPago + blocoOrg;
+  body.innerHTML = '<div id="abSplitBox"></div>' + blocoTudo + blocoPago + blocoOrg;
+  renderABsplit();
+}
+
+// ── Teste A/B da página (split base vs /v3) — lê o ab_pocket do snapshot do gestor ──
+async function renderABsplit(){
+  const box = document.getElementById('abSplitBox');
+  if (!box) return;
+  let ab = null;
+  try { const s = await fetch('/snapshot.json?cb='+Date.now(), {cache:'no-store'}).then(r=>r.json()); ab = s.ab_pocket; } catch(e){}
+  if (!ab) { box.innerHTML = ''; return; }
+  const fmtR = n => 'R$ '+(Math.round(n||0)).toLocaleString('pt-BR');
+  function col(nome, d, cor){
+    const conv = d.conv!=null ? d.conv+'%' : '—';
+    return `<div style="flex:1;min-width:150px;background:var(--card,#141414);border:1px solid ${cor};border-radius:12px;padding:14px">
+      <div style="font-weight:700;color:${cor};margin-bottom:8px">${nome}</div>
+      <div style="font-size:26px;font-weight:800;line-height:1">${conv}</div>
+      <div style="font-size:11px;color:var(--muted,#8a8a9a);margin-bottom:10px">conversão (venda ÷ sessão)</div>
+      <div style="font-size:12px;line-height:1.7">
+        <div>👥 ${d.sessoes||0} sessões</div>
+        <div>🛒 ${d.vendas||0} vendas · ${fmtR(d.receita)}</div>
+        <div>🖱️ dead-click ${d.dead_pct!=null?d.dead_pct+'%':'—'}</div>
+        <div>📜 scroll ${d.scroll_medio!=null?d.scroll_medio+'%':'—'}</div>
+      </div>
+    </div>`;
+  }
+  let veredito = '';
+  if ((ab.base.sessoes||0) > 30 && (ab.v3.sessoes||0) > 30 && ab.base.conv!=null && ab.v3.conv!=null){
+    const ganho = ab.base.conv ? ((ab.v3.conv - ab.base.conv)/ab.base.conv*100) : 0;
+    const venc = ab.v3.conv > ab.base.conv ? 'V3' : (ab.base.conv > ab.v3.conv ? 'BASE' : 'empate');
+    veredito = `<div style="margin-top:10px;padding:8px 12px;border-radius:10px;background:${venc==='V3'?'rgba(34,197,94,.12)':venc==='BASE'?'rgba(251,146,60,.12)':'rgba(150,150,150,.12)'};font-size:13px">
+      Vencendo: <b>${venc}</b> ${venc!=='empate'?('('+(ganho>0?'+':'')+ganho.toFixed(0)+'% de conversão vs base)'):''}</div>`;
+  } else {
+    veredito = `<div style="margin-top:10px;font-size:12px;color:var(--muted,#8a8a9a)">Amostra ainda pequena — deixa rodar alguns dias pra ter veredito confiável.</div>`;
+  }
+  box.innerHTML = `<div class="section" style="margin-bottom:14px">
+    <div class="section-header"><div class="section-title">🧪 Teste A/B da página · base vs /v3</div></div>
+    <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:0 6px 10px">${ab.janela}. A /v3 mudou a headline; o split manda 50% do tráfego pra cada versão.</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;padding:0 4px">
+      ${col('Base (atual)', ab.base, '#fb923c')}
+      ${col('V3 (nova headline)', ab.v3, '#22c55e')}
+    </div>
+    ${veredito}
+  </div>`;
 }
 
 function _funilSub(t) {
