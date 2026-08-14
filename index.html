@@ -1450,38 +1450,62 @@ async function renderReembolsos(){
   try { d = await fetch(REEMB_URL+'?periodo='+_reembPer+'&_='+Date.now()).then(r=>r.json()); }
   catch(e){ body.innerHTML = seletor + '<div style="padding:20px;color:var(--muted,#8a8a9a)">Erro ao carregar.</div>'; return; }
   const fmt = n => 'R$ '+(Math.round(n||0)).toLocaleString('pt-BR');
-  const FONTE = { trafego:'📢 Tráfego', organico:'🌱 Orgânico', time_vendas:'🎧 Time de vendas', meteorico:'🌪️ Meteórico', direto:'🔗 Direto' };
-  // KPIs
-  const kpis = `<div class="funis-kpi-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
-    <div class="fc" style="background:var(--card,#141414);border:1px solid #2a2a2a;border-radius:12px;padding:14px"><div class="fc-value" style="font-size:24px;font-weight:800">${d.total||0}</div><div class="fc-label" style="font-size:11px;color:var(--muted,#8a8a9a)">reembolsos</div></div>
-    <div class="fc" style="background:var(--card,#141414);border:1px solid #2a2a2a;border-radius:12px;padding:14px"><div class="fc-value" style="font-size:24px;font-weight:800">${fmt(d.valor_total)}</div><div class="fc-label" style="font-size:11px;color:var(--muted,#8a8a9a)">valor total</div></div>
-    <div class="fc" style="background:var(--card,#141414);border:1px solid #2a2a2a;border-radius:12px;padding:14px"><div class="fc-value" style="font-size:24px;font-weight:800">${fmt(d.media)}</div><div class="fc-label" style="font-size:11px;color:var(--muted,#8a8a9a)">média por reembolso</div></div>
-    <div class="fc" style="background:var(--card,#141414);border:1px solid #2a2a2a;border-radius:12px;padding:14px"><div class="fc-value" style="font-size:24px;font-weight:800">${d.taxa_reembolso!=null?d.taxa_reembolso+'%':'—'}</div><div class="fc-label" style="font-size:11px;color:var(--muted,#8a8a9a)">taxa (reemb ÷ vendas)</div></div>
+  const FONTE = { trafego:{nome:'Tráfego',emoji:'📢',cor:'#fb923c'}, organico:{nome:'Orgânico',emoji:'🌱',cor:'#4ade80'}, time_vendas:{nome:'Time de vendas',emoji:'🎧',cor:'#38bdf8'}, meteorico:{nome:'Meteórico',emoji:'🌪️',cor:'#a78bfa'}, direto:{nome:'Direto',emoji:'🔗',cor:'#94a3b8'} };
+  const FUNIL = { pocket:{nome:'Dream Baby Pocket',emoji:'👶',cor:'#a78bfa'}, quiz:{nome:'Quiz Pocket',emoji:'☁️',cor:'#38bdf8'}, guia:{nome:'Guia da Pega',emoji:'🤱',cor:'#f472b6'} };
+  const ROSE = '#fb7185';
+  const card = (inner,extra) => `<div style="background:linear-gradient(160deg,#181820,#131319);border:1px solid #2a2a35;border-radius:16px;padding:16px;${extra||''}">${inner}</div>`;
+  // ── KPIs (4 cards com acento rosé) ──
+  function kpi(val,label,cor){ return `<div style="flex:1;min-width:140px;background:linear-gradient(160deg,#181820,#131319);border:1px solid #2a2a35;border-radius:16px;padding:16px;position:relative;overflow:hidden">
+    <div style="position:absolute;top:0;left:0;width:100%;height:3px;background:${cor}"></div>
+    <div style="font-size:26px;font-weight:800;line-height:1;color:${cor}">${val}</div>
+    <div style="font-size:11px;color:#9aa;margin-top:6px;text-transform:uppercase;letter-spacing:.4px">${label}</div></div>`; }
+  const kpis = `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px">
+    ${kpi(d.total||0,'reembolsos',ROSE)}
+    ${kpi(fmt(d.valor_total),'valor total',ROSE)}
+    ${kpi(fmt(d.media),'média por reembolso','#fbbf24')}
+    ${kpi(d.taxa_reembolso!=null?d.taxa_reembolso+'%':'—','taxa · reemb ÷ vendas','#f59e0b')}
   </div>`;
-  function tabela(titulo, arr, labelFn){
-    if (!arr || !arr.length) return '';
-    const rows = arr.slice(0,12).map(x=>`<tr><td style="padding:7px 10px">${labelFn(x)}</td><td style="padding:7px 10px;text-align:right">${x.n}</td><td style="padding:7px 10px;text-align:right;color:var(--muted,#8a8a9a)">${fmt(x.valor)}</td></tr>`).join('');
-    return `<div style="background:var(--card,#141414);border:1px solid #2a2a2a;border-radius:12px;padding:6px 4px;margin-bottom:14px">
-      <div style="font-weight:700;padding:8px 10px">${titulo}</div>
-      <table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="color:var(--muted,#8a8a9a);font-size:11px"><th style="text-align:left;padding:4px 10px">—</th><th style="text-align:right;padding:4px 10px">qtd</th><th style="text-align:right;padding:4px 10px">valor</th></tr></thead><tbody>${rows}</tbody></table>
-    </div>`;
-  }
-  const bFonte = tabela('Por fonte', d.por_fonte, x=>FONTE[x.chave]||x.label);
-  const bProd = tabela('Por produto', d.por_produto, x=>x.label);
-  const bCri = tabela('🎯 Criativos que mais dão reembolso (tráfego)', d.por_criativo, x=>x.label);
-  const listaRows = (d.lista||[]).slice(0,60).map(v=>`<tr>
-    <td style="padding:6px 10px;white-space:nowrap">${v.data}</td>
-    <td style="padding:6px 10px">${v.produto}</td>
-    <td style="padding:6px 10px">${FONTE[v.fonte]||v.fonte}</td>
-    <td style="padding:6px 10px;color:var(--muted,#8a8a9a)">${v.criativo||'—'}</td>
-    <td style="padding:6px 10px;text-align:right">${fmt(v.valor)}</td></tr>`).join('');
-  const lista = `<div style="background:var(--card,#141414);border:1px solid #2a2a2a;border-radius:12px;padding:6px 4px">
-    <div style="font-weight:700;padding:8px 10px">Últimos reembolsos (${d.since} a ${d.until})</div>
-    <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="color:var(--muted,#8a8a9a);font-size:11px">
-      <th style="text-align:left;padding:4px 10px">data</th><th style="text-align:left;padding:4px 10px">produto</th><th style="text-align:left;padding:4px 10px">fonte</th><th style="text-align:left;padding:4px 10px">criativo</th><th style="text-align:right;padding:4px 10px">valor</th>
-    </tr></thead><tbody>${listaRows||'<tr><td colspan=5 style="padding:14px;color:var(--muted,#8a8a9a)">Sem reembolsos no período.</td></tr>'}</tbody></table></div>
-  </div>`;
-  body.innerHTML = seletor + kpis + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'+bFonte+bProd+'</div>' + bCri + lista;
+  // ── Por fonte: barra empilhada compacta (uma caixa) ──
+  const totF = (d.por_fonte||[]).reduce((s,x)=>s+x.n,0)||1;
+  const barra = (d.por_fonte||[]).map(x=>{const f=FONTE[x.chave]||{nome:x.label,cor:'#888'};return `<div title="${f.nome}: ${x.n} (${x.pct}%)" style="width:${x.n/totF*100}%;background:${f.cor};height:100%"></div>`;}).join('');
+  const legF = (d.por_fonte||[]).map(x=>{const f=FONTE[x.chave]||{nome:x.label,emoji:'',cor:'#888'};return `<span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;margin-right:14px"><span style="width:9px;height:9px;border-radius:2px;background:${f.cor};display:inline-block"></span>${f.emoji} ${f.nome} <b>${x.pct}%</b> <span style="color:#9aa">· ${fmt(x.valor)}</span></span>`;}).join('');
+  const boxFonte = card(`<div style="font-weight:700;margin-bottom:10px">Reembolso por fonte</div>
+    <div style="display:flex;height:14px;border-radius:8px;overflow:hidden;margin-bottom:10px;background:#0f0f14">${barra}</div>
+    <div style="line-height:2">${legF}</div>`, 'margin-bottom:14px');
+  // ── Por produto: principal + bumps, com % ──
+  function linhaProd(x,cor){ return `<div style="display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid #222">
+    <div style="flex:1;font-size:13px">${x.label}</div>
+    <div style="width:44px;text-align:right;font-size:13px;font-weight:700">${x.n}</div>
+    <div style="width:52px;text-align:right;font-size:12px;color:${cor}">${x.pct}%</div>
+    <div style="width:80px;text-align:right;font-size:12px;color:#9aa">${fmt(x.valor)}</div></div>`; }
+  const boxPrinc = card(`<div style="font-weight:700;margin-bottom:6px;color:${ROSE}">⭐ Produto principal</div>${(d.por_produto_principal||[]).slice(0,8).map(x=>linhaProd(x,ROSE)).join('')||'<div style="color:#9aa;font-size:12px;padding:8px">—</div>'}`);
+  const boxBump = card(`<div style="font-weight:700;margin-bottom:6px;color:#fbbf24">🎁 Order bumps</div>${(d.por_produto_bump||[]).slice(0,8).map(x=>linhaProd(x,'#fbbf24')).join('')||'<div style="color:#9aa;font-size:12px;padding:8px">Nenhum bump reembolsado</div>'}`);
+  // ── Criativos por funil (3 cards coloridos) ──
+  function boxFunil(fk){ const f=FUNIL[fk], arr=(d.por_criativo_funil&&d.por_criativo_funil[fk])||[]; if(!arr.length) return '';
+    const rows = arr.slice(0,8).map(x=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 2px;border-bottom:1px solid #202028">
+      <div style="flex:1;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.label}</div>
+      <div style="font-size:12px;font-weight:700">${x.n}</div>
+      <div style="font-size:11px;color:${f.cor};width:38px;text-align:right">${x.pct}%</div>
+      <div style="font-size:11px;color:#9aa;width:64px;text-align:right">${fmt(x.valor)}</div></div>`).join('');
+    return `<div style="flex:1;min-width:240px;background:linear-gradient(160deg,#181820,#131319);border:1px solid ${f.cor}44;border-radius:16px;padding:14px">
+      <div style="display:flex;align-items:center;gap:8px;font-weight:700;margin-bottom:8px;color:${f.cor}">${f.emoji} ${f.nome}</div>${rows}</div>`; }
+  const funis = ['pocket','quiz','guia'].map(boxFunil).filter(Boolean).join('');
+  const boxCri = funis ? card(`<div style="font-weight:700;margin-bottom:12px">🎯 Criativos que mais dão reembolso <span style="font-size:11px;color:#9aa;font-weight:400">· tráfego, por funil</span></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">${funis}</div>`,'margin-top:2px;margin-bottom:14px') : '';
+  // ── Lista ──
+  const listaRows = (d.lista||[]).slice(0,60).map(v=>{const f=FONTE[v.fonte]||{nome:v.fonte,cor:'#888'};const fu=FUNIL[v.funil];return `<tr style="border-bottom:1px solid #1e1e26">
+    <td style="padding:8px 10px;white-space:nowrap;color:#9aa;font-size:12px">${v.data}</td>
+    <td style="padding:8px 10px;font-size:13px">${v.produto}${v.bump?' <span style="font-size:10px;color:#fbbf24">bump</span>':''}</td>
+    <td style="padding:8px 10px"><span style="font-size:11px;padding:2px 8px;border-radius:20px;background:${f.cor}22;color:${f.cor}">${f.nome}</span></td>
+    <td style="padding:8px 10px;font-size:12px;color:${fu?fu.cor:'#9aa'}">${v.criativo||'—'}</td>
+    <td style="padding:8px 10px;text-align:right;font-weight:700;font-size:13px">${fmt(v.valor)}</td></tr>`;}).join('');
+  const lista = card(`<div style="font-weight:700;margin-bottom:6px">Últimos reembolsos <span style="font-size:11px;color:#9aa;font-weight:400">· ${d.since} a ${d.until}</span></div>
+    <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
+    <thead><tr style="color:#9aa;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px"><th style="text-align:left;padding:6px 10px">data</th><th style="text-align:left;padding:6px 10px">produto</th><th style="text-align:left;padding:6px 10px">fonte</th><th style="text-align:left;padding:6px 10px">criativo</th><th style="text-align:right;padding:6px 10px">valor</th></tr></thead>
+    <tbody>${listaRows||'<tr><td colspan=5 style="padding:16px;color:#9aa">Sem reembolsos no período.</td></tr>'}</tbody></table></div>`);
+  body.innerHTML = seletor + kpis + boxFonte
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">'+boxPrinc+boxBump+'</div>'
+    + boxCri + lista;
 }
 
 // ─── FUNIS — sub-abas Quiz | Meteórico (carregam separado) ──────────────────
