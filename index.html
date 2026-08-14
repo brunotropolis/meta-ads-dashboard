@@ -840,6 +840,7 @@
     <div class="tab" onclick="switchTab('funis')"><span class="tab-icon">🌪️</span> Funis</div>
     <div class="tab" onclick="switchTab('campanhas')" style="display:none"><span class="tab-icon">🚀</span> Campanhas</div>
     <div class="tab" onclick="switchTab('vendas')" id="tabVendas"><span class="tab-icon">💎</span> Vendas</div>
+    <div class="tab" onclick="switchTab('reembolsos')"><span class="tab-icon">↩️</span> Reembolsos</div>
     <div class="tab" onclick="switchTab('analise')" style="display:none"><span class="tab-icon">🔮</span> Análise & Baseline</div>
     <div class="tab" onclick="switchTab('gestor')"><span class="tab-icon">🕵️</span> Austin</div>
     <div class="tab" onclick="switchTab('banco')"><span class="tab-icon">🗂️</span> Base &amp; métricas</div>
@@ -1215,6 +1216,16 @@
     </div>
   </div>
 
+  <!-- TAB: REEMBOLSOS -->
+  <div class="tab-content" id="tab-reembolsos">
+    <div class="section">
+      <div class="section-header"><div class="section-title">↩️ Reembolsos</div></div>
+      <div id="reembBody" style="padding:4px">
+        <div class="loading"><div class="spinner"></div>Carregando reembolsos...</div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -1397,7 +1408,7 @@ function gestorPer() {
 }
 function switchTab(name) {
   activeTab = name;
-  const names = ['overview','funis','campanhas','vendas','analise','gestor','banco'];
+  const names = ['overview','funis','campanhas','vendas','reembolsos','analise','gestor','banco'];
   document.querySelectorAll('.tab').forEach((t, i) => {
     t.classList.toggle('active', names[i] === name);
   });
@@ -1420,6 +1431,57 @@ function switchTab(name) {
   if (name === 'funis') {
     _loadFunisActive();
   }
+  if (name === 'reembolsos') {
+    renderReembolsos();
+  }
+}
+
+// ─── REEMBOLSOS (aba própria, período independente) ─────────────────────────
+let _reembPer = '30d';
+const REEMB_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/meta-reembolsos';
+function setReembPer(p){ _reembPer = p; renderReembolsos(); }
+async function renderReembolsos(){
+  const body = document.getElementById('reembBody');
+  if (!body) return;
+  const pers = [['hoje','Hoje'],['7d','7 dias'],['30d','30 dias'],['90d','90 dias']];
+  const seletor = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">'+pers.map(p=>`<button onclick="setReembPer('${p[0]}')" class="period-btn${_reembPer===p[0]?' active':''}" style="padding:6px 14px">${p[1]}</button>`).join('')+'</div>';
+  body.innerHTML = seletor + '<div class="loading"><div class="spinner"></div>Carregando reembolsos...</div>';
+  let d;
+  try { d = await fetch(REEMB_URL+'?periodo='+_reembPer+'&_='+Date.now()).then(r=>r.json()); }
+  catch(e){ body.innerHTML = seletor + '<div style="padding:20px;color:var(--muted,#8a8a9a)">Erro ao carregar.</div>'; return; }
+  const fmt = n => 'R$ '+(Math.round(n||0)).toLocaleString('pt-BR');
+  const FONTE = { trafego:'📢 Tráfego', organico:'🌱 Orgânico', time_vendas:'🎧 Time de vendas', meteorico:'🌪️ Meteórico', direto:'🔗 Direto' };
+  // KPIs
+  const kpis = `<div class="funis-kpi-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
+    <div class="fc" style="background:var(--card,#141414);border:1px solid #2a2a2a;border-radius:12px;padding:14px"><div class="fc-value" style="font-size:24px;font-weight:800">${d.total||0}</div><div class="fc-label" style="font-size:11px;color:var(--muted,#8a8a9a)">reembolsos</div></div>
+    <div class="fc" style="background:var(--card,#141414);border:1px solid #2a2a2a;border-radius:12px;padding:14px"><div class="fc-value" style="font-size:24px;font-weight:800">${fmt(d.valor_total)}</div><div class="fc-label" style="font-size:11px;color:var(--muted,#8a8a9a)">valor total</div></div>
+    <div class="fc" style="background:var(--card,#141414);border:1px solid #2a2a2a;border-radius:12px;padding:14px"><div class="fc-value" style="font-size:24px;font-weight:800">${fmt(d.media)}</div><div class="fc-label" style="font-size:11px;color:var(--muted,#8a8a9a)">média por reembolso</div></div>
+    <div class="fc" style="background:var(--card,#141414);border:1px solid #2a2a2a;border-radius:12px;padding:14px"><div class="fc-value" style="font-size:24px;font-weight:800">${d.taxa_reembolso!=null?d.taxa_reembolso+'%':'—'}</div><div class="fc-label" style="font-size:11px;color:var(--muted,#8a8a9a)">taxa (reemb ÷ vendas)</div></div>
+  </div>`;
+  function tabela(titulo, arr, labelFn){
+    if (!arr || !arr.length) return '';
+    const rows = arr.slice(0,12).map(x=>`<tr><td style="padding:7px 10px">${labelFn(x)}</td><td style="padding:7px 10px;text-align:right">${x.n}</td><td style="padding:7px 10px;text-align:right;color:var(--muted,#8a8a9a)">${fmt(x.valor)}</td></tr>`).join('');
+    return `<div style="background:var(--card,#141414);border:1px solid #2a2a2a;border-radius:12px;padding:6px 4px;margin-bottom:14px">
+      <div style="font-weight:700;padding:8px 10px">${titulo}</div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="color:var(--muted,#8a8a9a);font-size:11px"><th style="text-align:left;padding:4px 10px">—</th><th style="text-align:right;padding:4px 10px">qtd</th><th style="text-align:right;padding:4px 10px">valor</th></tr></thead><tbody>${rows}</tbody></table>
+    </div>`;
+  }
+  const bFonte = tabela('Por fonte', d.por_fonte, x=>FONTE[x.chave]||x.label);
+  const bProd = tabela('Por produto', d.por_produto, x=>x.label);
+  const bCri = tabela('🎯 Criativos que mais dão reembolso (tráfego)', d.por_criativo, x=>x.label);
+  const listaRows = (d.lista||[]).slice(0,60).map(v=>`<tr>
+    <td style="padding:6px 10px;white-space:nowrap">${v.data}</td>
+    <td style="padding:6px 10px">${v.produto}</td>
+    <td style="padding:6px 10px">${FONTE[v.fonte]||v.fonte}</td>
+    <td style="padding:6px 10px;color:var(--muted,#8a8a9a)">${v.criativo||'—'}</td>
+    <td style="padding:6px 10px;text-align:right">${fmt(v.valor)}</td></tr>`).join('');
+  const lista = `<div style="background:var(--card,#141414);border:1px solid #2a2a2a;border-radius:12px;padding:6px 4px">
+    <div style="font-weight:700;padding:8px 10px">Últimos reembolsos (${d.since} a ${d.until})</div>
+    <div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="color:var(--muted,#8a8a9a);font-size:11px">
+      <th style="text-align:left;padding:4px 10px">data</th><th style="text-align:left;padding:4px 10px">produto</th><th style="text-align:left;padding:4px 10px">fonte</th><th style="text-align:left;padding:4px 10px">criativo</th><th style="text-align:right;padding:4px 10px">valor</th>
+    </tr></thead><tbody>${listaRows||'<tr><td colspan=5 style="padding:14px;color:var(--muted,#8a8a9a)">Sem reembolsos no período.</td></tr>'}</tbody></table></div>
+  </div>`;
+  body.innerHTML = seletor + kpis + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'+bFonte+bProd+'</div>' + bCri + lista;
 }
 
 // ─── FUNIS — sub-abas Quiz | Meteórico (carregam separado) ──────────────────
