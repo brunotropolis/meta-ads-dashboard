@@ -3675,5 +3675,81 @@ window.startDashboard = startDashboard;
 </script>
 <!-- ===================== /AUTH ===================== -->
 
+<!-- ===================== SHERLOCK — analista de página ===================== -->
+<style>
+  #sh-fab { position: fixed; bottom: 24px; right: 92px; width: 56px; height: 56px; border-radius: 50%; border: none; cursor: pointer; z-index: 9998;
+    background: linear-gradient(145deg,#1f3a34,#0f221e); color:#e7d9b8; font-size: 24px; box-shadow: 0 6px 20px rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; }
+  #sh-fab:hover { transform: scale(1.05); }
+  #sh-fab .sh-dot { position:absolute; top:8px; right:9px; width:9px; height:9px; border-radius:50%; background:#e3a31b; box-shadow:0 0 0 3px rgba(227,163,27,.25); }
+  #sh-drawer { position: fixed; bottom: 90px; right: 24px; width: 420px; max-width: calc(100vw - 32px); height: 70vh; max-height: 680px; z-index: 9999;
+    background: #12211d; border: 1px solid #2c463f; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.5); display: none; flex-direction: column; overflow: hidden;
+    transform: translateY(20px) scale(.98); opacity: 0; transition: all .18s ease; }
+  #sh-drawer.sh-open { display: flex; transform: translateY(0) scale(1); opacity: 1; }
+  #sh-header { display:flex; align-items:center; gap:10px; padding: 12px 14px; background: linear-gradient(120deg,#1f3a34,#132a25); border-bottom:1px solid #2c463f; }
+  #sh-header .sh-av { width:34px; height:34px; border-radius:50%; background: radial-gradient(circle at 30% 30%,#e3a31b,#8a5a12); display:flex; align-items:center; justify-content:center; font-size:17px; }
+  #sh-header .sh-t { flex:1; line-height:1.2; color:#e7d9b8; }
+  #sh-header .sh-t b { font-family: Georgia, serif; font-style: italic; font-size: 16px; }
+  #sh-header .sh-t small { display:block; opacity:.8; font-size:10px; letter-spacing:.5px; text-transform:uppercase; }
+  #sh-close { background: rgba(0,0,0,.3); border:none; color:#e7d9b8; width:28px; height:28px; border-radius:8px; cursor:pointer; font-size:16px; }
+  #sh-msgs { flex:1; overflow-y:auto; padding: 14px; display:flex; flex-direction:column; gap:10px; background:#0f1c19; }
+  #sh-msgs::-webkit-scrollbar { width:8px; } #sh-msgs::-webkit-scrollbar-thumb { background: rgba(227,163,27,.3); border-radius:4px; }
+  .sh-msg { max-width: 88%; padding: 9px 12px; border-radius: 12px; font-size: 13.5px; line-height: 1.5; white-space: normal; }
+  .sh-me { align-self: flex-end; background:#25473f; color:#eaf3ef; border-bottom-right-radius:4px; }
+  .sh-bot { align-self: flex-start; background:#182c27; color:#dfe7e3; border:1px solid #2c463f; border-bottom-left-radius:4px; }
+  .sh-bot h2 { font-family:Georgia,serif; font-size:14px; color:#e3a31b; margin:8px 0 4px; }
+  .sh-bot strong { color:#f0e2c0; } .sh-bot ul { margin:4px 0 4px 16px; } .sh-bot li { margin:2px 0; }
+  .sh-bot code { background:rgba(0,0,0,.3); padding:1px 5px; border-radius:4px; font-size:12px; }
+  #sh-iw { display:flex; gap:8px; padding:10px; background:#12211d; border-top:1px solid #2c463f; }
+  #sh-in { flex:1; resize:none; background:#0f1c19; border:1px solid #2c463f; border-radius:10px; color:#eaf3ef; padding:9px 11px; font-size:13.5px; font-family:inherit; max-height:120px; }
+  #sh-in:focus { outline:none; border-color:#e3a31b; box-shadow:0 0 0 3px rgba(227,163,27,.15); }
+  #sh-snd { background: linear-gradient(145deg,#e3a31b,#a5760f); border:none; color:#12211d; width:42px; border-radius:10px; cursor:pointer; font-size:15px; font-weight:700; }
+  #sh-snd:disabled { opacity:.5; cursor:not-allowed; }
+  #sh-foot { padding:6px 12px; background:rgba(0,0,0,.3); font-size:10px; color:#8aa39a; }
+</style>
+<button id="sh-fab" title="Sherlock — analista de página">🔍<span class="sh-dot"></span></button>
+<div id="sh-drawer" role="dialog" aria-label="Sherlock Chat">
+  <div id="sh-header">
+    <div class="sh-av">🕵️</div>
+    <div class="sh-t"><b>Sherlock</b><small>Detetive de páginas</small></div>
+    <button id="sh-close" aria-label="Fechar">×</button>
+  </div>
+  <div id="sh-msgs"></div>
+  <div id="sh-iw">
+    <textarea id="sh-in" placeholder="Pergunta pro Sherlock... (ex: o que trava a página do pocket?)" rows="1"></textarea>
+    <button id="sh-snd">▶</button>
+  </div>
+  <div id="sh-foot">Elementar — analisa página, propõe teste. Não sobe campanha.</div>
+</div>
+<script>
+(function(){
+  const URL_SH='/api/sherlock', HKEY='sherlock-history-v1';
+  const fab=document.getElementById('sh-fab'), dw=document.getElementById('sh-drawer'), cl=document.getElementById('sh-close'),
+        ms=document.getElementById('sh-msgs'), inp=document.getElementById('sh-in'), snd=document.getElementById('sh-snd');
+  function loadH(){ try{return JSON.parse(localStorage.getItem(HKEY)||'[]');}catch(e){return [];} }
+  function saveH(m){ const h=loadH(); h.push(m); if(h.length>50)h.shift(); localStorage.setItem(HKEY,JSON.stringify(h)); }
+  function md(t){ t=(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    t=t.replace(/^##\s?(.+)$/gm,'<h2>$1</h2>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`(.+?)`/g,'<code>$1</code>');
+    const lines=t.split('\n'); let out='',inul=false;
+    for(let ln of lines){ if(/^\s*[-•]\s+/.test(ln)){ if(!inul){out+='<ul>';inul=true;} out+='<li>'+ln.replace(/^\s*[-•]\s+/,'')+'</li>'; }
+      else { if(inul){out+='</ul>';inul=false;} if(/<h2>/.test(ln))out+=ln; else if(ln.trim())out+='<p>'+ln+'</p>'; } }
+    if(inul)out+='</ul>'; return out; }
+  function add(role,txt,skip){ const d=document.createElement('div'); d.className='sh-msg '+(role==='me'?'sh-me':'sh-bot');
+    d.innerHTML = role==='me' ? txt.replace(/</g,'&lt;') : md(txt); ms.appendChild(d); ms.scrollTop=ms.scrollHeight; if(!skip)saveH({role,content:txt}); }
+  function open(){ dw.classList.add('sh-open'); if(!ms.childElementCount){ const h=loadH(); if(h.length)h.forEach(m=>add(m.role,m.content,true)); else add('bot','Elementar, meu caro. Me diga qual página investigar (pocket, quiz ou guia) e eu leio as pistas: heatmap, cliques e a ida pro checkout.',true); } inp.focus(); }
+  fab.onclick=()=>dw.classList.contains('sh-open')?dw.classList.remove('sh-open'):open();
+  cl.onclick=()=>dw.classList.remove('sh-open');
+  inp.addEventListener('input',()=>{ inp.style.height='auto'; inp.style.height=Math.min(inp.scrollHeight,120)+'px'; });
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send(); } });
+  snd.onclick=send;
+  async function send(){ const t=inp.value.trim(); if(!t||snd.disabled)return; add('me',t); inp.value=''; inp.style.height='auto';
+    snd.disabled=true; const tick=document.createElement('div'); tick.className='sh-msg sh-bot'; tick.textContent='Sherlock investigando... 0s'; ms.appendChild(tick);
+    let s=0; const iv=setInterval(()=>{ s++; tick.textContent='Sherlock investigando... '+s+'s'+(s>60?' (quase lá)':''); },1000);
+    try{ const hist=loadH().slice(-6);
+      const res=await fetch(URL_SH,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:t,historico:hist})});
+      const j=await res.json(); clearInterval(iv); tick.remove(); add('bot',(j&&j.reply)||'Faltam pistas, meu caro. Tente de novo.');
+    }catch(e){ clearInterval(iv); tick.remove(); add('bot','Não consegui investigar agora ('+e.message+').'); }
+    snd.disabled=false; inp.focus(); }
+})();
+</script>
 </body>
 </html>
