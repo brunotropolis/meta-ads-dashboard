@@ -1480,17 +1480,21 @@ async function renderReembolsos(){
     <div style="width:80px;text-align:right;font-size:12px;color:#9aa">${fmt(x.valor)}</div></div>`; }
   const boxPrinc = card(`<div style="font-weight:700;margin-bottom:6px;color:${ROSE}">⭐ Produto principal</div>${(d.por_produto_principal||[]).slice(0,8).map(x=>linhaProd(x,ROSE)).join('')||'<div style="color:#9aa;font-size:12px;padding:8px">—</div>'}`);
   const boxBump = card(`<div style="font-weight:700;margin-bottom:6px;color:#fbbf24">🎁 Order bumps</div>${(d.por_produto_bump||[]).slice(0,8).map(x=>linhaProd(x,'#fbbf24')).join('')||'<div style="color:#9aa;font-size:12px;padding:8px">Nenhum bump reembolsado</div>'}`);
-  // ── Criativos por funil (3 cards coloridos) ──
+  // ── Criativos por funil (3 cards) com vendas + taxa (reemb ÷ vendas) ──
+  const taxaCor = t => t==null?'#9aa':(t<10?'#4ade80':(t<20?'#fbbf24':'#f87171'));
   function boxFunil(fk){ const f=FUNIL[fk], arr=(d.por_criativo_funil&&d.por_criativo_funil[fk])||[]; if(!arr.length) return '';
-    const rows = arr.slice(0,8).map(x=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 2px;border-bottom:1px solid #202028">
-      <div style="flex:1;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.label}</div>
-      <div style="font-size:12px;font-weight:700">${x.n}</div>
-      <div style="font-size:11px;color:${f.cor};width:38px;text-align:right">${x.pct}%</div>
-      <div style="font-size:11px;color:#9aa;width:64px;text-align:right">${fmt(x.valor)}</div></div>`).join('');
-    return `<div style="flex:1;min-width:240px;background:linear-gradient(160deg,#181820,#131319);border:1px solid ${f.cor}44;border-radius:16px;padding:14px">
-      <div style="display:flex;align-items:center;gap:8px;font-weight:700;margin-bottom:8px;color:${f.cor}">${f.emoji} ${f.nome}</div>${rows}</div>`; }
+    const head = `<div style="display:flex;gap:6px;padding:2px 2px 7px;font-size:9.5px;color:#8a8a9a;text-transform:uppercase;letter-spacing:.3px;border-bottom:1px solid #262630">
+      <div style="flex:1">criativo</div><div style="width:46px;text-align:right">vendas</div><div style="width:42px;text-align:right">reemb</div><div style="width:46px;text-align:right">taxa</div></div>`;
+    const rows = arr.slice(0,8).map(x=>`<div style="display:flex;align-items:center;gap:6px;padding:7px 2px;border-bottom:1px solid #1c1c24">
+      <div style="flex:1;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${x.label}">${x.label}</div>
+      <div style="width:46px;text-align:right;font-size:12.5px;color:#c8c8d4">${x.vendas}</div>
+      <div style="width:42px;text-align:right;font-size:12.5px;font-weight:700">${x.reembolsos}</div>
+      <div style="width:46px;text-align:right;font-size:12.5px;font-weight:800;color:${taxaCor(x.taxa)}">${x.taxa!=null?x.taxa+'%':'—'}</div></div>`).join('');
+    return `<div style="flex:1;min-width:280px;background:linear-gradient(160deg,#181820,#131319);border:1px solid ${f.cor}44;border-radius:16px;padding:14px">
+      <div style="display:flex;align-items:center;gap:8px;font-weight:700;margin-bottom:10px;color:${f.cor}">${f.emoji} ${f.nome}</div>${head}${rows}</div>`; }
   const funis = ['pocket','quiz','guia'].map(boxFunil).filter(Boolean).join('');
-  const boxCri = funis ? card(`<div style="font-weight:700;margin-bottom:12px">🎯 Criativos que mais dão reembolso <span style="font-size:11px;color:#9aa;font-weight:400">· tráfego, por funil</span></div>
+  const boxCri = funis ? card(`<div style="font-weight:700;margin-bottom:4px">🎯 Reembolso por criativo <span style="font-size:11px;color:#9aa;font-weight:400">· tráfego, por funil</span></div>
+    <div style="font-size:11px;color:#8a8a9a;margin-bottom:12px">taxa = reembolsos ÷ vendas do criativo. <span style="color:#4ade80">verde</span> saudável, <span style="color:#fbbf24">amarelo</span> atenção, <span style="color:#f87171">vermelho</span> alto. Assim um criativo que vende muito não parece ruim só por ter reembolso absoluto alto.</div>
     <div style="display:flex;gap:12px;flex-wrap:wrap">${funis}</div>`,'margin-top:2px;margin-bottom:14px') : '';
   // ── Lista ──
   const listaRows = (d.lista||[]).slice(0,60).map(v=>{const f=FONTE[v.fonte]||{nome:v.fonte,cor:'#888'};const fu=FUNIL[v.funil];return `<tr style="border-bottom:1px solid #1e1e26">
