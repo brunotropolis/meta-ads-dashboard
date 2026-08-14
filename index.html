@@ -1767,7 +1767,8 @@ async function loadFunisPocket() {
 function renderFunisPocket(f) {
   const body = document.getElementById('funisBody');
   if (!f || (!f.pago && !f.tudo)) {
-    body.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted,#8a8a9a)">Sem dados do funil Dream Baby Pocket no período.</div>';
+    body.innerHTML = '<div id="abSplitBox"></div><div style="padding:30px;text-align:center;color:var(--muted,#8a8a9a)">Sem dados do funil Dream Baby Pocket no período.</div>';
+    renderABsplit();
     return;
   }
   const P = f.pago || {}, O = f.organico || {}, T = f.tudo || {};
