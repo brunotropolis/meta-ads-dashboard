@@ -3042,6 +3042,7 @@ function renderHora() {
 function renderVendasTiktok(vendas) {
   const el = document.getElementById('vendasTiktok');
   if (!el) return;
+  el.innerHTML = ''; return; /* OCULTO (Bruno 14/Ago): TikTok Ads pausado. Reativar = remover esta linha */
   const isTT = s => /tiktok|\[tiktok\]/i.test((s.utm_source || '') + ' ' + (s.utm_campaign || ''));
   const tt = (vendas || []).filter(s => s.tipo === 'VENDA' && isTT(s));
   const n = tt.length;
@@ -3062,6 +3063,7 @@ function renderVendasTiktok(vendas) {
 function renderVendasChatgpt(vendas) {
   const el = document.getElementById('vendasChatgpt');
   if (!el) return;
+  el.innerHTML = ''; return; /* OCULTO (Bruno 14/Ago): ChatGPT Ads pausado. Reativar = remover esta linha */
   const isGPT = s => /chatgpt|openai|\[chatgpt\]|\[openai\]/i.test((s.utm_source || '') + ' ' + (s.utm_campaign || ''));
   const gp = (vendas || []).filter(s => s.tipo === 'VENDA' && isGPT(s));
   const n = gp.length;
