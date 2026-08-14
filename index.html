@@ -3470,6 +3470,7 @@ window.startDashboard = startDashboard;
   let isLoading = false;
 
   function openDrawer(){
+    var sh=document.getElementById('sh-drawer'); if(sh) sh.classList.remove('sh-open');
     drawer.classList.add('ap-open');
     setTimeout(() => input.focus(), 200);
     if (!msgsEl.dataset.welcomed) {
@@ -3681,7 +3682,7 @@ window.startDashboard = startDashboard;
     background: linear-gradient(145deg,#1f3a34,#0f221e); color:#e7d9b8; font-size: 24px; box-shadow: 0 6px 20px rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; }
   #sh-fab:hover { transform: scale(1.05); }
   #sh-fab .sh-dot { position:absolute; top:8px; right:9px; width:9px; height:9px; border-radius:50%; background:#e3a31b; box-shadow:0 0 0 3px rgba(227,163,27,.25); }
-  #sh-drawer { position: fixed; bottom: 90px; right: 24px; width: 420px; max-width: calc(100vw - 32px); height: 70vh; max-height: 680px; z-index: 9999;
+  #sh-drawer { position: fixed; bottom: 90px; right: 24px; width: 540px; max-width: calc(100vw - 32px); height: 82vh; max-height: 820px; z-index: 9999;
     background: #12211d; border: 1px solid #2c463f; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.5); display: none; flex-direction: column; overflow: hidden;
     transform: translateY(20px) scale(.98); opacity: 0; transition: all .18s ease; }
   #sh-drawer.sh-open { display: flex; transform: translateY(0) scale(1); opacity: 1; }
@@ -3735,7 +3736,7 @@ window.startDashboard = startDashboard;
     if(inul)out+='</ul>'; return out; }
   function add(role,txt,skip){ const d=document.createElement('div'); d.className='sh-msg '+(role==='me'?'sh-me':'sh-bot');
     d.innerHTML = role==='me' ? txt.replace(/</g,'&lt;') : md(txt); ms.appendChild(d); ms.scrollTop=ms.scrollHeight; if(!skip)saveH({role,content:txt}); }
-  function open(){ dw.classList.add('sh-open'); if(!ms.childElementCount){ const h=loadH(); if(h.length)h.forEach(m=>add(m.role,m.content,true)); else add('bot','Elementar, meu caro. Me diga qual página investigar (pocket, quiz ou guia) e eu leio as pistas: heatmap, cliques e a ida pro checkout.',true); } inp.focus(); }
+  function open(){ var ap=document.getElementById('ap-drawer'); if(ap) ap.classList.remove('ap-open'); dw.classList.add('sh-open'); if(!ms.childElementCount){ const h=loadH(); if(h.length)h.forEach(m=>add(m.role,m.content,true)); else add('bot','Elementar, meu caro. Me diga qual página investigar (pocket, quiz ou guia) e eu leio as pistas: heatmap, cliques e a ida pro checkout.',true); } inp.focus(); }
   fab.onclick=()=>dw.classList.contains('sh-open')?dw.classList.remove('sh-open'):open();
   cl.onclick=()=>dw.classList.remove('sh-open');
   inp.addEventListener('input',()=>{ inp.style.height='auto'; inp.style.height=Math.min(inp.scrollHeight,120)+'px'; });
