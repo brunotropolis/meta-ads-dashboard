@@ -356,8 +356,57 @@
         </div>
         <div class="section-body" style="padding:0">${tabela(rows)}</div></div>`;
     }
+    function abPocketPanel() {
+      const ab = DATA.ab_pocket; if (!ab || !ab.base || !ab.v3) return '';
+      const B = ab.base, V = ab.v3, CB = '#a78bfa', CV = '#34d399';
+      const pct = n => (n==null?'—':(+n).toFixed(2).replace('.',',')+'%');
+      const retMsg = s => s==null?'—':(s>=45?'passa da metade':s>=30?'chega ~1/3 da página':s>=20?'chega ~1/4 da página':'para no topo ('+Math.round(s)+'%)');
+      // vencedor parcial (por conversão) com trava de amostra
+      const amostraOk = B.sessoes>=30 && V.sessoes>=30;
+      const difVendas = Math.abs((V.vendas||0)-(B.vendas||0));
+      const lead = V.conv>B.conv ? 'v3' : (B.conv>V.conv ? 'base' : null);
+      let veredito, vcor;
+      if (!amostraOk) { veredito='Amostra ainda pequena — deixa rodar'; vcor='var(--muted)'; }
+      else if (difVendas<=1) { veredito='Empate técnico (vendas quase iguais) — é ruído, não crava'; vcor='var(--yellow)'; }
+      else { veredito=(lead==='v3'?'/v3 na frente':'Base na frente')+' — mas confirme com mais dias'; vcor='var(--green)'; }
+      const card = (nome, D, cor, ganha) => `
+        <div style="flex:1;min-width:180px;background:linear-gradient(160deg,#181820,#131319);border:1px solid ${ganha?cor:'#2a2a35'};border-radius:16px;padding:14px;position:relative">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${cor};border-radius:16px 16px 0 0"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><b style="color:${cor}">${nome}</b>${ganha?`<span style="font-size:10px;background:${cor}22;color:${cor};border-radius:20px;padding:2px 8px">na frente</span>`:''}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 12px">
+            <div><div style="font-size:11px;color:var(--muted)">Conversão</div><div style="font-size:20px;font-weight:700;color:${cor}">${pct(D.conv)}</div></div>
+            <div><div style="font-size:11px;color:var(--muted)">Vendas</div><div style="font-size:20px;font-weight:700">${D.vendas} <small style="font-size:11px;color:var(--muted)">/ ${D.sessoes} sess.</small></div></div>
+            <div style="grid-column:1/3"><div style="font-size:11px;color:var(--muted)">Retenção (rolagem média) · ${retMsg(D.scroll_medio)}</div>
+              <div style="height:8px;background:#23232e;border-radius:6px;overflow:hidden;margin-top:4px"><div style="height:100%;width:${Math.min(100,D.scroll_medio||0)}%;background:${cor}"></div></div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">desce ~${Math.round(D.scroll_medio||0)}% da página · clique-morto ${pct(D.dead_pct)}</div></div>
+          </div>
+        </div>`;
+      // linha do tempo
+      const H = (DATA.historico_ab||[]).filter(h=>h.base_conv!=null||h.v3_conv!=null);
+      let tl;
+      if (H.length<2) tl = `<div style="font-size:12.5px;color:var(--muted);padding:6px 2px">📈 Começando a registrar o histórico hoje. Volta amanhã pra ver a linha do tempo (conversão base × v3 por dia).</div>`;
+      else {
+        const rowsTl = H.slice(-14).map(h=>{
+          const win = (h.v3_conv||0)>(h.base_conv||0)?CV:((h.base_conv||0)>(h.v3_conv||0)?CB:'var(--muted)');
+          return `<tr><td style="padding:3px 8px;color:var(--muted)">${h.data.slice(5)}</td>
+            <td style="padding:3px 8px;text-align:right;color:${CB}">${pct(h.base_conv)} <small style="color:var(--muted)">(${h.base_vendas??'—'})</small></td>
+            <td style="padding:3px 8px;text-align:right;color:${CV}">${pct(h.v3_conv)} <small style="color:var(--muted)">(${h.v3_vendas??'—'})</small></td>
+            <td style="padding:3px 8px;text-align:center">${win===CV?'🟢 v3':win===CB?'🟣 base':'—'}</td></tr>`;
+        }).join('');
+        tl = `<table style="width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px">
+          <thead><tr style="color:var(--muted);font-size:11px"><th style="text-align:left;padding:3px 8px">dia</th><th style="text-align:right;padding:3px 8px;color:${CB}">base conv (vendas)</th><th style="text-align:right;padding:3px 8px;color:${CV}">v3 conv (vendas)</th><th style="padding:3px 8px">dia vencedor</th></tr></thead>
+          <tbody>${rowsTl}</tbody></table>`;
+      }
+      return `<div class="section"><div class="section-header"><div><div class="section-title">🧪 Teste A/B ao vivo — base vs /v3</div><div class="section-sub">split 50/50 na borda (Cloudflare) · janela 3 dias · a retenção é quanto da página a pessoa desce em média</div></div></div>
+        <div class="section-body">
+          <div style="display:flex;gap:12px;flex-wrap:wrap">${card('Base (atual)',B,CB,amostraOk&&difVendas>1&&lead==='base')}${card('/v3 (desafiante)',V,CV,amostraOk&&difVendas>1&&lead==='v3')}</div>
+          <div style="margin-top:12px;padding:10px 12px;background:${vcor}18;border:1px solid ${vcor}44;border-radius:12px;font-size:13px"><b style="color:${vcor}">Veredito:</b> ${veredito}. Só cravo vencedor com 30+ sessões e diferença real de vendas dos dois lados.</div>
+          <div style="margin-top:14px"><div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:2px">📈 Linha do tempo (histórico diário)</div>${tl}</div>
+        </div></div>`;
+    }
     function renderFunil(fkey) {
       const F=FUNIS[fkey], p=periodo(), rows=campanhas(fkey), r=resumo(rows,p);
+      const abBlock = fkey==='pocket' ? abPocketPanel() : '';
       const pm=F.pageMetrics.map(m=>`<div class="pm"><div class="pl">${m.l}${m.faq?qb(m.faq):''}</div><div class="pv ${m.cls}">${m.v}${m.cls==='bad'?metaTag(m.meta):''}</div></div>`).join('');
       const versoes=F.versoes.map(v=>{
         const talk=v.conversamos.map(t=>`<div class="talk">${t}</div>`).join('');
@@ -369,6 +418,7 @@
       }).join('');
       return kpiStrip(r)+`
       <div class="section"><div class="section-header"><div><div class="section-title">🚀 Campanhas do funil</div><div class="section-sub">${p?p.since+' → '+p.until:''}</div></div></div><div class="section-body" style="padding:0">${tabela(rows)}</div></div>
+      ${abBlock}
       <div class="section"><div class="section-header"><div><div class="section-title">🔮 Página de venda — ${F.page}</div><div class="section-sub">comportamento (Clarity) + auditoria</div></div></div><div class="section-body"><div class="page-metrics">${pm}</div></div></div>
       <div class="section"><div class="section-header"><div><div class="section-title">🧪 Histórico da página</div><div class="section-sub">cada versão nomeada, com o que conversamos e o que ajustamos</div></div></div><div class="section-body">${versoes}</div></div>`;
     }
