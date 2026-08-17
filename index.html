@@ -3774,14 +3774,14 @@ window.startDashboard = startDashboard;
 (function(){
   const SUPA_URL  = 'https://zageqyuwodvyxwohpugb.supabase.co';
   const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InphZ2VxeXV3b2R2eXh3b2hwdWdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1NTU5NTIsImV4cCI6MjA5MzEzMTk1Mn0.hpSav9X11Qq2wJMxOWFekHniJuHTgWZSUbwYhQfnKpM';
-  const sb = window.supabase.createClient(SUPA_URL, SUPA_ANON);
   const overlay = document.getElementById('login-overlay');
   const form    = document.getElementById('login-box');
   const errEl   = document.getElementById('lo-err');
   const btn     = document.getElementById('lo-btn');
+  let sb = null;
 
   function unlock(){
-    overlay.style.display = 'none';
+    if (overlay) overlay.style.display = 'none';
     if (window.startDashboard) window.startDashboard();
     addLogout();
   }
@@ -3790,23 +3790,30 @@ window.startDashboard = startDashboard;
     const b = document.createElement('button');
     b.id = 'lo-logout'; b.textContent = 'Sair';
     b.style.cssText = 'position:fixed;top:8px;right:10px;z-index:99998;background:rgba(22,27,41,.85);color:#8a8a9a;border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:5px 11px;font-size:12px;cursor:pointer';
-    b.onclick = async () => { await sb.auth.signOut(); location.reload(); };
+    b.onclick = async () => { try { if (sb) await sb.auth.signOut(); } catch (e) {} location.reload(); };
     document.body.appendChild(b);
   }
 
-  // Sessão já existente? entra direto.
-  sb.auth.getSession().then(({ data }) => { if (data && data.session) unlock(); });
+  // FAIL-OPEN: o Cloudflare Access ja e a tranca do dash. Se o supabase-js (CDN jsdelivr) ou o
+  // Supabase caírem, NAO trava a pagina no login — libera (quem chegou aqui ja passou pelo Access).
+  try { if (window.supabase && window.supabase.createClient) sb = window.supabase.createClient(SUPA_URL, SUPA_ANON); } catch (e) {}
+  if (!sb) { unlock(); return; }
 
-  form.addEventListener('submit', async (e) => {
+  // Sessão já existente? entra direto. Se o Supabase falhar, libera (fail-open).
+  sb.auth.getSession().then(({ data }) => { if (data && data.session) unlock(); }).catch(() => { unlock(); });
+
+  if (form) form.addEventListener('submit', async (e) => {
     e.preventDefault();
     errEl.textContent = '';
     btn.disabled = true; btn.textContent = 'Entrando...';
     const email = document.getElementById('lo-email').value.trim();
     const pass  = document.getElementById('lo-pass').value;
-    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
-    btn.disabled = false; btn.textContent = 'Entrar';
-    if (error) { errEl.textContent = 'E-mail ou senha incorretos.'; return; }
-    unlock();
+    try {
+      const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+      btn.disabled = false; btn.textContent = 'Entrar';
+      if (error) { errEl.textContent = 'E-mail ou senha incorretos.'; return; }
+      unlock();
+    } catch (err) { btn.disabled = false; btn.textContent = 'Entrar'; errEl.textContent = 'Falha de conexão com o login. Recarregue a página.'; }
   });
 })();
 </script>
