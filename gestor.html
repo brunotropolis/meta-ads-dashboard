@@ -482,7 +482,7 @@
     }
     const msgs=document.getElementById('chatMsgs'), inp=document.getElementById('chatIn');
     function addMsg(html,cls){ const d=document.createElement('div'); d.className='msg '+cls; d.innerHTML=html; msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight; }
-    const CHAT_URL='https://n8n-n8n.xktssy.easypanel.host/webhook/gestor-chat';
+    const CHAT_URL='/api/chat';
     const historico=[]; let sending=false;
     function dadosContexto(){ const p=periodo(); if(!p) return {}; return { periodo:state.per, campanhas:p.campanhas.filter(c=>c.gasto>0).map(c=>({nome:c.nome,funil:c.funil,gasto:c.gasto,vendas:c.vendas,receita:c.receita,roas:c.roas,cpa:c.cpa,ctr:c.ctr,connect:c.connect,ida:c.ida,freq:c.freq,estado:c.estado})), orfas:p.orfas }; }
     function mdToHtml(t){
