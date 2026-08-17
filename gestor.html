@@ -351,7 +351,7 @@
     }
     function renderGeral() {
       const p=periodo(), rows=campanhas(fFiltro), r=resumo(rows,p);
-      return kpiStrip(r)+`<div class="section">
+      return `<div class="section" id="pilotoSection"><div class="section-header"><div><div class="section-title">🤖 Piloto automático</div><div class="section-sub">o Austin monitora 6x/dia (7,10,13,16,19,21h) e te manda no WhatsApp · com o piloto ligado, ele executa a instrução no horário, dentro das travas</div></div></div><div class="section-body" id="pilotoBox"><div style="color:var(--muted);font-size:12.5px">carregando…</div></div></div>`+kpiStrip(r)+`<div class="section">
         <div class="section-header">
           <div><div class="section-title">🚀 Campanhas</div><div class="section-sub">${p?p.since+' → '+p.until:''} · todas com gasto no período</div></div>
           <div class="fpills">
@@ -495,6 +495,7 @@
       const view=document.getElementById('view');
       if(!DATA.periodos){ view.innerHTML='<div class="empty" style="padding:60px">Sem dados. (snapshot não carregou)<br><small style="opacity:.6">'+(window.__snapErr?('motivo: '+window.__snapErr):'sem erro reportado')+'</small></div>'; return; }
       view.innerHTML = state.tab==='geral'?renderGeral():state.tab==='banco'?renderBanco():renderFunil(state.tab);
+      if(state.tab==='geral') loadPiloto();
       if(['pocket','quiz','guia'].includes(state.tab)) loadEstrategias(state.tab);
       const p=periodo();
       document.getElementById('perHint').textContent = p?(p.since==p.until?p.since:p.dias+' dias'):'';
@@ -584,6 +585,28 @@
       sending=false;
     }
     document.getElementById('chatSend').onclick=send;
+    // ── Piloto automático (config do monitor) ─────────────────────────────────
+    const CFG_URL='/api/monitor-cfg';
+    async function apiCfg(body){ try{ return await fetch(CFG_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)}).then(r=>r.json()); }catch(e){ return {ok:false}; } }
+    async function loadPiloto(){
+      const box=document.getElementById('pilotoBox'); if(!box) return;
+      const j=await apiCfg({op:'get'}); const c=(j&&j.cfg)||{modo_auto:false,instrucao:''};
+      const on=!!c.modo_auto;
+      box.innerHTML=`
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+          <button id="pilotoToggle" style="background:${on?'linear-gradient(120deg,#34d399,#818cf8)':'#23232e'};color:${on?'#0a0a0a':'var(--muted)'};border:none;border-radius:24px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer">${on?'🟢 Piloto LIGADO':'⚪ Piloto desligado'}</button>
+          <span style="font-size:12px;color:var(--muted)">${on?'ele vai <b style="color:#34d399">executar</b> a instrução no horário (dentro das travas) e te avisar no zap':'ele só <b>reporta</b> no zap, não executa nada'}</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px">📝 Instrução permanente (o que ele deve fazer sozinho quando se aplicar)</div>
+        <textarea id="pilotoInstr" rows="2" style="width:100%;background:rgba(10,11,21,.6);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:9px 11px;font-size:13px;font-family:inherit;resize:vertical" placeholder="ex: escala os winners (ROAS ≥ 2,5 e 50+ vendas) em +20% amanhã de manhã, teto R$ 120/dia">${esc(c.instrucao||'')}</textarea>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+          <button id="pilotoSave" style="background:var(--grad-purple,#818cf8);border:none;color:#fff;border-radius:9px;padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer">💾 Salvar instrução</button>
+          <span style="font-size:11px;color:var(--muted)">${c.instrucao_ts?('última edição: '+c.instrucao_ts):''}</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5">⚠️ Trava de segurança: mesmo ligado, ele só faz o que está escrito aqui (ou nas regras) e respeita os limites do Executor (máx +100%/−50%, mín R$5). Toda ação cai no teu WhatsApp na hora.</div>`;
+      document.getElementById('pilotoToggle').onclick=async()=>{ const t=document.getElementById('pilotoToggle'); t.disabled=true; t.textContent='...'; await apiCfg({op:'set',modo_auto:!on}); loadPiloto(); };
+      document.getElementById('pilotoSave').onclick=async()=>{ const b=document.getElementById('pilotoSave'); b.disabled=true; b.textContent='salvando...'; await apiCfg({op:'set',instrucao:document.getElementById('pilotoInstr').value}); loadPiloto(); };
+    }
     // ── Livro de estratégias (por funil) ──────────────────────────────────────
     const ESTR_URL='/api/estrategias';
     const ESTR_STATUS=['proposta','aplicada','deu certo','deu errado','descartada'];
