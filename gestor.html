@@ -159,6 +159,13 @@
   .chat-input textarea:focus { border-color:var(--border-hover); }
   .chat-send { width:40px; height:40px; flex:none; border:none; border-radius:11px; background:var(--grad-purple); color:#fff; font-size:16px; cursor:pointer; box-shadow:0 3px 12px var(--purple-glow); }
   .chat-hint { font-size:10px; color:var(--muted); text-align:center; padding:0 12px 10px; }
+  .chat-mesa-row { padding:8px 12px 0; }
+  .chat-mesa { width:100%; background:rgba(52,211,153,.08); border:1px dashed rgba(52,211,153,.4); color:#34d399; border-radius:10px; padding:7px 10px; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit; transition:.15s; }
+  .chat-mesa:hover { background:rgba(52,211,153,.14); }
+  .chat-mesa.on { background:linear-gradient(120deg,rgba(52,211,153,.22),rgba(129,140,248,.22)); border-style:solid; border-color:transparent; color:#fff; box-shadow:0 2px 12px rgba(52,211,153,.25); }
+  .estr-chip { background:rgba(255,255,255,.04); border:1px solid var(--border); color:var(--muted); border-radius:20px; padding:3px 10px; font-size:11px; cursor:pointer; font-family:inherit; transition:.12s; }
+  .estr-chip:hover { color:var(--text); border-color:var(--border-hover); }
+  .estr-chip.on { font-weight:700; }
 
   .chat-bg { display:none; }
 
@@ -226,6 +233,7 @@
       <button class="chat-x" id="chatX">×</button>
     </div>
     <div class="chat-msgs" id="chatMsgs"></div>
+    <div class="chat-mesa-row"><button class="chat-mesa" id="chatMesa" title="Chama o Sherlock (análise de página) pra pensar junto com o Austin. Fica mais lento — são os dois analisando.">🔍 Chamar o Sherlock</button></div>
     <div class="chat-input">
       <textarea id="chatIn" rows="1" placeholder="Pergunta pro Gestor…"></textarea>
       <button class="chat-send" id="chatSend">➤</button>
@@ -419,6 +427,7 @@
       return kpiStrip(r)+`
       <div class="section"><div class="section-header"><div><div class="section-title">🚀 Campanhas do funil</div><div class="section-sub">${p?p.since+' → '+p.until:''}</div></div></div><div class="section-body" style="padding:0">${tabela(rows)}</div></div>
       ${abBlock}
+      <div class="section"><div class="section-header"><div><div class="section-title">🧠 Estratégias tentadas</div><div class="section-sub">o que o Austin e o Sherlock já propuseram aqui · você marca o resultado</div></div></div><div class="section-body" id="estrBox"><div style="color:var(--muted);font-size:12.5px;padding:6px 2px">carregando…</div></div></div>
       <div class="section"><div class="section-header"><div><div class="section-title">🔮 Página de venda — ${F.page}</div><div class="section-sub">comportamento (Clarity) + auditoria</div></div></div><div class="section-body"><div class="page-metrics">${pm}</div></div></div>
       <div class="section"><div class="section-header"><div><div class="section-title">🧪 Histórico da página</div><div class="section-sub">cada versão nomeada, com o que conversamos e o que ajustamos</div></div></div><div class="section-body">${versoes}</div></div>`;
     }
@@ -486,6 +495,7 @@
       const view=document.getElementById('view');
       if(!DATA.periodos){ view.innerHTML='<div class="empty" style="padding:60px">Sem dados. (snapshot não carregou)<br><small style="opacity:.6">'+(window.__snapErr?('motivo: '+window.__snapErr):'sem erro reportado')+'</small></div>'; return; }
       view.innerHTML = state.tab==='geral'?renderGeral():state.tab==='banco'?renderBanco():renderFunil(state.tab);
+      if(['pocket','quiz','guia'].includes(state.tab)) loadEstrategias(state.tab);
       const p=periodo();
       document.getElementById('perHint').textContent = p?(p.since==p.until?p.since:p.dias+' dias'):'';
       const gEl=document.getElementById('gerado');
@@ -556,20 +566,62 @@
       h=h.replace(/(<\/table>)<br>/g,'$1').replace(/<br>(<table>)/g,'$1'); // sem <br> colado na tabela
       return h;
     }
+    let mesaOn=false;
+    const mesaBtn=document.getElementById('chatMesa');
+    mesaBtn.onclick=()=>{ mesaOn=!mesaOn; mesaBtn.classList.toggle('on',mesaOn); mesaBtn.textContent = mesaOn ? '🕵️ Sherlock na mesa (clique pra tirar)' : '🔍 Chamar o Sherlock'; };
     async function send(){
       const v=inp.value.trim(); if(!v||sending) return;
       addMsg(esc(v),'me'); historico.push({role:'me',content:v}); inp.value=''; inp.style.height='auto';
-      const typing=document.createElement('div'); typing.className='msg bot'; typing.innerHTML='<span class="typing">•••</span>'; msgs.appendChild(typing); msgs.scrollTop=msgs.scrollHeight;
+      const typing=document.createElement('div'); typing.className='msg bot'; typing.innerHTML= mesaOn ? '<span class="typing">🕵️ Austin e Sherlock analisando juntos…</span>' : '<span class="typing">•••</span>'; msgs.appendChild(typing); msgs.scrollTop=msgs.scrollHeight;
       sending=true;
       try {
-        const r=await fetch(CHAT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({message:v,periodo:state.per,tab:state.tab,dados:dadosContexto(),historico:historico.slice(-6)})});
+        const r=await fetch(CHAT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({message:v,periodo:state.per,tab:state.tab,mesa:mesaOn,dados:dadosContexto(),historico:historico.slice(-6)})});
         const j=await r.json(); typing.remove();
         const reply=(j&&j.reply)||responder(v);
         addMsg(mdToHtml(reply),'bot'); historico.push({role:'bot',content:reply});
+        if(j&&j.estrategia) renderEstrategiaSalvar(j.estrategia);
       } catch(e) { typing.remove(); addMsg(mdToHtml(responder(v)),'bot'); }
       sending=false;
     }
     document.getElementById('chatSend').onclick=send;
+    // ── Livro de estratégias (por funil) ──────────────────────────────────────
+    const ESTR_URL='/api/estrategias';
+    const ESTR_STATUS=['proposta','aplicada','deu certo','deu errado','descartada'];
+    const ESTR_COR={ 'proposta':'#818cf8','aplicada':'#38bdf8','deu certo':'#34d399','deu errado':'#fb7185','descartada':'#6b7280' };
+    async function apiEstr(body){ try{ return await fetch(ESTR_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)}).then(r=>r.json()); }catch(e){ return {ok:false}; } }
+    async function loadEstrategias(fkey){
+      const box=document.getElementById('estrBox'); if(!box) return;
+      const j=await apiEstr({op:'list',funil:fkey});
+      const list=(j&&j.estrategias)||[];
+      if(!list.length){ box.innerHTML='<div style="color:var(--muted);font-size:12.5px;padding:6px 2px">Nenhuma estratégia registrada aqui ainda. Quando o Austin (ou a mesa com o Sherlock) fechar um plano, aparece um botão pra salvar — e ele fica aqui pra você marcar o resultado.</div>'; return; }
+      box.innerHTML=list.map(e=>estrCard(e,fkey)).join('');
+    }
+    function estrCard(e,fkey){
+      const cor=ESTR_COR[e.status]||'#818cf8';
+      const chips=ESTR_STATUS.map(s=>`<button class="estr-chip${s===e.status?' on':''}" style="${s===e.status?('background:'+cor+';border-color:'+cor+';color:#0a0a0a'):''}" onclick="setEstrStatus('${e.id}','${s}','${fkey}')">${s}</button>`).join('');
+      const orig=e.origem==='mesa'?'🕵️ mesa (Austin+Sherlock)':(e.origem==='sherlock'?'🔍 Sherlock':'🎛️ Austin');
+      return `<div style="background:linear-gradient(160deg,#181820,#131319);border:1px solid #2a2a35;border-left:3px solid ${cor};border-radius:12px;padding:12px 14px;margin-bottom:10px">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:5px"><b style="font-size:13.5px">${esc(e.titulo)}</b><span style="font-size:10px;color:var(--muted)">${orig} · ${e.criada_em||''}</span></div>
+        ${e.hipotese?`<div style="font-size:12px;color:var(--muted);margin:2px 0"><b style="color:#a9a9b8">Hipótese:</b> ${esc(e.hipotese)}</div>`:''}
+        ${e.acao?`<div style="font-size:12px;color:var(--muted);margin:2px 0"><b style="color:#a9a9b8">Ação:</b> ${esc(e.acao)}</div>`:''}
+        ${e.metrica_alvo?`<div style="font-size:12px;color:var(--muted);margin:2px 0"><b style="color:#a9a9b8">Métrica-alvo:</b> ${esc(e.metrica_alvo)}</div>`:''}
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;align-items:center"><span style="font-size:10.5px;color:var(--muted);margin-right:2px">status:</span>${chips}</div>
+      </div>`;
+    }
+    async function setEstrStatus(id,status,fkey){ await apiEstr({op:'update',id,status}); loadEstrategias(fkey); }
+    function renderEstrategiaSalvar(e){
+      if(!e||!e.titulo) return;
+      const d=document.createElement('div'); d.className='msg bot';
+      d.innerHTML=`<div style="border:1px dashed rgba(52,211,153,.5);border-radius:10px;padding:9px 11px;background:rgba(52,211,153,.06)">
+        <div style="font-size:12px;color:#34d399;font-weight:600;margin-bottom:3px">💡 Estratégia pronta pra salvar no livro</div>
+        <div style="font-size:12.5px"><b>${esc(e.titulo)}</b></div>
+        ${e.acao?`<div style="font-size:11.5px;color:var(--muted);margin-top:2px">${esc(e.acao)}</div>`:''}
+        <button class="estr-save" style="margin-top:8px;background:var(--grad-purple,#818cf8);border:none;color:#fff;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer">💾 Salvar no livro (${esc(e.funil||'pocket')})</button>
+      </div>`;
+      const btn=d.querySelector('.estr-save');
+      btn.onclick=async()=>{ btn.disabled=true; btn.textContent='salvando…'; const j=await apiEstr({op:'add',estrategia:e}); btn.textContent=(j&&j.ok)?'✅ salvo no livro':'erro ao salvar'; if(j&&j.ok&&state.tab===e.funil) loadEstrategias(e.funil); };
+      msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight;
+    }
     inp.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send(); } });
     inp.addEventListener('input',()=>{ inp.style.height='auto'; inp.style.height=Math.min(inp.scrollHeight,100)+'px'; });
     // toggle mobile
