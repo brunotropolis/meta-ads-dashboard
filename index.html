@@ -1229,7 +1229,7 @@
 </div>
 
 <script>
-const API_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/meta-dashboard-api';
+const API_URL = '/api/n8n/meta-dashboard-api';
 let DATA = null;
 let activeTab = 'overview';
 let currentPeriodo = 'hoje';
@@ -1438,7 +1438,7 @@ function switchTab(name) {
 
 // ─── REEMBOLSOS (aba própria, período independente) ─────────────────────────
 let _reembPer = '30d';
-const REEMB_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/meta-reembolsos';
+const REEMB_URL = '/api/n8n/meta-reembolsos';
 function setReembPer(p){ _reembPer = p; renderReembolsos(); }
 async function renderReembolsos(){
   const body = document.getElementById('reembBody');
@@ -2029,7 +2029,7 @@ function renderRegua(b) {
 }
 
 // ─── TERMÔMETRO DOS CRIATIVOS (endpoint próprio, classificação em tempo real) ─
-const MONITOR_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/monitor-criativos-api';
+const MONITOR_URL = '/api/n8n/monitor-criativos-api';
 let _monCache = {}, _monTs = {};
 
 async function loadMonitor(force) {
@@ -2155,7 +2155,7 @@ function renderMonitor(d) {
 }
 
 // ─── BREAKDOWNS (placement, demografia, pausadas) ───────────────────────────
-const BREAKDOWNS_URL = 'https://n8n-n8n.xktssy.easypanel.host/webhook/meta-dashboard-breakdowns';
+const BREAKDOWNS_URL = '/api/n8n/meta-dashboard-breakdowns';
 const _breakdownsCache = {}; // por chave de período
 
 function _breakdownsKey() {
