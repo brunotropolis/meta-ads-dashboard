@@ -1830,8 +1830,7 @@ async function loadFunisPocket() {
 function renderFunisPocket(f) {
   const body = document.getElementById('funisBody');
   if (!f || (!f.pago && !f.tudo)) {
-    body.innerHTML = '<div id="abSplitBox"></div><div style="padding:30px;text-align:center;color:var(--muted,#8a8a9a)">Sem dados do funil Dream Baby Pocket no período.</div>';
-    renderABsplit();
+    body.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted,#8a8a9a)">Sem dados do funil Dream Baby Pocket no período.</div>';
     return;
   }
   const P = f.pago || {}, O = f.organico || {}, T = f.tudo || {};
@@ -1881,8 +1880,7 @@ function renderFunisPocket(f) {
       <div style="font-size:12px;color:var(--muted,#8a8a9a);padding:4px 6px 10px">Este funil é só tráfego por enquanto, mas ${O.comprou} venda${O.comprou!==1?'s':''} da oferta chegou sem tag de tráfego (R$ ${fmt(O.receita_total)}) — mostrado aqui pra nada se perder.</div>
     </div>` : '';
 
-  body.innerHTML = '<div id="abSplitBox"></div>' + blocoTudo + blocoPago + blocoOrg;
-  renderABsplit();
+  body.innerHTML = blocoTudo + blocoPago + blocoOrg;
 }
 
 // ── Teste A/B da página (split base vs /v3) — lê o ab_pocket do snapshot do gestor ──
