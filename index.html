@@ -3544,6 +3544,7 @@ window.startDashboard = startDashboard;
     <button id="ap-close" aria-label="Fechar">×</button>
   </div>
   <div id="ap-messages"></div>
+  <div id="ap-mesa-row" style="padding:6px 12px 0"><button id="ap-mesa" title="Chama o Sherlock (análise de página) pra pensar junto com o Austin. Fica mais lento — são os dois analisando." style="width:100%;background:rgba(52,211,153,.08);border:1px dashed rgba(52,211,153,.45);color:#34d399;border-radius:10px;padding:7px 10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s">🔍 Chamar o Sherlock</button></div>
   <div id="ap-input-wrap">
     <textarea id="ap-input" placeholder="Pergunta pro Austin... (Enter envia, Shift+Enter quebra linha)" rows="1"></textarea>
     <button id="ap-send">▶</button>
@@ -3574,7 +3575,26 @@ window.startDashboard = startDashboard;
   const msgsEl = document.getElementById('ap-messages');
   const input = document.getElementById('ap-input');
   const sendBtn = document.getElementById('ap-send');
-  let isLoading = false;
+  const mesaBtn = document.getElementById('ap-mesa');
+  let isLoading = false, mesaOn = false;
+  mesaBtn.addEventListener('click', () => {
+    mesaOn = !mesaOn;
+    mesaBtn.textContent = mesaOn ? '🕵️ Sherlock na mesa (clique pra tirar)' : '🔍 Chamar o Sherlock';
+    mesaBtn.style.background = mesaOn ? 'linear-gradient(120deg,rgba(52,211,153,.22),rgba(129,140,248,.22))' : 'rgba(52,211,153,.08)';
+    mesaBtn.style.color = mesaOn ? '#fff' : '#34d399';
+    mesaBtn.style.borderStyle = mesaOn ? 'solid' : 'dashed';
+    mesaBtn.style.borderColor = mesaOn ? 'transparent' : 'rgba(52,211,153,.45)';
+  });
+  // salvar estrategia no livro (quando o Austin/mesa fecha um plano)
+  function saveEstrategiaUI(estr){
+    if(!estr || !estr.titulo) return;
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'border:1px dashed rgba(52,211,153,.5);border-radius:10px;padding:9px 11px;background:rgba(52,211,153,.06);margin:6px 0';
+    wrap.innerHTML = '<div style="font-size:12px;color:#34d399;font-weight:600;margin-bottom:3px">💡 Estratégia pronta pro livro</div><div style="font-size:12.5px"><b>'+esc(estr.titulo)+'</b></div>'+(estr.acao?'<div style="font-size:11.5px;color:#9ca3b8;margin-top:2px">'+esc(estr.acao)+'</div>':'')+'<button style="margin-top:8px;background:#818cf8;border:none;color:#fff;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer">💾 Salvar no livro ('+esc(estr.funil||'pocket')+')</button>';
+    const b = wrap.querySelector('button');
+    b.onclick = async () => { b.disabled=true; b.textContent='salvando...'; try{ const j=await fetch('/api/estrategias',{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({op:'add',estrategia:estr})}).then(r=>r.json()); b.textContent = j&&j.ok ? '✅ salvo no livro (aba do funil)' : 'erro ao salvar'; }catch(e){ b.textContent='erro ao salvar'; } };
+    msgsEl.appendChild(wrap); msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
 
   function openDrawer(){
     var sh=document.getElementById('sh-drawer'); if(sh) sh.classList.remove('sh-open');
@@ -3696,11 +3716,11 @@ window.startDashboard = startDashboard;
     const t0 = Date.now();
     const tickEl = document.createElement('div');
     tickEl.style.cssText = 'font-size:10px;color:#9ca3b8;margin-top:4px;text-align:center;';
-    tickEl.textContent = 'Austin pensando... 0s';
+    tickEl.textContent = mesaOn ? '🕵️ Austin e Sherlock analisando juntos... 0s' : 'Austin pensando... 0s';
     typingEl.appendChild(tickEl);
     const ticker = setInterval(() => {
       const sec = Math.floor((Date.now() - t0) / 1000);
-      tickEl.textContent = `Austin pensando... ${sec}s ${sec > 60 ? '(consultando Meta API, normal demorar até 2min)' : ''}`;
+      tickEl.textContent = (mesaOn ? '🕵️ Austin e Sherlock analisando juntos... ' : 'Austin pensando... ') + sec + 's ' + (sec > 60 ? '(os dois analisando, normal demorar)' : '');
     }, 1000);
     try {
       const ctrl = new AbortController();
@@ -3709,7 +3729,7 @@ window.startDashboard = startDashboard;
       const res = await fetch(AUSTIN_URL, {
         method: 'POST',
         headers: {'Content-Type':'text/plain'},
-        body: JSON.stringify({ message: text, periodo: '7d', historico: loadHistory().slice(-6) }),
+        body: JSON.stringify({ message: text, periodo: '7d', mesa: mesaOn, historico: loadHistory().slice(-6) }),
         signal: ctrl.signal,
       });
       clearTimeout(timeout);
@@ -3718,6 +3738,7 @@ window.startDashboard = startDashboard;
       typingEl.remove();
       const reply = data.reply || 'Oh, behave! Resposta vazia.';
       addBot(reply, data.suggested_actions || []);
+      if (data.estrategia) saveEstrategiaUI(data.estrategia);
     } catch(e) {
       clearInterval(ticker);
       typingEl.remove();
