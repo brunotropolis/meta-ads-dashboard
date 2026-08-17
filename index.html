@@ -3595,6 +3595,16 @@ window.startDashboard = startDashboard;
     b.onclick = async () => { b.disabled=true; b.textContent='salvando...'; try{ const j=await fetch('/api/estrategias',{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({op:'add',estrategia:estr})}).then(r=>r.json()); b.textContent = j&&j.ok ? '✅ salvo no livro (aba do funil)' : 'erro ao salvar'; }catch(e){ b.textContent='erro ao salvar'; } };
     msgsEl.appendChild(wrap); msgsEl.scrollTop = msgsEl.scrollHeight;
   }
+  // agendar acao pro piloto (confirmacao do Bruno arma o piloto)
+  function agendarUI(ag){
+    if(!ag || !ag.instrucao) return;
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'border:1px solid #34d39955;border-left:3px solid #34d399;border-radius:10px;padding:10px 12px;background:rgba(52,211,153,.07);margin:6px 0';
+    wrap.innerHTML = '<div style="font-size:12px;color:#34d399;font-weight:700;margin-bottom:3px">🤖 Agendar no piloto</div><div style="font-size:12.5px;color:#e6e6ee">'+esc(ag.resumo||ag.instrucao)+'</div><div style="font-size:11px;color:#9ca3b8;margin-top:3px">'+esc(ag.instrucao)+'</div><button style="margin-top:9px;background:linear-gradient(120deg,#34d399,#818cf8);border:none;color:#0a0a0a;border-radius:8px;padding:7px 14px;font-size:12.5px;font-weight:700;cursor:pointer">✅ Confirmar agendamento</button>';
+    const b = wrap.querySelector('button');
+    b.onclick = async () => { b.disabled=true; b.textContent='armando...'; try{ const j=await fetch('/api/monitor-cfg',{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({op:'set',instrucao:ag.instrucao,modo_auto:true})}).then(r=>r.json()); b.textContent = (j&&j.ok) ? '✅ Agendado! (aparece no histórico do funil)' : 'erro ao agendar'; }catch(e){ b.textContent='erro ao agendar'; } };
+    msgsEl.appendChild(wrap); msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
 
   function openDrawer(){
     var sh=document.getElementById('sh-drawer'); if(sh) sh.classList.remove('sh-open');
@@ -3739,6 +3749,7 @@ window.startDashboard = startDashboard;
       const reply = data.reply || 'Oh, behave! Resposta vazia.';
       addBot(reply, data.suggested_actions || []);
       if (data.estrategia) saveEstrategiaUI(data.estrategia);
+      if (data.agendar) agendarUI(data.agendar);
     } catch(e) {
       clearInterval(ticker);
       typingEl.remove();
