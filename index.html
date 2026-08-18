@@ -3654,10 +3654,10 @@ window.startDashboard = startDashboard;
           btn.disabled = true;
           btn.innerHTML = renderLabel() + '<div style="margin-top:6px;color:#fbbf24;">⏳ Executando...</div>';
           try {
-            const criar = a.tipo === 'criar_campanha_teste';
+            const criar = ['criar_campanha_teste','criar_publico_50','criar_campanha_engajamento'].includes(a.tipo);
             const url = criar ? CREATE_URL : EXECUTE_URL;
             const body = criar
-              ? { nome: a.nome || a.alvo, alvo: a.alvo, funil: a.funil, verba_dia: a.verba_dia, criativos: a.criativos || [] }
+              ? { tipo: a.tipo, nome: a.nome || a.alvo, alvo: a.alvo, funil: a.funil, verba_dia: a.verba_dia, criativos: a.criativos || [], videos: a.videos || [], pct: a.pct, dias: a.dias, start_time: a.start_time }
               : { session_id: sessionId, action: a };
             const res = await fetch(url, {
               method: 'POST',
