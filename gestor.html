@@ -473,6 +473,16 @@
         {m:'Ticket médio', ideal:'—', media:'R$ 72', k:null, f:'rs'},
         {m:'Retenção 3s', ideal:'20-25%', media:'31%', k:null, f:'pct'},
       ]},
+      guia:{ nome:'Guia da Pega', icon:'🤱', linhas:[
+        {m:'CTR (link)', ideal:'1,3%', media:'2,3%', k:'ctr', f:'pct', dir:'up'},
+        {m:'Connect rate', ideal:'80%', media:'—', k:'connect', f:'pct', dir:'up'},
+        {m:'Ida pro checkout', ideal:'25%', media:'pixel restrito*', k:null, f:'pct', gargalo:true},
+        {m:'CPM', ideal:'—', media:'R$ 23', k:'cpm', f:'rs', dir:'down'},
+        {m:'CPA (real)', ideal:'R$ 36', media:'R$ 32', k:'cpa', f:'rs', dir:'down'},
+        {m:'ROAS real', ideal:'2,0', media:'1,92', k:'roas', f:'num', dir:'up'},
+        {m:'Frequência', ideal:'—', media:'~1,3', k:'freq', f:'num'},
+        {m:'Ticket médio', ideal:'—', media:'R$ 76', k:null, f:'rs'},
+      ]},
     };
     function aggFunil(fkey){
       const p=periodo(); if(!p) return {vazio:true};
@@ -506,7 +516,15 @@
         O <b>chat usa exatamente esses mesmos números</b> pra decidir — quando ele diz "está pior que o normal", é contra a coluna do meio.
         Fontes: entrega/custo/frequência = Meta · venda e ROAS = Greenn (nunca o pixel, que superconta) · comportamento da página = Clarity.
       </div></div>`;
-      return nota + tabelaFunil('pocket') + tabelaFunil('quiz');
+      const guiaNota=`<div class="section" style="background:rgba(52,211,153,.06)"><div class="section-body" style="font-size:12px;color:var(--muted);line-height:1.6">
+        <b style="color:var(--text)">* Guia da Pega:</b> o pixel dele é restrito e não retorna checkout/compra — a <b>ida pro checkout não é medível pelo pixel</b> (só pelo Clarity: hero segura 48% aos 10%, scroll 23%). ROAS/CPA/vendas vêm da <b>venda real da Greenn</b> casada por UTM #id (nunca o pixel). Conta própria (act_1292645585152754), produto 136511.
+      </div></div>`;
+      const engaj=`<div class="section" style="background:rgba(236,72,153,.06)"><div class="section-header"><div><div class="section-title">📣 Funil de Engajamento — régua própria</div><div class="section-sub">marca / alcance / aquecimento · NUNCA por ROAS (correlação ~0 com venda) · baseline Ago/2026, editável</div></div></div><div class="section-body" style="font-size:12.5px;color:var(--muted);line-height:1.9">
+        <b style="color:var(--text)">Médias da casa (medidas em 12 campanhas):</b> CPM <b>R$ 3,13</b> <i>(🟢&lt;R$5 · 🟡R$5–13 · 🔴&gt;R$15)</i> · custo/engajamento <b>R$ 0,005</b> <i>(🟢&lt;R$0,02 · 🔴&gt;R$0,30)</i> · custo/view <b>R$ 0,006</b> <i>(🟢&lt;R$0,03)</i> · CTR pro perfil 🟢&gt;5% · freq &gt;3–4 = fadiga. Jogamos abaixo do "excelente" do mercado (custo/ThruPlay &lt;US$0,03).<br>
+        <b style="color:var(--text)">Modelo p/ impulsionar Reel:</b> ABO — 1 Reel por conjunto, ~R$12/dia, 3–5 por vez, 4–7 dias → consolidar os vencedores num CBO. <b>NÃO</b> CBO com todos dentro (otimiza pela view mais barata, não pelo público que converte).<br>
+        <b style="color:var(--text)">Quando pausar um Reel (nunca ROAS):</b> &lt;R$30 = aquecendo · pausa só com <b>2+ sinais ruins juntos</b> (custo/ThruPlay caro &gt;~R$0,10 + retenção baixa + prova baixa) · freq &gt;3–4 = fadiga · manter/escalar = view barata + salvamento/share subindo (candidato a virar criativo de venda). Teste final: o público de 50% converte quando retargetado numa venda?
+      </div></div>`;
+      return nota + tabelaFunil('pocket') + tabelaFunil('quiz') + tabelaFunil('guia') + guiaNota + engaj;
     }
     function render() {
       const view=document.getElementById('view');
