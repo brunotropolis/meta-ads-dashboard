@@ -208,6 +208,7 @@
         <div class="subtab" data-tab="pocket">👶 Dream Baby Pocket</div>
         <div class="subtab" data-tab="quiz">🎯 Quiz Dream Baby</div>
         <div class="subtab" data-tab="guia">🤱 Guia da Pega</div>
+        <div class="subtab" data-tab="engajamento">📣 Engajamento</div>
       </div>
       <div class="periodo-wrap">
         <div class="periodo">
@@ -412,6 +413,21 @@
           <div style="margin-top:14px"><div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:2px">📈 Linha do tempo (histórico diário)</div>${tl}</div>
         </div></div>`;
     }
+    function renderEngajamento() {
+      const eng=(DATA.engajamento&&DATA.engajamento.d30)||[], seg=DATA.seguidores||{}, posts=DATA.posts_ig||[];
+      const num=n=>(Number(n)||0).toLocaleString('pt-BR'), rs=n=>'R$ '+Math.round(n).toLocaleString('pt-BR');
+      const cpmCor=c=>c==null?'var(--muted)':(c<5?'var(--green)':c<=13?'var(--yellow)':'var(--red)');
+      const cpeCor=c=>c==null?'var(--muted)':(c<0.02?'var(--green)':c<=0.10?'var(--yellow)':'var(--red)');
+      const kpi=(ic,l,v,sub)=>`<div style="flex:1;min-width:150px;background:linear-gradient(160deg,#181820,#131319);border:1px solid #2a2a35;border-radius:14px;padding:13px 15px"><div style="font-size:11px;color:var(--muted)">${ic} ${l}</div><div style="font-size:22px;font-weight:700;margin-top:3px">${v}</div>${sub?`<div style="font-size:10.5px;color:var(--muted);margin-top:2px">${sub}</div>`:''}</div>`;
+      const g7=seg.ganho_7d, cps=seg.custo_seguidor_7d;
+      const header=`<div class="section"><div class="section-header"><div><div class="section-title">📣 Funil de Engajamento</div><div class="section-sub">régua própria — marca, alcance e seguidores · NUNCA por ROAS · dados 30 dias</div></div></div><div class="section-body">
+        <div style="display:flex;gap:12px;flex-wrap:wrap">${kpi('👥','Seguidores',num(seg.atual)||'—')}${kpi('📈','Ganho 7 dias',g7==null?'—':(g7>=0?'+':'')+num(g7))}${kpi('🎯','Custo/seguidor (7d)',cps?rs(cps):'—','nível conta · inclui orgânico')}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:10px;line-height:1.5">O ganho de seguidor e o custo/seguidor começam a preencher em ~1–2 dias (rastreio diário começou hoje). Por campanha, a Meta não expõe na API — ative a coluna <b>"Seguidos"</b> no gerenciador.</div></div></div>
+        <div class="section" style="background:rgba(236,72,153,.06)"><div class="section-body" style="font-size:12.5px;color:var(--muted);line-height:1.8"><b style="color:var(--text)">Régua da casa (nossa média medida):</b> CPM 🟢&lt;R$5 · 🟡R$5–13 · 🔴&gt;R$15 <i>(nossa R$3)</i> · custo/engajamento 🟢&lt;R$0,02 · 🟡até R$0,10 · 🔴&gt;R$0,30 <i>(nossa R$0,005)</i> · custo/view 🟢&lt;R$0,03 · CTR pro perfil 🟢&gt;5% · freq acima de 3–4 = fadiga.</div></div>`;
+      const camps=eng.length?`<div class="section"><div class="section-header"><div><div class="section-title">🚀 Campanhas de engajamento</div></div></div><div class="section-body" style="padding:0"><table><thead><tr><th class="l">Campanha</th><th>CPM</th><th>Custo/eng</th><th>Alcance</th><th>Freq</th><th>Views</th><th>🔖</th><th>↗</th></tr></thead><tbody>`+eng.map(c=>`<tr><td class="l"><span class="cname">${c.ativa?'🟢':'⚪'} ${esc(c.nome).slice(0,38)}</span></td><td style="color:${cpmCor(c.cpm)}">R$${c.cpm}</td><td style="color:${cpeCor(c.custo_eng)}">R$${c.custo_eng!=null?c.custo_eng:'—'}</td><td>${num(c.alcance)}</td><td style="color:${c.freq>3?'var(--red)':''}">${c.freq}</td><td>${num(c.views)}</td><td>${num(c.salvamentos)}</td><td>${num(c.compartilhamentos)}</td></tr>`).join('')+`</tbody></table></div></div>`:`<div class="section"><div class="section-body"><div class="empty"><div class="big">Sem campanha de engajamento nos últimos 30 dias.</div>Quando rodar, elas aparecem aqui com a régua de marca (CPM, custo/eng, alcance), não de venda.</div></div></div>`;
+      const radar=`<div class="section"><div class="section-header"><div><div class="section-title">🔥 Radar de posts — candidatos a patrocinar</div><div class="section-sub">ordenados por PROVA de valor (salvamento + compartilhamento) · o que já funciona organicamente</div></div></div><div class="section-body" style="padding:0"><table><thead><tr><th class="l">Post (clica pra abrir)</th><th>Alcance</th><th>👍</th><th>💬</th><th>🔖 Salv</th><th>↗ Shares</th><th>Eng%</th></tr></thead><tbody>`+(posts.length?posts.map(p=>`<tr><td class="l"><a href="${p.permalink||'#'}" target="_blank" style="color:var(--text);text-decoration:none">${p.data} · ${esc(p.caption||'').slice(0,34)}</a></td><td>${num(p.alcance)}</td><td>${num(p.likes)}</td><td>${num(p.comentarios)}</td><td style="font-weight:700;color:#ec4899">${num(p.salvamentos)}</td><td style="font-weight:700;color:#ec4899">${num(p.compartilhamentos)}</td><td>${p.eng_pct!=null?p.eng_pct+'%':'—'}</td></tr>`).join(''):`<tr><td colspan="7" style="color:var(--muted);padding:14px">Sem posts no radar.</td></tr>`)+`</tbody></table></div></div>`;
+      return header+camps+radar;
+    }
     function renderFunil(fkey) {
       const F=FUNIS[fkey], p=periodo(), rows=campanhas(fkey), r=resumo(rows,p);
       const abBlock = fkey==='pocket' ? abPanel(DATA.ab_pocket,'v3',DATA.historico_ab) : (fkey==='guia' ? abPanel(DATA.ab_guia,'v2',null) : '');
@@ -495,7 +511,7 @@
     function render() {
       const view=document.getElementById('view');
       if(!DATA.periodos){ view.innerHTML='<div class="empty" style="padding:60px">Sem dados. (snapshot não carregou)<br><small style="opacity:.6">'+(window.__snapErr?('motivo: '+window.__snapErr):'sem erro reportado')+'</small></div>'; return; }
-      view.innerHTML = state.tab==='geral'?renderGeral():state.tab==='banco'?renderBanco():renderFunil(state.tab);
+      view.innerHTML = state.tab==='geral'?renderGeral():state.tab==='banco'?renderBanco():state.tab==='engajamento'?renderEngajamento():renderFunil(state.tab);
       if(['pocket','quiz','guia'].includes(state.tab)){ loadEstrategias(state.tab); loadHistorico(state.tab); }
       const p=periodo();
       document.getElementById('perHint').textContent = p?(p.since==p.until?p.since:p.dias+' dias'):'';
