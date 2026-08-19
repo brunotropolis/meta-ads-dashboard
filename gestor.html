@@ -532,7 +532,13 @@
       const bumpNota=`<div class="section" style="background:rgba(251,191,36,.06)"><div class="section-body" style="font-size:12px;color:var(--muted);line-height:1.6">
         <b style="color:var(--text)">🎯 Attach de bump — objetivo 25% (meta da casa):</b> o ProAlt não dá benchmark de order bump (só alerta que bump demais/aleatório derruba a conversão do checkout), então fixamos <b>25%</b> como alvo. Medido 60d: Pocket 21% · Quiz 21% · <b>Guia 25% (já no alvo)</b>. Subir de 21→25% no Pocket/Quiz leva o ticket de ~R$ 72,5 pra ~R$ 73,5. Bump entra como linha separada no checkout — attach = nº bumps ÷ nº compras do principal.
       </div></div>`;
-      return nota + tabelaFunil('pocket') + tabelaFunil('quiz') + tabelaFunil('guia') + guiaNota + bumpNota + engaj;
+      const reguaDecisao=`<div class="section" style="background:rgba(129,140,248,.08);border-color:rgba(129,140,248,.3)"><div class="section-header"><div><div class="section-title">🎯 Régua de decisão — escalar × reduzir × cortar</div><div class="section-sub">como o Austin decide (mesmas regras que ele aplica no chat) · atualizado 19/Ago</div></div></div><div class="section-body" style="font-size:12.5px;color:var(--muted);line-height:1.85">
+        <b style="color:var(--text)">Janela:</b> o RECENTE (hoje/3d) é a verdade. <b>Sem lag</b> — a venda vem da Greenn por UTM na hora (o pixel restrito do Guia não atrapalha a venda casada). Sempre ler na janela pedida.<br>
+        <b style="color:#4ade80">Forte AGORA</b> (3d bom + tend estável/melhorando) → <b>ESCALAR +10%/dia, todo dia</b> (nunca pulo grande — +20-50% joga no aprendizado e derruba). Terça = pra LANÇAR teste novo; subir verba de winner é "pouco e sempre".<br>
+        <b style="color:#fbbf24">ESFRIANDO</b> (tend piorando, 3d caindo) mas <b>ROAS ainda &gt; 1,6</b> → <b>NÃO cortar.</b> Reduzir verba até o <b>piso ~R$32</b> (½ do ticket = CPA ideal), observar 2-3 dias: recuperou → sobe de volta (ressuscitou); continuar ruim mesmo no piso → aí corta.<br>
+        <b style="color:#f87171">CORTAR</b> só com ROAS &lt; 1,3 (após tentar o piso, se valer). <b>Nunca matar campanha com ROAS &gt; 1,6</b> — reduz em vez de cortar (ainda dá lucro fino e pode voltar).
+      </div></div>`;
+      return nota + reguaDecisao + tabelaFunil('pocket') + tabelaFunil('quiz') + tabelaFunil('guia') + guiaNota + bumpNota + engaj;
     }
     function render() {
       const view=document.getElementById('view');
