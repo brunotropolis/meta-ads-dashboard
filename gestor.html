@@ -398,7 +398,7 @@
       else {
         const rowsTl = H.slice(-14).map(h=>{
           const win = (h.v3_conv||0)>(h.base_conv||0)?CV:((h.base_conv||0)>(h.v3_conv||0)?CB:'var(--muted)');
-          return `<tr><td style="padding:3px 8px;color:var(--muted)">${h.data.slice(5)}</td>
+          return `<tr><td style="padding:3px 8px;color:var(--muted)">${h.data.slice(8)+'/'+h.data.slice(5,7)}</td>
             <td style="padding:3px 8px;text-align:right;color:${CB}">${pct(h.base_conv)} <small style="color:var(--muted)">(${h.base_vendas??'—'})</small></td>
             <td style="padding:3px 8px;text-align:right;color:${CV}">${pct(h.v3_conv)} <small style="color:var(--muted)">(${h.v3_vendas??'—'})</small></td>
             <td style="padding:3px 8px;text-align:center">${win===CV?'🟢 v3':win===CB?'🟣 base':'—'}</td></tr>`;
