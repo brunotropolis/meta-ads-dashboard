@@ -371,14 +371,20 @@
       const B = ab.base, V = ab[vkey], CB = '#a78bfa', CV = '#34d399';
       const pct = n => (n==null?'—':(+n).toFixed(2).replace('.',',')+'%');
       const retMsg = s => s==null?'—':(s>=45?'passa da metade':s>=30?'chega ~1/3 da página':s>=20?'chega ~1/4 da página':'para no topo ('+Math.round(s)+'%)');
-      // vencedor parcial (por conversão) com trava de amostra
-      const amostraOk = B.sessoes>=30 && V.sessoes>=30;
-      const difVendas = Math.abs((V.vendas||0)-(B.vendas||0));
-      const lead = V.conv>B.conv ? vkey : (B.conv>V.conv ? 'base' : null);
-      let veredito, vcor;
-      if (!amostraOk) { veredito=(V.sessoes<5?'A /'+vkey+' ainda não recebeu tráfego (split recém-ligado) — volte em ~1 dia':'Amostra ainda pequena — deixa rodar'); vcor='var(--muted)'; }
-      else if (difVendas<=1) { veredito='Empate técnico (vendas quase iguais) — é ruído, não crava'; vcor='var(--yellow)'; }
-      else { veredito=(lead===vkey?'/'+vkey+' na frente':'Base na frente')+' — mas confirme com mais dias'; vcor='var(--green)'; }
+      // VALIDAÇÃO (19/Ago): prazo por DIAS + piso de amostra (não mais "30 sessões"). Aprova a troca se o
+      // desafiante IGUALA ou SUPERA a base em conversão E retenção (não precisa bater a meta de 30% — essa é a estrela-guia).
+      const FLOOR = 300; // ~4-5 dias no volume atual (~130-160 sessões/dia/lado)
+      const amostraOk = (B.sessoes||0)>=FLOOR && (V.sessoes||0)>=FLOOR;
+      const cB=B.conv||0, cV=V.conv||0, rB=B.scroll_medio||0, rV=V.scroll_medio||0;
+      const convGanha=cV>=cB, convPerto=cV>=cB*0.9, retGanha=rV>=rB;
+      const lead = cV>cB ? vkey : (cB>cV ? 'base' : null);
+      let veredito, vcor, aprovado=false;
+      if ((V.sessoes||0)<20) { veredito='A /'+vkey+' quase não recebeu tráfego ainda (split recém-ligado) — volte em ~1 dia'; vcor='var(--muted)'; }
+      else if (!amostraOk) { veredito='Coletando dados — precisa ~'+FLOOR+' sessões/lado (≈ 4-5 dias). Parcial: '+(cV>cB?'/'+vkey+' converte melhor':'base converte melhor')+' · retenção '+(rV>rB?'/'+vkey:'base')+' na frente'; vcor='var(--yellow)'; }
+      else if (convGanha && retGanha) { veredito='✅ /'+vkey+' APROVADO — iguala/supera a base em conversão E retenção. Pode virar a principal.'; vcor='var(--green)'; aprovado=true; }
+      else if (convPerto && retGanha) { veredito='✅ /'+vkey+' pode virar — perto na conversão e melhor na retenção (a troca vale).'; vcor='var(--green)'; aprovado=true; }
+      else if (cV<cB*0.9) { veredito='❌ Base ganha — /'+vkey+' converte bem menos. Mantém a base.'; vcor='var(--red)'; }
+      else { veredito='Empate/misto — mais 1-2 dias pra cravar (conversão perto, retenção dividida).'; vcor='var(--yellow)'; }
       const card = (nome, D, cor, ganha) => `
         <div style="flex:1;min-width:180px;background:linear-gradient(160deg,#181820,#131319);border:1px solid ${ganha?cor:'#2a2a35'};border-radius:16px;padding:14px;position:relative">
           <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${cor};border-radius:16px 16px 0 0"></div>
@@ -409,8 +415,8 @@
       }
       return `<div class="section"><div class="section-header"><div><div class="section-title">🧪 Teste A/B ao vivo — base vs /${vkey}</div><div class="section-sub">split 50/50 na borda (Cloudflare) · janela 3 dias · a retenção é quanto da página a pessoa desce em média</div></div></div>
         <div class="section-body">
-          <div style="display:flex;gap:12px;flex-wrap:wrap">${card('Base (atual)',B,CB,amostraOk&&difVendas>1&&lead==='base')}${card('/'+vkey+' (desafiante)',V,CV,amostraOk&&difVendas>1&&lead===vkey)}</div>
-          <div style="margin-top:12px;padding:10px 12px;background:${vcor}18;border:1px solid ${vcor}44;border-radius:12px;font-size:13px"><b style="color:${vcor}">Veredito:</b> ${veredito}. Só cravo vencedor com 30+ sessões e diferença real de vendas dos dois lados.</div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">${card('Base (atual)',B,CB,amostraOk&&cB>cV&&!aprovado)}${card('/'+vkey+' (desafiante)',V,CV,aprovado)}</div>
+          <div style="margin-top:12px;padding:10px 12px;background:${vcor}18;border:1px solid ${vcor}44;border-radius:12px;font-size:13px"><b style="color:${vcor}">Veredito:</b> ${veredito}<br><span style="font-size:11px;color:var(--muted)">Regra (19/Ago): valida por PRAZO (~4-5 dias) + piso de ${300} sessões/lado — não mais só "30 sessões". Aprova a troca se o desafiante <b>iguala ou supera a base</b> em conversão + retenção. Meta-estrela: 30% de ida-pro-checkout (medição por variante em breve) — mas <b>não precisa bater 30% pra aprovar</b>.</span></div>
           <div style="margin-top:14px"><div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:2px">📈 Linha do tempo (histórico diário)</div>${tl}</div>
         </div></div>`;
     }
@@ -430,7 +436,7 @@
     }
     function renderFunil(fkey) {
       const F=FUNIS[fkey], p=periodo(), rows=campanhas(fkey), r=resumo(rows,p);
-      const abBlock = fkey==='pocket' ? abPanel(DATA.ab_pocket,'v3',DATA.historico_ab) : (fkey==='guia' ? abPanel(DATA.ab_guia,'v2',null) : '');
+      const abBlock = fkey==='pocket' ? abPanel(DATA.ab_pocket,'v4',DATA.historico_ab) : (fkey==='guia' ? abPanel(DATA.ab_guia,'v2',null) : '');
       const pm=F.pageMetrics.map(m=>`<div class="pm"><div class="pl">${m.l}${m.faq?qb(m.faq):''}</div><div class="pv ${m.cls}">${m.v}${m.cls==='bad'?metaTag(m.meta):''}</div></div>`).join('');
       const versoes=F.versoes.map(v=>{
         const talk=v.conversamos.map(t=>`<div class="talk">${t}</div>`).join('');
