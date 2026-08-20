@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Sherlock — Detetive de Páginas</title>
+<style>
+  :root{
+    --bg:#0a0f0d; --bg2:#0d1512; --card:rgba(18,26,23,.72); --card2:rgba(24,34,30,.7);
+    --line:rgba(52,211,153,.16); --ink:#e8f0ec; --muted:#8fa39a;
+    --teal:#34d399; --teal-soft:#6ee7b7; --gold:#e3a31b; --red:#f87171; --green:#4ade80;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:
+    radial-gradient(1100px 700px at 12% -8%,#0f1b17 0%,transparent 55%),
+    radial-gradient(900px 600px at 100% 0%,#12100a 0%,transparent 50%),var(--bg);
+    color:var(--ink);min-height:100vh;line-height:1.5}
+  a{color:var(--teal-soft);text-decoration:none}
+  .top{display:flex;align-items:center;gap:14px;padding:16px 22px;border-bottom:1px solid var(--line);
+    background:linear-gradient(90deg,rgba(52,211,153,.06),transparent);position:sticky;top:0;z-index:20;backdrop-filter:blur(8px)}
+  .badge{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:23px;
+    background:radial-gradient(circle at 30% 30%,#123,#0a1512);border:1px solid var(--line);box-shadow:0 0 22px rgba(52,211,153,.18)}
+  .top h1{font-size:18px;font-weight:800;letter-spacing:.2px}
+  .top .sub{font-size:12px;color:var(--muted);margin-top:1px}
+  .top .back{margin-left:auto;font-size:13px;color:var(--muted);border:1px solid var(--line);padding:8px 14px;border-radius:10px;transition:.15s}
+  .top .back:hover{color:var(--teal-soft);border-color:var(--teal)}
+  .wrap{display:grid;grid-template-columns:1fr 380px;gap:18px;max-width:1240px;margin:0 auto;padding:18px 20px 40px}
+  @media(max-width:920px){.wrap{grid-template-columns:1fr}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(6px)}
+  /* chat */
+  .chat{display:flex;flex-direction:column;height:calc(100vh - 138px);min-height:520px}
+  .chat .hd{padding:13px 18px;border-bottom:1px solid var(--line);font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px}
+  .msgs{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:13px}
+  .msg{max-width:86%;padding:12px 15px;border-radius:14px;font-size:14.5px;white-space:normal}
+  .me{align-self:flex-end;background:linear-gradient(135deg,#134e3a,#0f3b2c);border:1px solid rgba(52,211,153,.3)}
+  .bot{align-self:flex-start;background:var(--card2);border:1px solid var(--line)}
+  .bot h2{font-size:15px;margin:10px 0 5px;color:var(--teal-soft)}
+  .bot strong{color:#fff}
+  .bot code{background:rgba(52,211,153,.12);padding:1px 6px;border-radius:5px;font-size:13px}
+  .bot ul{margin:6px 0 6px 18px}.bot li{margin:2px 0}
+  .bot p{margin:6px 0}
+  .iw{display:flex;gap:9px;padding:13px;border-top:1px solid var(--line)}
+  .iw textarea{flex:1;background:rgba(10,16,13,.7);border:1px solid var(--line);border-radius:11px;color:var(--ink);
+    padding:11px 13px;font-family:inherit;font-size:14px;resize:none;max-height:130px;outline:none}
+  .iw textarea:focus{border-color:var(--teal)}
+  .iw button{background:linear-gradient(135deg,var(--teal),#10b981);border:none;color:#052e22;font-weight:800;
+    width:46px;border-radius:11px;cursor:pointer;font-size:16px;transition:.15s}
+  .iw button:disabled{opacity:.5;cursor:default}
+  .foot{padding:8px 18px 12px;font-size:11px;color:var(--muted);text-align:center}
+  /* history */
+  .side .hd{padding:14px 16px;border-bottom:1px solid var(--line)}
+  .side .hd b{font-size:14px}.side .hd .s{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .tabs{display:flex;gap:6px;padding:12px 14px 4px}
+  .tab{flex:1;text-align:center;font-size:12px;padding:7px 4px;border-radius:9px;border:1px solid var(--line);
+    color:var(--muted);cursor:pointer;transition:.15s}
+  .tab.on{color:#052e22;background:var(--teal);border-color:var(--teal);font-weight:700}
+  .estr{padding:10px 14px 18px;max-height:calc(100vh - 250px);overflow-y:auto}
+  .card{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+  .card .t{font-weight:700;font-size:13.5px;margin-bottom:4px}
+  .card .meta{font-size:12px;color:var(--muted);margin:3px 0}
+  .card .meta b{color:var(--ink)}
+  .st{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px}
+  .st.proposta{background:rgba(227,163,27,.15);color:var(--gold)}
+  .st.aplicada{background:rgba(52,211,153,.15);color:var(--teal-soft)}
+  .st.deu_certo{background:rgba(74,222,128,.16);color:var(--green)}
+  .st.deu_errado{background:rgba(248,113,113,.16);color:var(--red)}
+  .btns{display:flex;gap:5px;margin-top:9px;flex-wrap:wrap}
+  .btns button{font-size:11px;padding:5px 9px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;transition:.15s}
+  .btns button:hover{color:var(--ink);border-color:var(--teal)}
+  .empty{color:var(--muted);font-size:12.5px;padding:14px 4px;text-align:center}
+  .typing{color:var(--teal-soft)}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="badge">🔍</div>
+  <div>
+    <h1>Sherlock</h1>
+    <div class="sub">Detetive de páginas · lê a página inteira, o heatmap e o funil por seção</div>
+  </div>
+  <a class="back" href="/">← voltar ao dash</a>
+</div>
+
+<div class="wrap">
+  <!-- CHAT -->
+  <div class="panel chat">
+    <div class="hd">🕵️ Investigação <span style="color:var(--muted);font-weight:400;font-size:12px">— pergunta de qualquer página (pocket, quiz, guia, canguru, coala…)</span></div>
+    <div class="msgs" id="msgs"></div>
+    <div class="iw">
+      <textarea id="in" rows="1" placeholder="Ex: analisa a página do canguru lendo a página inteira · quantos % chegam no botão na dbpocket?"></textarea>
+      <button id="snd">▶</button>
+    </div>
+    <div class="foot">Elementar. Analisa página, propõe teste, escreve o brief. Não sobe campanha (isso é com o Austin).</div>
+  </div>
+
+  <!-- HISTORICO / LEDGER -->
+  <div class="panel side">
+    <div class="hd"><b>🧪 Testes & alterações</b><div class="s">o que já propusemos e testamos · você marca o resultado</div></div>
+    <div class="tabs" id="tabs">
+      <div class="tab on" data-f="pocket">Pocket</div>
+      <div class="tab" data-f="quiz">Quiz</div>
+      <div class="tab" data-f="guia">Guia</div>
+    </div>
+    <div class="estr" id="estr"><div class="empty">carregando…</div></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var URL_SH='/api/sherlock', URL_ESTR='/api/estrategias', HKEY='sherlock-page-history-v1';
+  var msgs=document.getElementById('msgs'), inp=document.getElementById('in'), snd=document.getElementById('snd');
+
+  function loadH(){ try{return JSON.parse(localStorage.getItem(HKEY)||'[]');}catch(e){return [];} }
+  function saveH(m){ var h=loadH(); h.push(m); if(h.length>60)h.shift(); localStorage.setItem(HKEY,JSON.stringify(h)); }
+  function md(t){ t=(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    t=t.replace(/^##\s?(.+)$/gm,'<h2>$1</h2>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`(.+?)`/g,'<code>$1</code>');
+    var lines=t.split('\n'), out='', inul=false, i, ln;
+    for(i=0;i<lines.length;i++){ ln=lines[i];
+      if(/^\s*[-•]\s+/.test(ln)){ if(!inul){out+='<ul>';inul=true;} out+='<li>'+ln.replace(/^\s*[-•]\s+/,'')+'</li>'; }
+      else { if(inul){out+='</ul>';inul=false;} if(/<h2>/.test(ln))out+=ln; else if(ln.trim())out+='<p>'+ln+'</p>'; } }
+    if(inul)out+='</ul>'; return out; }
+  function add(role,txt,skip){ var d=document.createElement('div'); d.className='msg '+(role==='me'?'me':'bot');
+    d.innerHTML = role==='me' ? txt.replace(/</g,'&lt;') : md(txt); msgs.appendChild(d); msgs.scrollTop=msgs.scrollHeight; if(!skip)saveH({role:role,content:txt}); }
+
+  var h=loadH();
+  if(h.length) h.forEach(function(m){add(m.role,m.content,true);});
+  else add('bot','Elementar, meu caro. Diga qual página investigar (pocket, quiz, guia, ou um perfil: canguru, coala, coruja, leão, suricato) e eu leio as pistas: a página inteira, o heatmap, o funil por seção e a ida pro checkout.',true);
+
+  inp.addEventListener('input',function(){ inp.style.height='auto'; inp.style.height=Math.min(inp.scrollHeight,130)+'px'; });
+  inp.addEventListener('keydown',function(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send(); } });
+  snd.onclick=send;
+  async function send(){ var t=inp.value.trim(); if(!t||snd.disabled)return; add('me',t); inp.value=''; inp.style.height='auto';
+    snd.disabled=true; var tick=document.createElement('div'); tick.className='msg bot'; tick.innerHTML='<span class="typing">Sherlock investigando… 0s</span>'; msgs.appendChild(tick); msgs.scrollTop=msgs.scrollHeight;
+    var s=0, iv=setInterval(function(){ s++; tick.innerHTML='<span class="typing">Sherlock investigando… '+s+'s'+(s>60?' (quase lá, a página inteira demora)':'')+'</span>'; },1000);
+    try{ var hist=loadH().slice(-6);
+      var res=await fetch(URL_SH,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:t,historico:hist})});
+      var j=await res.json(); clearInterval(iv); tick.remove(); add('bot',(j&&j.reply)||'Faltam pistas, meu caro. Tente de novo.');
+    }catch(e){ clearInterval(iv); tick.remove(); add('bot','Não consegui investigar agora ('+e.message+').'); }
+    snd.disabled=false; inp.focus(); }
+
+  // ---- HISTORICO / LEDGER ----
+  var fAtual='pocket';
+  async function apiEstr(body){ try{ return await fetch(URL_ESTR,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(body)}).then(function(r){return r.json();}); }catch(e){ return {ok:false}; } }
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  var STLAB={proposta:'proposta',aplicada:'aplicada',deu_certo:'deu certo',deu_errado:'deu errado'};
+  function stClass(s){ return String(s||'proposta').replace(/\s+/g,'_'); }
+  async function loadEstr(fkey){
+    var box=document.getElementById('estr'); box.innerHTML='<div class="empty">carregando…</div>';
+    var j=await apiEstr({op:'list',funil:fkey});
+    var list=(j&&j.estrategias)||(j&&j.list)||[];
+    if(!Array.isArray(list)||!list.length){ box.innerHTML='<div class="empty">Nenhum teste registrado aqui ainda.<br>Quando você e o Sherlock fecharem um teste no chat, ele fica registrado aqui pra você marcar o resultado.</div>'; return; }
+    box.innerHTML='';
+    list.forEach(function(e){
+      var st=stClass(e.status||'proposta');
+      var d=document.createElement('div'); d.className='card';
+      d.innerHTML='<div class="t">'+esc(e.titulo||e.hipotese||'(sem título)')+'</div>'+
+        '<div style="margin:5px 0"><span class="st '+st+'">'+(STLAB[st]||st)+'</span> '+
+        '<span style="font-size:11px;color:var(--muted)">'+(e.origem==='mesa'?'🕵️ mesa':(e.origem==='sherlock'?'🔍 Sherlock':'🎛️ Austin'))+'</span></div>'+
+        (e.hipotese&&e.titulo?'<div class="meta"><b>Hipótese:</b> '+esc(e.hipotese)+'</div>':'')+
+        (e.acao?'<div class="meta"><b>Mudança:</b> '+esc(e.acao)+'</div>':'')+
+        (e.metrica_alvo?'<div class="meta"><b>Métrica-alvo:</b> '+esc(e.metrica_alvo)+'</div>':'')+
+        '<div class="btns">'+
+          '<button data-s="aplicada">apliquei</button>'+
+          '<button data-s="deu_certo">deu certo</button>'+
+          '<button data-s="deu_errado">deu errado</button>'+
+        '</div>';
+      d.querySelectorAll('.btns button').forEach(function(b){
+        b.onclick=async function(){ b.disabled=true; b.textContent='…'; await apiEstr({op:'update',id:e.id,status:b.getAttribute('data-s')}); loadEstr(fkey); };
+      });
+      box.appendChild(d);
+    });
+  }
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.onclick=function(){ document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on');}); t.classList.add('on'); fAtual=t.getAttribute('data-f'); loadEstr(fAtual); };
+  });
+  loadEstr('pocket');
+})();
+</script>
+</body>
+</html>
