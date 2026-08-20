@@ -3643,9 +3643,21 @@ window.startDashboard = startDashboard;
       const label = document.createElement('div'); label.style.cssText='font-size:10px;color:#fb923c;font-weight:700;text-transform:uppercase;letter-spacing:.5px;';
       label.textContent = '🎯 Ações sugeridas — aprovar?';
       wrap.appendChild(label);
+      // dedup: assinatura da acao pra nao re-oferecer o que ja foi aprovado nesta conversa
+      const sigOf = a => [a.tipo, a.alvo||a.nome||'', a.valor||'', a.media_id||(a.media_ids||[]).join(','), (a.criativos||[]).join(','), (a.videos||[]).join(',')].join('|');
+      const execKey = 'ap-exec-'+sessionId;
+      const execSet = () => { try { return new Set(JSON.parse(localStorage.getItem(execKey)||'[]')); } catch(e){ return new Set(); } };
+      const addExec = sig => { try { const s=execSet(); s.add(sig); localStorage.setItem(execKey, JSON.stringify([...s].slice(-100))); } catch(e){} };
       actions.forEach(a => {
+        const sig = sigOf(a);
         const btn = document.createElement('button'); btn.className = 'ap-action-btn';
         const renderLabel = () => `<span class="ap-action-tipo">${esc(a.tipo||'?')}</span> ${esc(a.alvo||'')} ${a.valor?`→ <b>${esc(String(a.valor))}</b>`:''}<div style="opacity:.75;margin-top:3px;font-size:11px;">${esc(a.motivo||'')}</div>`;
+        if (execSet().has(sig)) {
+          btn.disabled = true; btn.dataset.executed = 'ok';
+          btn.style.borderColor = 'rgba(74,222,128,0.4)'; btn.style.opacity = '.72';
+          btn.innerHTML = renderLabel() + `<div style="margin-top:6px;color:#4ade80;font-weight:700;">✓ Já aprovado nesta conversa</div>`;
+          wrap.appendChild(btn); return;
+        }
         btn.innerHTML = renderLabel();
         btn.title = 'Clique para aprovar e executar via Meta Ads API';
         btn.addEventListener('click', async () => {
@@ -3654,7 +3666,7 @@ window.startDashboard = startDashboard;
           btn.disabled = true;
           btn.innerHTML = renderLabel() + '<div style="margin-top:6px;color:#fbbf24;">⏳ Executando...</div>';
           try {
-            const criar = ['criar_campanha_teste','criar_publico_50','criar_campanha_engajamento','impulsionar_reel','impulsionar_reels_abo','criar_engajamento_abo'].includes(a.tipo);
+            const criar = ['criar_campanha_teste','criar_campanha_abo','criar_publico_50','criar_campanha_engajamento','impulsionar_reel','impulsionar_reels_abo','criar_engajamento_abo'].includes(a.tipo);
             const url = criar ? CREATE_URL : EXECUTE_URL;
             const body = criar
               ? { tipo: a.tipo, nome: a.nome || a.alvo, alvo: a.alvo, funil: a.funil, verba_dia: a.verba_dia, criativos: a.criativos || [], videos: a.videos || [], media_ids: a.media_ids || [], pct: a.pct, dias: a.dias, start_time: a.start_time, media_id: a.media_id, criar_publico: a.criar_publico }
