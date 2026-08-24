@@ -3666,10 +3666,10 @@ window.startDashboard = startDashboard;
           btn.disabled = true;
           btn.innerHTML = renderLabel() + '<div style="margin-top:6px;color:#fbbf24;">⏳ Executando...</div>';
           try {
-            const criar = ['criar_campanha_teste','criar_campanha_abo','criar_campanha_remarketing','criar_publico_50','criar_campanha_engajamento','impulsionar_reel','impulsionar_reels_abo','criar_engajamento_abo'].includes(a.tipo);
+            const criar = ['criar_campanha_teste','criar_campanha_abo','criar_campanha_remarketing','criar_campanha_com_anuncios','criar_publico_50','criar_campanha_engajamento','impulsionar_reel','impulsionar_reels_abo','criar_engajamento_abo'].includes(a.tipo);
             const url = criar ? CREATE_URL : EXECUTE_URL;
             const body = criar
-              ? { tipo: a.tipo, nome: a.nome || a.alvo, alvo: a.alvo, funil: a.funil, verba_dia: a.verba_dia, criativos: a.criativos || [], publicos: a.publicos || [], excluir_compradores: a.excluir_compradores, videos: a.videos || [], media_ids: a.media_ids || [], pct: a.pct, dias: a.dias, start_time: a.start_time, media_id: a.media_id, criar_publico: a.criar_publico }
+              ? { tipo: a.tipo, nome: a.nome || a.alvo, alvo: a.alvo, funil: a.funil, verba_dia: a.verba_dia, criativos: a.criativos || [], publicos: a.publicos || [], excluir_compradores: a.excluir_compradores, videos: a.videos || [], media_ids: a.media_ids || [], pct: a.pct, dias: a.dias, start_time: a.start_time, media_id: a.media_id, criar_publico: a.criar_publico, estrutura: a.estrutura, copy: a.copy, headline: a.headline, descricao: a.descricao, cta: a.cta, link: a.link }
               : { session_id: sessionId, action: a };
             const res = await fetch(url, {
               method: 'POST',
