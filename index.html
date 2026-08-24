@@ -811,6 +811,7 @@
   <div class="tabs">
     <div class="tab active" onclick="switchTab('overview')"><span class="tab-icon">🎮</span> Overview</div>
     <div class="tab" onclick="switchTab('funis')"><span class="tab-icon">🌪️</span> Funis</div>
+    <div class="tab" onclick="switchTab('panorama')"><span class="tab-icon">🗺️</span> Panorama</div>
     <div class="tab" onclick="switchTab('campanhas')" style="display:none"><span class="tab-icon">🚀</span> Campanhas</div>
     <div class="tab" onclick="switchTab('vendas')" id="tabVendas"><span class="tab-icon">💎</span> Vendas</div>
     <div class="tab" onclick="switchTab('reembolsos')"><span class="tab-icon">↩️</span> Reembolsos</div>
@@ -849,6 +850,39 @@
   </div>
 
   <!-- TAB: OVERVIEW -->
+  <div class="tab-content" id="tab-panorama">
+    <style>
+      #panoramaBody{max-width:1080px;margin:0 auto}
+      .pano-hero{background:linear-gradient(135deg,rgba(167,139,250,.16),rgba(34,211,238,.08));border:1px solid rgba(167,139,250,.28);border-radius:18px;padding:20px 22px;margin-bottom:22px}
+      .pano-hero .t{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.7px;text-transform:uppercase}
+      .pano-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
+      .pano-kpi .v{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1}
+      .pano-kpi .l{font-size:11px;color:var(--muted);margin-top:6px;font-weight:600}
+      .pano-macro{margin-bottom:26px}
+      .pano-mhead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+      .pano-mhead h3{font-size:16px;font-weight:800;letter-spacing:.3px}
+      .pano-chip{font-size:12px;color:var(--muted);background:var(--bg2,#16161f);border:1px solid var(--border,#262633);border-radius:999px;padding:4px 11px;font-weight:700}
+      .pano-chip b{color:var(--text,#fff)}
+      .pano-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+      .pano-card{background:var(--bg2,#16161f);border:1px solid var(--border,#262633);border-radius:15px;padding:16px 17px;cursor:pointer;transition:border-color .15s,transform .12s}
+      .pano-card:hover{transform:translateY(-2px);border-color:var(--purple,#a78bfa)}
+      .pano-card .nome{font-size:14px;font-weight:800}
+      .pano-card .rec{font-size:23px;font-weight:800;letter-spacing:-.02em;margin-top:9px;line-height:1}
+      .pano-card .row{display:flex;align-items:center;gap:8px;margin-top:9px;flex-wrap:wrap}
+      .pano-b{font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px}
+      .pano-b.roas{background:rgba(74,222,128,.14);color:#4ade80}
+      .pano-b.roaslow{background:rgba(251,146,60,.14);color:#fb923c}
+      .pano-b.org{background:rgba(34,211,238,.14);color:#22d3ee}
+      .pano-b.met{background:rgba(167,139,250,.16);color:#a78bfa}
+      .pano-b.zero{background:var(--bg,#0e0e15);color:var(--muted);border:1px solid var(--border)}
+      .pano-det{font-size:11.5px;color:var(--muted);margin-top:10px;display:none;border-top:1px solid var(--border);padding-top:9px;line-height:1.7}
+      .pano-card.open .pano-det{display:block}
+      .pano-det b{color:var(--text,#fff)}
+      @media(max-width:640px){.pano-kpis{grid-template-columns:repeat(2,1fr)}.pano-grid{grid-template-columns:1fr 1fr}}
+    </style>
+    <div id="panoramaBody"><div style="text-align:center;color:var(--muted);padding:50px">carregando panorama…</div></div>
+  </div>
+
   <div class="tab-content active" id="tab-overview">
     <!-- Finance cards row 1 -->
     <div class="finance-grid" id="financeGrid">
@@ -1379,9 +1413,55 @@ async function populateData(btn) {
 function gestorPer() {
   return ({ hoje:'hoje', ontem:'ontem', '3dias':'3d', semana:'7d', mes:'mes', personalizado:'mes' })[currentPeriodo] || '7d';
 }
+var _panoData = null;
+function panoFmt(n){ return 'R$ ' + Math.round(n||0).toLocaleString('pt-BR'); }
+function panoMes(since){ try{ var m=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez']; var p=since.split('-'); return m[+p[1]-1]+'/'+p[0]; }catch(e){return '';} }
+function renderPanorama(){
+  var el = document.getElementById('panoramaBody');
+  if (_panoData) paintPanorama(_panoData);
+  fetch('/api/funis', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({})})
+    .then(function(r){return r.json();})
+    .then(function(j){ if(!j||!j.ok){ el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px">não consegui carregar o panorama</div>'; return;} _panoData=j; paintPanorama(j); })
+    .catch(function(){ if(!_panoData) el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px">falha de rede, recarrega</div>'; });
+}
+function paintPanorama(j){
+  var el=document.getElementById('panoramaBody'); var g=j.geral;
+  var roasG = g.roas!=null ? g.roas.toFixed(2)+'x' : '—';
+  var h='<div class="pano-hero"><div class="t">Panorama · '+panoMes(j.periodo.since)+'</div><div class="pano-kpis">'
+    +'<div class="pano-kpi"><div class="v">'+g.vendas+'</div><div class="l">vendas</div></div>'
+    +'<div class="pano-kpi"><div class="v">'+panoFmt(g.receita)+'</div><div class="l">faturamento</div></div>'
+    +'<div class="pano-kpi"><div class="v">'+panoFmt(g.gasto)+'</div><div class="l">gasto Meta</div></div>'
+    +'<div class="pano-kpi"><div class="v" style="color:#4ade80">'+roasG+'</div><div class="l">ROAS real</div></div>'
+    +'</div></div>';
+  ['dream','guia'].forEach(function(mk){
+    var M=j.macros[mk]; var t=M.total;
+    h+='<div class="pano-macro"><div class="pano-mhead"><h3>'+(mk==='dream'?'🍼 ':'🤱 ')+M.nome+'</h3>'
+      +'<span class="pano-chip"><b>'+t.vendas+'</b> vendas</span><span class="pano-chip"><b>'+panoFmt(t.receita)+'</b></span>'
+      +(t.gasto>0?'<span class="pano-chip">gasto <b>'+panoFmt(t.gasto)+'</b></span><span class="pano-chip">ROAS <b>'+(t.roas!=null?t.roas.toFixed(2)+'x':'—')+'</b></span>':'')
+      +'</div><div class="pano-grid">';
+    M.subs.forEach(function(s){
+      var badges='';
+      if(s.key==='meteorico') badges='<span class="pano-b met">meteórico</span>';
+      else if(s.gasto>0 && s.roas!=null) badges='<span class="pano-b '+(s.roas>=1.8?'roas':'roaslow')+'">ROAS '+s.roas.toFixed(2)+'x</span>';
+      else if(s.vendas>0) badges='<span class="pano-b org">orgânico</span>';
+      else badges='<span class="pano-b zero">sem venda</span>';
+      var ticket = s.vendas>0 ? panoFmt(s.receita/s.vendas) : '—';
+      var det = '<b>'+s.vendas+'</b> vendas · <b>'+panoFmt(s.receita)+'</b><br>';
+      if(s.key==='meteorico') det+='mecânica própria (WhatsApp) · ticket médio '+ticket;
+      else det+='pago <b>'+s.pago+'</b> · orgânico <b>'+s.org+'</b><br>gasto Meta <b>'+panoFmt(s.gasto)+'</b> · ticket '+ticket;
+      h+='<div class="pano-card" onclick="this.classList.toggle(\'open\')">'
+        +'<div class="nome">'+s.nome+'</div><div class="rec">'+panoFmt(s.receita)+'</div>'
+        +'<div class="row"><span class="pano-b" style="background:rgba(255,255,255,.06);color:var(--muted)">'+s.vendas+' vendas</span>'+badges+'</div>'
+        +'<div class="pano-det">'+det+'</div></div>';
+    });
+    h+='</div></div>';
+  });
+  h+='<div style="text-align:center;color:var(--muted);font-size:11.5px;margin-top:6px">clique num funil pra ver o detalhe · ROAS = faturamento Greenn ÷ gasto Meta</div>';
+  el.innerHTML=h;
+}
 function switchTab(name) {
   activeTab = name;
-  const names = ['overview','funis','campanhas','vendas','reembolsos','analise','gestor','banco'];
+  const names = ['overview','funis','panorama','campanhas','vendas','reembolsos','analise','gestor','banco'];
   document.querySelectorAll('.tab').forEach((t, i) => {
     t.classList.toggle('active', names[i] === name);
   });
@@ -1395,6 +1475,7 @@ function switchTab(name) {
     const f = document.getElementById('bancoFrame');
     if (f) f.src = 'banco.html?embed=1&periodo=' + gestorPer();
   }
+  if (name === 'panorama') renderPanorama();
   if (name === 'analise' && DATA) {
     renderAnalise();
     loadBreakdowns(); // chama 2º endpoint pra placement/demografia/pausadas
