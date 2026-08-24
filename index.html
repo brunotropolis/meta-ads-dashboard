@@ -1430,12 +1430,13 @@ function paintPanorama(j, filtro){
   var macros = filtro ? [filtro] : ['dream','guia'];
   var hd = filtro ? j.macros[filtro].total : j.geral;
   var titulo = filtro ? (filtro==='dream'?'🌙 Dream Baby':'🤱 Guia da Pega') : 'Panorama';
-  var roasH = hd.roas!=null ? hd.roas.toFixed(2)+'x' : '—';
+  var roasM = hd.roas_midia!=null ? hd.roas_midia.toFixed(2)+'x' : '—';
+  var roasF = hd.roas!=null ? hd.roas.toFixed(2)+'x' : '—';
   var h='<div class="pano-hero"><div class="t">'+titulo+' · '+panoMes(j.periodo.since)+'</div><div class="pano-kpis">'
     +'<div class="pano-kpi"><div class="v">'+hd.vendas+'</div><div class="l">vendas</div></div>'
     +'<div class="pano-kpi"><div class="v">'+panoFmt(hd.receita)+'</div><div class="l">faturamento'+(hd.bumps?' (c/ '+hd.bumps+' bumps)':'')+'</div></div>'
-    +'<div class="pano-kpi"><div class="v">'+panoFmt(hd.gasto)+'</div><div class="l">gasto Meta</div></div>'
-    +'<div class="pano-kpi"><div class="v" style="color:#4ade80">'+roasH+'</div><div class="l">ROAS real</div></div>'
+    +'<div class="pano-kpi"><div class="v" style="color:#4ade80">'+roasM+'</div><div class="l">ROAS de mídia</div></div>'
+    +'<div class="pano-kpi"><div class="v" style="color:#22d3ee">'+roasF+'</div><div class="l">ROAS do funil (c/ orgânico)</div></div>'
     +'</div></div>';
   macros.forEach(function(mk){
     var M=j.macros[mk]; var t=M.total;
@@ -1450,7 +1451,7 @@ function paintPanorama(j, filtro){
     M.subs.forEach(function(s){
       var badges='';
       if(s.key==='meteorico') badges='<span class="pano-b met">meteórico</span>';
-      else if(s.gasto>0 && s.roas!=null) badges='<span class="pano-b '+(s.roas>=1.8?'roas':'roaslow')+'">ROAS '+s.roas.toFixed(2)+'x</span>';
+      else if(s.gasto>0 && s.roas_midia!=null) badges='<span class="pano-b '+(s.roas_midia>=1.5?'roas':'roaslow')+'">mídia '+s.roas_midia.toFixed(2)+'x</span>'+(s.roas!=null?'<span class="pano-b" style="background:rgba(34,211,238,.14);color:#22d3ee">funil '+s.roas.toFixed(2)+'x</span>':'');
       else if(s.vendas>0) badges='<span class="pano-b org">orgânico</span>';
       else badges='<span class="pano-b zero">sem venda</span>';
       if(s.conversao_3d!=null) badges+='<span class="pano-b conv">conv '+String(s.conversao_3d).replace('.',',')+'%</span>';
@@ -1462,7 +1463,7 @@ function paintPanorama(j, filtro){
     });
     h+='</div></div>';
   });
-  h+='<div style="text-align:center;color:var(--muted);font-size:11.5px;margin-top:6px">clique num funil pra abrir a análise · ROAS = faturamento Greenn (c/ bumps) ÷ gasto Meta</div>';
+  h+='<div style="text-align:center;color:var(--muted);font-size:11.5px;margin-top:8px;line-height:1.7">clique num funil pra abrir a análise<br><span style="color:#4ade80">ROAS de mídia</span> = só vendas de anúncio ÷ gasto (comparável ao Austin) · <span style="color:#22d3ee">ROAS do funil</span> = tudo (com orgânico + bumps) ÷ gasto</div>';
   el.innerHTML='<div id="panoramaBody">'+h+'</div>';
 }
 function renderFunilPano(key){
@@ -1470,14 +1471,15 @@ function renderFunilPano(key){
   function paint(j){
     var f=null; ['dream','guia'].forEach(function(m){var x=j.macros[m].subs.find(function(y){return y.key===key});if(x)f=x;});
     if(!f){ el.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted)">Funil não encontrado.</div>'; return; }
-    var roasTxt = f.roas!=null ? f.roas.toFixed(2)+'x' : (f.vendas>0?'orgânico':'—');
+    var roasM = f.roas_midia!=null ? f.roas_midia.toFixed(2)+'x' : (f.gasto>0?'—':'sem mídia');
+    var roasF = f.roas!=null ? f.roas.toFixed(2)+'x' : (f.vendas>0?'orgânico':'—');
     var kpis='<div class="finance-grid funis-kpi-grid" style="padding:4px">'
       +'<div class="finance-card fc-red"><span class="fc-icon">📢</span><div class="fc-label">Investido Meta</div><div class="fc-value">R$ '+fmt(f.gasto)+'</div></div>'
       +'<div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento'+(f.bumps?' (c/ '+f.bumps+' bumps)':'')+'</div><div class="fc-value">R$ '+fmt(f.receita)+'</div></div>'
-      +'<div class="finance-card fc-cyan"><span class="fc-icon">🛒</span><div class="fc-label">Vendas</div><div class="fc-value">'+f.vendas+'</div></div>'
-      +'<div class="finance-card fc-yellow"><span class="fc-icon">📊</span><div class="fc-label">ROAS real</div><div class="fc-value">'+roasTxt+'</div></div>'
+      +'<div class="finance-card fc-yellow"><span class="fc-icon">📊</span><div class="fc-label">ROAS de mídia</div><div class="fc-value">'+roasM+'</div></div>'
+      +'<div class="finance-card fc-cyan"><span class="fc-icon">🌱</span><div class="fc-label">ROAS do funil</div><div class="fc-value">'+roasF+'</div></div>'
       +'</div>';
-    var origem='<div style="padding:8px 6px;color:var(--muted);font-size:13px">Pago <b style="color:var(--text,#fff)">'+f.pago+'</b> · Orgânico <b style="color:var(--text,#fff)">'+f.org+'</b>'+(f.vendas?(' · Ticket médio R$ '+fmt(f.receita/f.vendas)):'')+'</div>';
+    var origem='<div style="padding:8px 6px;color:var(--muted);font-size:13px">'+f.vendas+' vendas · Pago <b style="color:var(--text,#fff)">'+f.pago+'</b> (R$ '+fmt(f.pago_receita||0)+') · Orgânico <b style="color:var(--text,#fff)">'+f.org+'</b> (R$ '+fmt(f.org_receita||0)+')'+(f.vendas?(' · ticket médio R$ '+fmt(f.receita/f.vendas)):'')+'<br><span style="color:var(--muted);font-size:11.5px">ROAS de mídia = só pago ÷ gasto (comparável ao Austin) · ROAS do funil = tudo, com orgânico ÷ gasto</span></div>';
     var flow='';
     if(key==='ebook'){
       if(f.sessoes_3d){
