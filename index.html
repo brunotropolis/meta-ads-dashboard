@@ -1423,7 +1423,7 @@ function renderPanorama(){
   else { el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:50px"><div class="spinner"></div>carregando panorama…</div>'; }
   fetch('/api/funis', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({})})
     .then(function(r){return r.json();})
-    .then(function(j){ if(!j||!j.ok){ el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px">não consegui carregar o panorama</div>'; return;} _panoData=j; paintPanorama(j); })
+    .then(function(j){ if(!j||!j.ok){ if(currentFunisSub==='panorama') el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px">não consegui carregar o panorama</div>'; return;} _panoData=j; if(currentFunisSub==='panorama') paintPanorama(j); })
     .catch(function(){ if(!_panoData) el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px">falha de rede, recarrega</div>'; });
 }
 function paintPanorama(j){
