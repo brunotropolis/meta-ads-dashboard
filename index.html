@@ -1505,11 +1505,15 @@ function renderFunilPano(key){
     } else {
       var F=f.flow||{};
       if(F.tem){
-        flow=_funilSub('🔻 Funil (tráfego pago) — ⚠️ passo checkout não é medido (pixel do Guia restrito)')
+        var comprouPago = (f.pago!=null?f.pago:(F.comprou||0)); // comprou do funil PAGO (não mistura orgânico)
+        var steps=[ _funilStep('Cliques no anúncio', F.cliques||0),
+          _funilStep('Entrou na página', F.visitou||0, F.connect_rate!=null?('Connect '+F.connect_rate+'%'):'') ];
+        if(F.checkout>0) steps.push(_funilStep('Foi pro checkout', F.checkout, F.ida!=null?(F.ida+'% da página'):''));
+        steps.push(_funilStep('Comprou (pago)', comprouPago, F.checkout>0?((+(comprouPago/F.checkout*100).toFixed(1))+'% do checkout'):(F.visitou?((+(comprouPago/F.visitou*100).toFixed(1))+'% da página'):'')));
+        var nota = (key==='guia') ? ' — ⚠️ passo checkout não é medido (pixel do Guia restrito)' : '';
+        flow=_funilSub('🔻 Funil (tráfego pago)'+nota)
           +'<div class="funil-flow" style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">'
-          +_funilStep('Cliques no anúncio', F.cliques||0)+_arrow()
-          +_funilStep('Entrou na página', F.visitou||0, F.connect_rate!=null?('Connect '+F.connect_rate+'%'):'')+_arrow()
-          +_funilStep('Comprou', F.comprou||0, F.visitou?((+(F.comprou/F.visitou*100).toFixed(1))+'% da página'):'')
+          +steps.join(_arrow())
           +'</div>';
       } else { flow='<div style="padding:14px;color:var(--muted);font-size:13px">Sem tráfego pago no período nesse funil.</div>'; }
     }
@@ -1652,10 +1656,8 @@ function switchFunisSub(k){
 }
 function _loadFunisActive(){
   if (currentFunisSub === 'meteorico') loadMeteorico();
-  else if (currentFunisSub === 'guia') loadFunisGuia();
-  else if (currentFunisSub === 'pocket') loadFunisPocket();
-  else if (currentFunisSub === 'quiz') loadFunis();
-  else if (currentFunisSub === 'ebook' || currentFunisSub === 'mat_calo' || currentFunisSub === 'mat_ama') renderFunilPano(currentFunisSub);
+  // guia/pocket/quiz agora vêm da MESMA fonte da Panorama (funis-dash) -> ROAS bate 100% com o card e com o Austin.
+  else renderFunilPano(currentFunisSub);
 }
 function drillFunil(macro,key){ switchMacro(macro); switchFunisSub(key); }
 function renderMacroOverview(m){ renderPanorama(m); }
@@ -1691,13 +1693,7 @@ function schedulePrefetchFunis() {
     }
     return `${API_URL}?${p}`;
   };
-  setTimeout(async () => {
-    try {
-      if (!_funisCache[key]) { const d = await (await fetch(mk('funis'))).json(); if (d.funis) _funisCache[key] = d.funis; }
-      if (!_funisPocketCache[key]) { const d = await (await fetch(mk('funis_pocket'))).json(); if (d.funis) _funisPocketCache[key] = d.funis; }
-      if (!_funisGuiaCache[key]) { const d = await (await fetch(mk('funis_guia'))).json(); if (d.funis) _funisGuiaCache[key] = d.funis; }
-    } catch (e) {}
-  }, 1200);
+  // (prefetch dos funis antigos removido — guia/pocket/quiz agora vêm da funis-dash via renderFunilPano)
 }
 
 // ─── FUNIS (Quiz Dream Baby Pocket) ─────────────────────────────────────────
