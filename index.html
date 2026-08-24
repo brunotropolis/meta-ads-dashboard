@@ -1207,15 +1207,13 @@
   <div class="tab-content" id="tab-funis">
     <div class="section">
       <div class="section-header" style="flex-wrap:wrap;gap:8px">
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button id="fsubPano" class="fsub-btn active" onclick="switchFunisSub('panorama')">🗺️ Panorama</button>
-          <button id="fsubQuiz" class="fsub-btn" onclick="switchFunisSub('quiz')">☁️ Quiz Dream Baby Pocket</button>
-          <button id="fsubGuia" class="fsub-btn" onclick="switchFunisSub('guia')">🤱 Guia da Pega</button>
-          <button id="fsubPocket" class="fsub-btn" onclick="switchFunisSub('pocket')">🌙 Dream Baby Pocket</button>
-          <button id="fsubMet" class="fsub-btn" onclick="switchFunisSub('meteorico')">💬 Meteórico (WhatsApp)</button>
-          <button id="fsubEbook" class="fsub-btn" onclick="switchFunisSub('ebook')">📕 Ebook amamentação</button>
-          <button id="fsubMatCalo" class="fsub-btn" onclick="switchFunisSub('mat_calo')">📰 Matéria Calo</button>
-          <button id="fsubMatAma" class="fsub-btn" onclick="switchFunisSub('mat_ama')">📰 Matéria Amamentação</button>
+        <div style="width:100%">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button id="fmacPano" class="fsub-btn active" onclick="switchMacro('panorama')">🗺️ Panorama</button>
+            <button id="fmacDream" class="fsub-btn" onclick="switchMacro('dream')">🌙 Dream Baby</button>
+            <button id="fmacGuia" class="fsub-btn" onclick="switchMacro('guia')">🤱 Guia da Pega</button>
+          </div>
+          <div id="funisSubRow" style="display:flex;gap:7px;flex-wrap:wrap;margin-top:10px"></div>
         </div>
       </div>
       <div id="funisBody" style="padding:4px">
@@ -1419,48 +1417,52 @@ function panoFmt(n){ return 'R$ ' + Math.round(n||0).toLocaleString('pt-BR'); }
 function panoMes(since){ try{ var m=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez']; var p=since.split('-'); return m[+p[1]-1]+'/'+p[0]; }catch(e){return '';} }
 function renderPanorama(){
   var el = document.getElementById('funisBody');
-  if (_panoData) { paintPanorama(_panoData); }
-  else { el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:50px"><div class="spinner"></div>carregando panorama…</div>'; }
+  var filtro = currentMacro==='panorama' ? null : currentMacro;
+  if (_panoData) { paintPanorama(_panoData, filtro); }
+  else { el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:50px"><div class="spinner"></div>carregando…</div>'; }
   fetch('/api/funis', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({})})
     .then(function(r){return r.json();})
-    .then(function(j){ if(!j||!j.ok){ if(currentFunisSub==='panorama') el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px">não consegui carregar o panorama</div>'; return;} _panoData=j; if(currentFunisSub==='panorama') paintPanorama(j); })
-    .catch(function(){ if(!_panoData) el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px">falha de rede, recarrega</div>'; });
+    .then(function(j){ if(!j||!j.ok){ if(!currentFunisSub) el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px">não consegui carregar</div>'; return;} _panoData=j; if(!currentFunisSub) paintPanorama(j, currentMacro==='panorama'?null:currentMacro); })
+    .catch(function(){ if(!_panoData && !currentFunisSub) el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px">falha de rede, recarrega</div>'; });
 }
-function paintPanorama(j){
-  var el=document.getElementById('funisBody'); if(!el) return; var g=j.geral;
-  var roasG = g.roas!=null ? g.roas.toFixed(2)+'x' : '—';
-  var h='<div class="pano-hero"><div class="t">Panorama · '+panoMes(j.periodo.since)+'</div><div class="pano-kpis">'
-    +'<div class="pano-kpi"><div class="v">'+g.vendas+'</div><div class="l">vendas</div></div>'
-    +'<div class="pano-kpi"><div class="v">'+panoFmt(g.receita)+'</div><div class="l">faturamento</div></div>'
-    +'<div class="pano-kpi"><div class="v">'+panoFmt(g.gasto)+'</div><div class="l">gasto Meta</div></div>'
-    +'<div class="pano-kpi"><div class="v" style="color:#4ade80">'+roasG+'</div><div class="l">ROAS real</div></div>'
+function paintPanorama(j, filtro){
+  var el=document.getElementById('funisBody'); if(!el) return;
+  var macros = filtro ? [filtro] : ['dream','guia'];
+  var hd = filtro ? j.macros[filtro].total : j.geral;
+  var titulo = filtro ? (filtro==='dream'?'🌙 Dream Baby':'🤱 Guia da Pega') : 'Panorama';
+  var roasH = hd.roas!=null ? hd.roas.toFixed(2)+'x' : '—';
+  var h='<div class="pano-hero"><div class="t">'+titulo+' · '+panoMes(j.periodo.since)+'</div><div class="pano-kpis">'
+    +'<div class="pano-kpi"><div class="v">'+hd.vendas+'</div><div class="l">vendas</div></div>'
+    +'<div class="pano-kpi"><div class="v">'+panoFmt(hd.receita)+'</div><div class="l">faturamento'+(hd.bumps?' (c/ '+hd.bumps+' bumps)':'')+'</div></div>'
+    +'<div class="pano-kpi"><div class="v">'+panoFmt(hd.gasto)+'</div><div class="l">gasto Meta</div></div>'
+    +'<div class="pano-kpi"><div class="v" style="color:#4ade80">'+roasH+'</div><div class="l">ROAS real</div></div>'
     +'</div></div>';
-  ['dream','guia'].forEach(function(mk){
+  macros.forEach(function(mk){
     var M=j.macros[mk]; var t=M.total;
-    h+='<div class="pano-macro"><div class="pano-mhead"><h3>'+(mk==='dream'?'🌙 ':'🤱 ')+M.nome+'</h3>'
-      +'<span class="pano-chip"><b>'+t.vendas+'</b> vendas</span><span class="pano-chip"><b>'+panoFmt(t.receita)+'</b></span>'
-      +(t.gasto>0?'<span class="pano-chip">gasto <b>'+panoFmt(t.gasto)+'</b></span><span class="pano-chip">ROAS <b>'+(t.roas!=null?t.roas.toFixed(2)+'x':'—')+'</b></span>':'')
-      +'</div><div class="pano-grid">';
+    h+='<div class="pano-macro">';
+    if(!filtro){
+      h+='<div class="pano-mhead"><h3>'+(mk==='dream'?'🌙 ':'🤱 ')+M.nome+'</h3>'
+        +'<span class="pano-chip"><b>'+t.vendas+'</b> vendas</span><span class="pano-chip"><b>'+panoFmt(t.receita)+'</b></span>'
+        +(t.gasto>0?'<span class="pano-chip">gasto <b>'+panoFmt(t.gasto)+'</b></span><span class="pano-chip">ROAS <b>'+(t.roas!=null?t.roas.toFixed(2)+'x':'—')+'</b></span>':'')
+        +'</div>';
+    }
+    h+='<div class="pano-grid">';
     M.subs.forEach(function(s){
       var badges='';
       if(s.key==='meteorico') badges='<span class="pano-b met">meteórico</span>';
       else if(s.gasto>0 && s.roas!=null) badges='<span class="pano-b '+(s.roas>=1.8?'roas':'roaslow')+'">ROAS '+s.roas.toFixed(2)+'x</span>';
       else if(s.vendas>0) badges='<span class="pano-b org">orgânico</span>';
       else badges='<span class="pano-b zero">sem venda</span>';
-      if(s.conversao_3d!=null) badges+='<span class="pano-b conv">conv '+String(s.conversao_3d).replace('.',',')+'% (3d)</span>';
-      var ticket = s.vendas>0 ? panoFmt(s.receita/s.vendas) : '—';
-      var det = '<b>'+s.vendas+'</b> vendas · <b>'+panoFmt(s.receita)+'</b><br>';
-      if(s.key==='meteorico') det+='mecânica própria (WhatsApp) · ticket médio '+ticket;
-      else det+='pago <b>'+s.pago+'</b> · orgânico <b>'+s.org+'</b><br>gasto Meta <b>'+panoFmt(s.gasto)+'</b> · ticket '+ticket;
-      if(s.conversao_3d!=null) det+='<br><span style="color:#fbbf24">Clarity (3 dias): <b>'+s.sessoes_3d+'</b> visitas → <b>'+s.vendas_3d+'</b> vendas · conversão <b>'+String(s.conversao_3d).replace('.',',')+'%</b>'+(s.scroll_medio!=null?' · scroll '+s.scroll_medio+'%':'')+'</span>';
-      h+='<div class="pano-card" onclick="this.classList.toggle(\'open\')">'
+      if(s.conversao_3d!=null) badges+='<span class="pano-b conv">conv '+String(s.conversao_3d).replace('.',',')+'%</span>';
+      var bumpTxt = s.bumps ? ' · +'+s.bumps+' bumps' : '';
+      h+='<div class="pano-card" onclick="drillFunil(\''+mk+'\',\''+s.key+'\')">'
         +'<div class="nome">'+s.nome+'</div><div class="rec">'+panoFmt(s.receita)+'</div>'
-        +'<div class="row"><span class="pano-b" style="background:rgba(255,255,255,.06);color:var(--muted)">'+s.vendas+' vendas</span>'+badges+'</div>'
-        +'<div class="pano-det">'+det+'</div></div>';
+        +'<div class="row"><span class="pano-b" style="background:rgba(255,255,255,.06);color:var(--muted)">'+s.vendas+' vendas'+bumpTxt+'</span>'+badges+'</div>'
+        +'<div style="font-size:11px;color:var(--muted);margin-top:9px;font-weight:700">abrir funil →</div></div>';
     });
     h+='</div></div>';
   });
-  h+='<div style="text-align:center;color:var(--muted);font-size:11.5px;margin-top:6px">clique num funil pra ver o detalhe · ROAS = faturamento Greenn ÷ gasto Meta</div>';
+  h+='<div style="text-align:center;color:var(--muted);font-size:11.5px;margin-top:6px">clique num funil pra abrir a análise · ROAS = faturamento Greenn (c/ bumps) ÷ gasto Meta</div>';
   el.innerHTML='<div id="panoramaBody">'+h+'</div>';
 }
 function renderFunilPano(key){
@@ -1471,7 +1473,7 @@ function renderFunilPano(key){
     var roasTxt = f.roas!=null ? f.roas.toFixed(2)+'x' : (f.vendas>0?'orgânico':'—');
     var kpis='<div class="finance-grid funis-kpi-grid" style="padding:4px">'
       +'<div class="finance-card fc-red"><span class="fc-icon">📢</span><div class="fc-label">Investido Meta</div><div class="fc-value">R$ '+fmt(f.gasto)+'</div></div>'
-      +'<div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento</div><div class="fc-value">R$ '+fmt(f.receita)+'</div></div>'
+      +'<div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento'+(f.bumps?' (c/ '+f.bumps+' bumps)':'')+'</div><div class="fc-value">R$ '+fmt(f.receita)+'</div></div>'
       +'<div class="finance-card fc-cyan"><span class="fc-icon">🛒</span><div class="fc-label">Vendas</div><div class="fc-value">'+f.vendas+'</div></div>'
       +'<div class="finance-card fc-yellow"><span class="fc-icon">📊</span><div class="fc-label">ROAS real</div><div class="fc-value">'+roasTxt+'</div></div>'
       +'</div>';
@@ -1525,7 +1527,7 @@ function switchTab(name) {
     loadMonitor();    // termômetro dos criativos (hoje × faixa ideal)
   }
   if (name === 'funis') {
-    _loadFunisActive();
+    _renderFunisState();
   }
   if (name === 'reembolsos') {
     renderReembolsos();
@@ -1609,21 +1611,42 @@ async function renderReembolsos(){
 }
 
 // ─── FUNIS — sub-abas Quiz | Meteórico (carregam separado) ──────────────────
-let currentFunisSub = 'panorama';
-function switchFunisSub(which) {
-  currentFunisSub = which;
-  ['Pano','Quiz','Guia','Pocket','Met','Ebook','MatCalo','MatAma'].forEach(function(id){ var el=document.getElementById('fsub'+id); if(el) el.classList.remove('active'); });
-  var mapa={panorama:'Pano',quiz:'Quiz',guia:'Guia',pocket:'Pocket',meteorico:'Met',ebook:'Ebook',mat_calo:'MatCalo',mat_ama:'MatAma'};
-  var b=document.getElementById('fsub'+(mapa[which]||'')); if(b) b.classList.add('active');
+let currentMacro = 'panorama';
+let currentFunisSub = null;
+const MACRO_SUBS = {
+  dream: [{k:'pocket',n:'🌙 Dream Baby Pocket'},{k:'quiz',n:'☁️ Quiz Dream Baby'},{k:'meteorico',n:'💬 Meteórico'}],
+  guia: [{k:'ebook',n:'📕 Ebook amamentação'},{k:'mat_calo',n:'📰 Matéria Calo'},{k:'guia',n:'🤱 Guia da Pega'},{k:'mat_ama',n:'📰 Matéria Amamentação'}]
+};
+function switchMacro(m){
+  currentMacro = m; currentFunisSub = null;
+  ['Pano','Dream','Guia'].forEach(function(id){ var el=document.getElementById('fmac'+id); if(el) el.classList.remove('active'); });
+  var mp={panorama:'Pano',dream:'Dream',guia:'Guia'}; var b=document.getElementById('fmac'+(mp[m]||'')); if(b) b.classList.add('active');
+  var row=document.getElementById('funisSubRow');
+  if(m==='panorama'){ if(row) row.innerHTML=''; renderPanorama(); }
+  else {
+    if(row) row.innerHTML = MACRO_SUBS[m].map(function(s){ return '<button class="fsub-btn" data-sub="'+s.k+'" onclick="switchFunisSub(\''+s.k+'\')">'+s.n+'</button>'; }).join('');
+    renderMacroOverview(m);
+  }
+}
+function switchFunisSub(k){
+  currentFunisSub = k;
+  var row=document.getElementById('funisSubRow');
+  if(row) [].forEach.call(row.querySelectorAll('.fsub-btn'), function(b){ b.classList.toggle('active', b.getAttribute('data-sub')===k); });
   _loadFunisActive();
 }
-function _loadFunisActive() {
-  if (currentFunisSub === 'panorama') renderPanorama();
-  else if (currentFunisSub === 'meteorico') loadMeteorico();
+function _loadFunisActive(){
+  if (currentFunisSub === 'meteorico') loadMeteorico();
   else if (currentFunisSub === 'guia') loadFunisGuia();
   else if (currentFunisSub === 'pocket') loadFunisPocket();
+  else if (currentFunisSub === 'quiz') loadFunis();
   else if (currentFunisSub === 'ebook' || currentFunisSub === 'mat_calo' || currentFunisSub === 'mat_ama') renderFunilPano(currentFunisSub);
-  else loadFunis();
+}
+function drillFunil(macro,key){ switchMacro(macro); switchFunisSub(key); }
+function renderMacroOverview(m){ renderPanorama(m); }
+function _renderFunisState(){
+  if(currentMacro==='panorama') renderPanorama();
+  else if(currentFunisSub) _loadFunisActive();
+  else renderMacroOverview(currentMacro);
 }
 async function loadMeteorico() {
   const body = document.getElementById('funisBody');
@@ -1788,13 +1811,12 @@ function renderFunis(f) {
   const PF = P.funil || {}, OF = O.funil || {}, TF = T.funil || {};
 
   function _funilRow(F){
+    // quiz: escondemos "Entrou no quiz" e "Chegou na oferta" (URL do resultado varia por perfil, não dá pra medir confiável)
     var s=[];
     if (F.cliques!=null) s.push(_funilStep('Cliques no anúncio', F.cliques||0));
-    s.push(_funilStep('Entrou no quiz', F.entrou_quiz||0, F.connect_rate!=null ? ('Connect '+(F.connect_rate||0)+'%') : ''));
-    s.push(_funilStep('Chegou na oferta', F.chegou_oferta||0, (F.finalizacao_quiz||0)+'% terminou o quiz'));
     var temCheckout = F.foi_checkout!=null;
-    if (temCheckout) s.push(_funilStep('Foi pro checkout', F.foi_checkout||0, (F.oferta_checkout||0)+'% da oferta'));
-    s.push(_funilStep('Comprou', F.comprou||0, temCheckout ? ((F.checkout_compra||0)+'% do checkout') : ((F.oferta_compra||0)+'% da oferta')));
+    if (temCheckout) s.push(_funilStep('Foi pro checkout', F.foi_checkout||0, (F.cliques ? (+(F.foi_checkout/F.cliques*100).toFixed(1))+'% dos cliques' : '')));
+    s.push(_funilStep('Comprou', F.comprou||0, temCheckout ? ((F.checkout_compra||0)+'% do checkout') : (F.cliques ? ((+(F.comprou/F.cliques*100).toFixed(1))+'% dos cliques') : '')));
     return '<div class="funil-flow" style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">'+s.join(_arrow())+'</div>';
   }
 
@@ -1807,7 +1829,7 @@ function renderFunis(f) {
         <div class="finance-card fc-yellow"><span class="fc-icon">📊</span><div class="fc-label">ROAS Produto Principal</div><div class="fc-value">${(T.roas_principal||0).toFixed(2)}x</div></div>
         <div class="finance-card fc-purple"><span class="fc-icon">🌪️</span><div class="fc-label">ROAS Funil</div><div class="fc-value">${(T.roas_funil||0).toFixed(2)}x</div></div>
       </div>
-      ${_funilSub('🔻 Funil do Quiz · conversão total ' + (TF.conv_total||0) + '% (entrou no quiz → compra)')}
+      ${_funilSub('🔻 Funil do Quiz · conversão total ' + (TF.conv_total||0) + '% (clique → compra)')}
       ${_funilRow(TF)}
       <div class="table-wrap" style="margin-top:10px">${_bumpsTable(T.bumps, T.comprou||0)}</div>
     </div>`;
