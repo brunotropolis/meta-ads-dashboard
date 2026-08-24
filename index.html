@@ -1432,7 +1432,7 @@ function paintPanorama(j, filtro){
   var titulo = filtro ? (filtro==='dream'?'🌙 Dream Baby':'🤱 Guia da Pega') : 'Panorama';
   var roasM = hd.roas_midia!=null ? hd.roas_midia.toFixed(2)+'x' : '—';
   var roasF = hd.roas!=null ? hd.roas.toFixed(2)+'x' : '—';
-  var h='<div class="pano-hero"><div class="t">'+titulo+' · '+panoMes(j.periodo.since)+'</div><div class="pano-kpis">'
+  var h='<div class="pano-hero"><div class="t">'+titulo+' · '+(j.periodo.label||panoMes(j.periodo.since))+'</div><div class="pano-kpis">'
     +'<div class="pano-kpi"><div class="v">'+hd.vendas+'</div><div class="l">vendas</div></div>'
     +'<div class="pano-kpi"><div class="v">'+panoFmt(hd.receita)+'</div><div class="l">faturamento'+(hd.bumps?' (c/ '+hd.bumps+' bumps)':'')+'</div></div>'
     +'<div class="pano-kpi"><div class="v" style="color:#4ade80">'+roasM+'</div><div class="l">ROAS de mídia</div></div>'
@@ -1617,7 +1617,7 @@ let currentMacro = 'panorama';
 let currentFunisSub = null;
 const MACRO_SUBS = {
   dream: [{k:'pocket',n:'🌙 Dream Baby Pocket'},{k:'quiz',n:'☁️ Quiz Dream Baby'},{k:'meteorico',n:'💬 Meteórico'}],
-  guia: [{k:'ebook',n:'📕 Ebook amamentação'},{k:'mat_calo',n:'📰 Matéria Calo'},{k:'guia',n:'🤱 Guia da Pega'},{k:'mat_ama',n:'📰 Matéria Amamentação'}]
+  guia: [{k:'guia',n:'🤱 Guia da Pega'},{k:'ebook',n:'📕 Ebook amamentação'},{k:'mat_calo',n:'📰 Matéria Calo'},{k:'mat_ama',n:'📰 Matéria Amamentação'}]
 };
 function switchMacro(m){
   currentMacro = m; currentFunisSub = null;
