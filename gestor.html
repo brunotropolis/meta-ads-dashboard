@@ -306,12 +306,20 @@
     const fb = f => `<span class="fbadge fb-${f}">${f==='pocket'?'POCKET':f==='quiz'?'QUIZ':f==='guia'?'GUIA':'OUTRO'}</span>`;
     const metaTag = t => t ? `<span class="meta-tag">${t}</span>` : '';
     const nomeCurto = c => c.nome.replace(/\[dream pocket\]/i,'').replace(/\[|\]/g,'').replace(/\s+/g,' ').trim().slice(0,34);
-    const DEFS = { roas:'Receita real ÷ gasto. Meta 1,8.', cpa:'Custo por venda (gasto ÷ vendas). Ideal ~R$ 36.', freq:'Vezes que a mesma pessoa viu o anúncio. Ideal até 2-3.', ctr:'Cliques no link ÷ quem viu. Bom acima de 1,3%.', connect:'Quem carregou a página ÷ cliques. Abaixo de 80% = quebra técnica.', ida:'Quem foi pro checkout ÷ quem chegou na página. Ideal 25% — nosso gargalo.', receita:'O que sobra da venda depois da taxa da plataforma.', vendas:'Vendas casadas à campanha por UTM (fora = orgânico/resíduo).', dead:'Cliques em algo que parece botão mas não é.', rage:'Cliques de raiva no mesmo lugar / voltar na hora.', scroll:'Quão fundo as pessoas rolam a página.', hero:'% que passa da 1ª tela (10% da página). Baixo = o topo não segura.', lcp:'Tempo até o maior elemento carregar. Acima de 2,5s = lento.' };
+    const DEFS = { roas:'Receita real ÷ gasto. Meta 1,8.', cpa:'Custo por venda (gasto ÷ vendas). Ideal ~R$ 36.', freq:'Vezes que a mesma pessoa viu o anúncio. Ideal até 2-3.', ctr:'Cliques no link ÷ quem viu. Bom acima de 1,3%.', connect:'Quem carregou a página ÷ cliques. Abaixo de 80% = quebra técnica.', ida:'Quem foi pro checkout ÷ quem chegou na página. Ideal 25% — nosso gargalo.', receita:'O que sobra da venda depois da taxa da plataforma.', vendas:'Vendas casadas à campanha por UTM (fora = orgânico/resíduo).', principal:'Vendas do produto principal do funil (sem os order bumps), pela venda real da Greenn. pago = veio de anúncio · org = orgânico (bio/stories/direto). Distribui por funil e por período.', bumps:'Order bumps vendidos junto com o principal deste funil (linha separada no checkout), casados à venda principal pelo checkout.', roasmidia:'Receita PAGA do funil (com os bumps das vendas pagas) ÷ gasto de mídia. Mesma conta do Panorama e do Austin.', dead:'Cliques em algo que parece botão mas não é.', rage:'Cliques de raiva no mesmo lugar / voltar na hora.', scroll:'Quão fundo as pessoas rolam a página.', hero:'% que passa da 1ª tela (10% da página). Baixo = o topo não segura.', lcp:'Tempo até o maior elemento carregar. Acima de 2,5s = lento.' };
     const qb = f => `<a class="q" data-faq="${f}" title="${(DEFS[f]||'').replace(/"/g,'&quot;')}">?</a>`;
 
     function periodo() { return DATA.periodos ? DATA.periodos[state.per] : null; }
     function campanhas(filtro) { const p=periodo(); if(!p) return []; return p.campanhas.filter(c=>c.gasto>0 && (!filtro||filtro==='todos'||c.funil===filtro)).sort((a,b)=>(a.ativa?0:1)-(b.ativa?0:1) || b.gasto-a.gasto); }
-    function resumo(rows,p) { const g=rows.reduce((s,c)=>s+c.gasto,0),v=rows.reduce((s,c)=>s+c.vendas,0),r=rows.reduce((s,c)=>s+c.receita,0); return {gasto:g,vendas:v,rec:r,roas:g>0?r/g:0,orfas:p?p.orfas:{n:0}}; }
+    function resumo(rows,p,fk) {
+      const g=rows.reduce((s,c)=>s+c.gasto,0),v=rows.reduce((s,c)=>s+c.vendas,0),r=rows.reduce((s,c)=>s+c.receita,0);
+      // breakdown POR FUNIL (mesma conta da funis-dash/Panorama): produto principal x order bumps, pago x org. Distribui por funil.
+      const fv=(p&&p.funil_vendas)?p.funil_vendas:{};
+      const keys=(!fk||fk==='todos')?['pocket','quiz','guia']:(fv[fk]?[fk]:[]);
+      let main=0,pago=0,org=0,bumps=0,pagoRec=0,orgRec=0,recPrinc=0,recBumps=0;
+      keys.forEach(k=>{const t=fv[k];if(!t)return;main+=t.main;pago+=t.pago;org+=t.org;bumps+=t.bumps;pagoRec+=t.pago_receita;orgRec+=t.org_receita;recPrinc+=t.rec_principal;recBumps+=t.rec_bumps;});
+      return {gasto:g,vendas:v,rec:r,roas:g>0?r/g:0,orfas:p?p.orfas:{n:0},main,pago,org,bumps,pagoRec,orgRec,recPrinc,recBumps,roasMidia:g>0?pagoRec/g:0};
+    }
 
     function tabela(rows) {
       if (!rows.length) return `<div class="empty"><div class="big">Nenhuma campanha com gasto nesse período.</div>Troque o período acima, ou este funil está sem verba agora.</div>`;
@@ -343,16 +351,16 @@
         </tr></thead><tbody>${tr}</tbody></table></div>`;
     }
     function kpiStrip(r) {
-      const roasBad=r.roas>0&&r.roas<1.3;
+      const roasBad=r.roasMidia>0&&r.roasMidia<1.3;
       return `<div class="kpis">
         <div class="kpi"><div class="l">Gasto de mídia</div><div class="v num">${money(r.gasto)}</div></div>
-        <div class="kpi"><div class="l">Vendas da mídia</div><div class="v num">${r.vendas} <small>· ${money(r.rec)}</small></div></div>
-        <div class="kpi"><div class="l">ROAS de mídia</div><div class="v num" style="color:${r.roas>=1.8?'var(--green)':r.roas>=1.3?'var(--yellow)':'var(--red)'}">${r.roas?r.roas.toFixed(2):'—'}${roasBad?metaTag('meta 1,8'):''}</div></div>
-        <div class="kpi"><div class="l">Vendas fora da mídia</div><div class="v num">${r.orfas.n}</div></div>
+        <div class="kpi"><div class="l">Produto principal${qb('principal')}</div><div class="v num">${r.main} <small>· pago ${r.pago} · org ${r.org}</small></div></div>
+        <div class="kpi"><div class="l">Order bumps${qb('bumps')}</div><div class="v num">${r.bumps} <small>· ${money(r.recBumps)}</small></div></div>
+        <div class="kpi"><div class="l">ROAS de mídia${qb('roasmidia')}</div><div class="v num" style="color:${r.roasMidia>=1.8?'var(--green)':r.roasMidia>=1.3?'var(--yellow)':'var(--red)'}">${r.roasMidia?r.roasMidia.toFixed(2):'—'}${roasBad?metaTag('meta 1,8'):''}</div></div>
       </div>`;
     }
     function renderGeral() {
-      const p=periodo(), rows=campanhas(fFiltro), r=resumo(rows,p);
+      const p=periodo(), rows=campanhas(fFiltro), r=resumo(rows,p,fFiltro);
       return kpiStrip(r)+`<div class="section">
         <div class="section-header">
           <div><div class="section-title">🚀 Campanhas</div><div class="section-sub">${p?p.since+' → '+p.until:''} · todas com gasto no período</div></div>
@@ -436,7 +444,7 @@
       return header+camps+radar;
     }
     function renderFunil(fkey) {
-      const F=FUNIS[fkey], p=periodo(), rows=campanhas(fkey), r=resumo(rows,p);
+      const F=FUNIS[fkey], p=periodo(), rows=campanhas(fkey), r=resumo(rows,p,fkey);
       const abBlock = fkey==='pocket' ? abPanel(DATA.ab_pocket,'v4',DATA.historico_ab) : (fkey==='guia' ? abPanel(DATA.ab_guia,'v2',null) : '');
       const pm=F.pageMetrics.map(m=>`<div class="pm"><div class="pl">${m.l}${m.faq?qb(m.faq):''}</div><div class="pv ${m.cls}">${m.v}${m.cls==='bad'?metaTag(m.meta):''}</div></div>`).join('');
       const versoes=F.versoes.map(v=>{
