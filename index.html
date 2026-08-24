@@ -1262,7 +1262,7 @@ function setPeriodo(periodo) {
   if (periodo !== 'personalizado') {
     loadData();
     if (activeTab === 'analise') loadBreakdowns();
-    if (activeTab === 'funis') _loadFunisActive();
+    if (activeTab === 'funis') _renderFunisState();
   }
 }
 
@@ -1272,7 +1272,7 @@ function applyCustomPeriod() {
   if (!inicio || !fim) { alert('Selecione as datas'); return; }
   loadData();
   if (activeTab === 'analise') loadBreakdowns();
-  if (activeTab === 'funis') loadFunis();
+  if (activeTab === 'funis') _renderFunisState();
 }
 
 // ─── CACHE (localStorage, TTL 5 min) ────────────────────────────────────────
@@ -1413,16 +1413,29 @@ function gestorPer() {
   return ({ hoje:'hoje', ontem:'ontem', '3dias':'3d', semana:'7d', mes:'mes', personalizado:'mes' })[currentPeriodo] || '7d';
 }
 var _panoData = null;
+var _panoPer = null; // periodo com que o _panoData foi carregado (invalida cache ao trocar)
 function panoFmt(n){ return 'R$ ' + Math.round(n||0).toLocaleString('pt-BR'); }
 function panoMes(since){ try{ var m=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez']; var p=since.split('-'); return m[+p[1]-1]+'/'+p[0]; }catch(e){return '';} }
+function panoDatas(){
+  function dd(off){ var x=new Date(Date.now()-3*3600e3+off*864e5); return x.toISOString().slice(0,10); }
+  var hoje=dd(0);
+  if(currentPeriodo==='hoje') return {since:hoje,until:hoje};
+  if(currentPeriodo==='ontem') return {since:dd(-1),until:dd(-1)};
+  if(currentPeriodo==='3dias') return {since:dd(-2),until:hoje};
+  if(currentPeriodo==='semana') return {since:dd(-6),until:hoje};
+  if(currentPeriodo==='personalizado'){ var i=(document.getElementById('dataInicio')||{}).value, f=(document.getElementById('dataFim')||{}).value; return (i&&f)?{since:i,until:f}:{}; }
+  return {}; // mes = padrao 30d do endpoint (alinhado ao Austin)
+}
+function panoLabel(){ return ({hoje:'hoje',ontem:'ontem','3dias':'últimos 3 dias',semana:'últimos 7 dias',mes:'últimos 30 dias',personalizado:'período personalizado'})[currentPeriodo]||'últimos 30 dias'; }
 function renderPanorama(){
   var el = document.getElementById('funisBody');
   var filtro = currentMacro==='panorama' ? null : currentMacro;
+  if (_panoData && _panoPer !== currentPeriodo) _panoData = null; // trocou período → recarrega
   if (_panoData) { paintPanorama(_panoData, filtro); }
   else { el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:50px"><div class="spinner"></div>carregando…</div>'; }
-  fetch('/api/funis', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({})})
+  fetch('/api/funis', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(panoDatas())})
     .then(function(r){return r.json();})
-    .then(function(j){ if(!j||!j.ok){ if(!currentFunisSub) el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px">não consegui carregar</div>'; return;} _panoData=j; if(!currentFunisSub) paintPanorama(j, currentMacro==='panorama'?null:currentMacro); })
+    .then(function(j){ if(!j||!j.ok){ if(!currentFunisSub) el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px">não consegui carregar</div>'; return;} _panoData=j; _panoPer=currentPeriodo; if(!currentFunisSub) paintPanorama(j, currentMacro==='panorama'?null:currentMacro); })
     .catch(function(){ if(!_panoData && !currentFunisSub) el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px">falha de rede, recarrega</div>'; });
 }
 function paintPanorama(j, filtro){
@@ -1432,7 +1445,7 @@ function paintPanorama(j, filtro){
   var titulo = filtro ? (filtro==='dream'?'🌙 Dream Baby':'🤱 Guia da Pega') : 'Panorama';
   var roasM = hd.roas_midia!=null ? hd.roas_midia.toFixed(2)+'x' : '—';
   var roasF = hd.roas!=null ? hd.roas.toFixed(2)+'x' : '—';
-  var h='<div class="pano-hero"><div class="t">'+titulo+' · '+(j.periodo.label||panoMes(j.periodo.since))+'</div><div class="pano-kpis">'
+  var h='<div class="pano-hero"><div class="t">'+titulo+' · '+panoLabel()+'</div><div class="pano-kpis">'
     +'<div class="pano-kpi"><div class="v">'+hd.vendas+'</div><div class="l">vendas</div></div>'
     +'<div class="pano-kpi"><div class="v">'+panoFmt(hd.receita)+'</div><div class="l">faturamento'+(hd.bumps?' (c/ '+hd.bumps+' bumps)':'')+'</div></div>'
     +'<div class="pano-kpi"><div class="v" style="color:#4ade80">'+roasM+'</div><div class="l">ROAS de mídia</div></div>'
@@ -1502,9 +1515,10 @@ function renderFunilPano(key){
     }
     el.innerHTML='<div id="panoramaBody"><div class="section" style="margin-bottom:16px"><div class="section-header"><div class="section-title">'+f.nome+'</div></div>'+kpis+origem+flow+'</div></div>';
   }
+  if(_panoData && _panoPer!==currentPeriodo) _panoData=null;
   if(_panoData) paint(_panoData);
   else { el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px"><div class="spinner"></div>carregando…</div>';
-    fetch('/api/funis',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}).then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){_panoData=j; if(currentFunisSub===key) paint(j);} }).catch(function(){ el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px">falha ao carregar</div>'; }); }
+    fetch('/api/funis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(panoDatas())}).then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){_panoData=j; _panoPer=currentPeriodo; if(currentFunisSub===key) paint(j);} }).catch(function(){ el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px">falha ao carregar</div>'; }); }
 }
 function switchTab(name) {
   activeTab = name;
