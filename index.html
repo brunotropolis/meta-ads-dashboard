@@ -1213,6 +1213,9 @@
           <button id="fsubGuia" class="fsub-btn" onclick="switchFunisSub('guia')">🤱 Guia da Pega</button>
           <button id="fsubPocket" class="fsub-btn" onclick="switchFunisSub('pocket')">🌙 Dream Baby Pocket</button>
           <button id="fsubMet" class="fsub-btn" onclick="switchFunisSub('meteorico')">💬 Meteórico (WhatsApp)</button>
+          <button id="fsubEbook" class="fsub-btn" onclick="switchFunisSub('ebook')">📕 Ebook amamentação</button>
+          <button id="fsubMatCalo" class="fsub-btn" onclick="switchFunisSub('mat_calo')">📰 Matéria Calo</button>
+          <button id="fsubMatAma" class="fsub-btn" onclick="switchFunisSub('mat_ama')">📰 Matéria Amamentação</button>
         </div>
       </div>
       <div id="funisBody" style="padding:4px">
@@ -1460,6 +1463,45 @@ function paintPanorama(j){
   h+='<div style="text-align:center;color:var(--muted);font-size:11.5px;margin-top:6px">clique num funil pra ver o detalhe · ROAS = faturamento Greenn ÷ gasto Meta</div>';
   el.innerHTML='<div id="panoramaBody">'+h+'</div>';
 }
+function renderFunilPano(key){
+  var el=document.getElementById('funisBody');
+  function paint(j){
+    var f=null; ['dream','guia'].forEach(function(m){var x=j.macros[m].subs.find(function(y){return y.key===key});if(x)f=x;});
+    if(!f){ el.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted)">Funil não encontrado.</div>'; return; }
+    var roasTxt = f.roas!=null ? f.roas.toFixed(2)+'x' : (f.vendas>0?'orgânico':'—');
+    var kpis='<div class="finance-grid funis-kpi-grid" style="padding:4px">'
+      +'<div class="finance-card fc-red"><span class="fc-icon">📢</span><div class="fc-label">Investido Meta</div><div class="fc-value">R$ '+fmt(f.gasto)+'</div></div>'
+      +'<div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento</div><div class="fc-value">R$ '+fmt(f.receita)+'</div></div>'
+      +'<div class="finance-card fc-cyan"><span class="fc-icon">🛒</span><div class="fc-label">Vendas</div><div class="fc-value">'+f.vendas+'</div></div>'
+      +'<div class="finance-card fc-yellow"><span class="fc-icon">📊</span><div class="fc-label">ROAS real</div><div class="fc-value">'+roasTxt+'</div></div>'
+      +'</div>';
+    var origem='<div style="padding:8px 6px;color:var(--muted);font-size:13px">Pago <b style="color:var(--text,#fff)">'+f.pago+'</b> · Orgânico <b style="color:var(--text,#fff)">'+f.org+'</b>'+(f.vendas?(' · Ticket médio R$ '+fmt(f.receita/f.vendas)):'')+'</div>';
+    var flow='';
+    if(key==='ebook'){
+      if(f.sessoes_3d){
+        flow=_funilSub('🔻 Funil (Clarity · últimos 3 dias) — 100% orgânico')
+          +'<div class="funil-flow" style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">'
+          +_funilStep('Visitas na página', f.sessoes_3d)+_arrow()
+          +_funilStep('Comprou', f.vendas_3d||0, 'conversão '+String(f.conversao_3d).replace('.',',')+'%')
+          +'</div><div style="padding:6px;color:var(--muted);font-size:12.5px">Saúde da página (Clarity): scroll médio <b style="color:var(--text,#fff)">'+(f.scroll_medio!=null?f.scroll_medio+'%':'—')+'</b> · dead-click <b style="color:var(--text,#fff)">'+(f.dead_pct!=null?f.dead_pct+'%':'—')+'</b></div>';
+      } else { flow='<div style="padding:14px;color:var(--muted);font-size:13px">Sem dados do Clarity ainda pra esse funil.</div>'; }
+    } else {
+      var F=f.flow||{};
+      if(F.tem){
+        flow=_funilSub('🔻 Funil (tráfego pago) — ⚠️ passo checkout não é medido (pixel do Guia restrito)')
+          +'<div class="funil-flow" style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">'
+          +_funilStep('Cliques no anúncio', F.cliques||0)+_arrow()
+          +_funilStep('Entrou na página', F.visitou||0, F.connect_rate!=null?('Connect '+F.connect_rate+'%'):'')+_arrow()
+          +_funilStep('Comprou', F.comprou||0, F.visitou?((+(F.comprou/F.visitou*100).toFixed(1))+'% da página'):'')
+          +'</div>';
+      } else { flow='<div style="padding:14px;color:var(--muted);font-size:13px">Sem tráfego pago no período nesse funil.</div>'; }
+    }
+    el.innerHTML='<div id="panoramaBody"><div class="section" style="margin-bottom:16px"><div class="section-header"><div class="section-title">'+f.nome+'</div></div>'+kpis+origem+flow+'</div></div>';
+  }
+  if(_panoData) paint(_panoData);
+  else { el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px"><div class="spinner"></div>carregando…</div>';
+    fetch('/api/funis',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}).then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){_panoData=j; if(currentFunisSub===key) paint(j);} }).catch(function(){ el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px">falha ao carregar</div>'; }); }
+}
 function switchTab(name) {
   activeTab = name;
   const names = ['overview','funis','campanhas','vendas','reembolsos','analise','gestor','banco'];
@@ -1570,12 +1612,9 @@ async function renderReembolsos(){
 let currentFunisSub = 'panorama';
 function switchFunisSub(which) {
   currentFunisSub = which;
-  const bpan = document.getElementById('fsubPano'), bq = document.getElementById('fsubQuiz'), bm = document.getElementById('fsubMet'), bg = document.getElementById('fsubGuia'), bp = document.getElementById('fsubPocket');
-  if (bpan) bpan.classList.toggle('active', which === 'panorama');
-  if (bq) bq.classList.toggle('active', which === 'quiz');
-  if (bg) bg.classList.toggle('active', which === 'guia');
-  if (bp) bp.classList.toggle('active', which === 'pocket');
-  if (bm) bm.classList.toggle('active', which === 'meteorico');
+  ['Pano','Quiz','Guia','Pocket','Met','Ebook','MatCalo','MatAma'].forEach(function(id){ var el=document.getElementById('fsub'+id); if(el) el.classList.remove('active'); });
+  var mapa={panorama:'Pano',quiz:'Quiz',guia:'Guia',pocket:'Pocket',meteorico:'Met',ebook:'Ebook',mat_calo:'MatCalo',mat_ama:'MatAma'};
+  var b=document.getElementById('fsub'+(mapa[which]||'')); if(b) b.classList.add('active');
   _loadFunisActive();
 }
 function _loadFunisActive() {
@@ -1583,6 +1622,7 @@ function _loadFunisActive() {
   else if (currentFunisSub === 'meteorico') loadMeteorico();
   else if (currentFunisSub === 'guia') loadFunisGuia();
   else if (currentFunisSub === 'pocket') loadFunisPocket();
+  else if (currentFunisSub === 'ebook' || currentFunisSub === 'mat_calo' || currentFunisSub === 'mat_ama') renderFunilPano(currentFunisSub);
   else loadFunis();
 }
 async function loadMeteorico() {
