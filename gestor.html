@@ -437,7 +437,7 @@
           <thead><tr style="color:var(--muted);font-size:11px"><th style="text-align:left;padding:3px 8px">dia</th><th style="text-align:right;padding:3px 8px;color:${CB}">base conv (vendas)</th><th style="text-align:right;padding:3px 8px;color:${CV}">v3 conv (vendas)</th><th style="padding:3px 8px">dia vencedor</th></tr></thead>
           <tbody>${rowsTl}</tbody></table>`;
       }
-      return `<div class="section"><div class="section-header"><div><div class="section-title">🧪 Teste A/B ao vivo — base vs /${vkey}</div><div class="section-sub">split 50/50 na borda (Cloudflare) · janela 3 dias · a retenção é quanto da página a pessoa desce em média</div></div></div>
+      return `<div class="section"><div class="section-header"><div><div class="section-title">🧪 Teste A/B ao vivo — base vs /${vkey}</div><div class="section-sub">split 50/50 na borda (Cloudflare) · ${esc(ab.janela||'janela 3 dias')} · a retenção é quanto da página a pessoa desce em média</div></div></div>
         <div class="section-body">
           <div style="display:flex;gap:12px;flex-wrap:wrap">${card('Base (atual)',B,CB,amostraOk&&cB>cV&&!aprovado)}${card('/'+vkey+' (desafiante)',V,CV,aprovado)}</div>
           <div style="margin-top:12px;padding:10px 12px;background:${vcor}18;border:1px solid ${vcor}44;border-radius:12px;font-size:13px"><b style="color:${vcor}">Veredito:</b> ${veredito}<br><span style="font-size:11px;color:var(--muted)">Regra (19/Ago): valida por PRAZO (~4-5 dias) + piso de ${300} sessões/lado — não mais só "30 sessões". Aprova a troca se o desafiante <b>iguala ou supera a base</b> em conversão + retenção. Meta-estrela: 30% de ida-pro-checkout (medição por variante em breve) — mas <b>não precisa bater 30% pra aprovar</b>.</span></div>
