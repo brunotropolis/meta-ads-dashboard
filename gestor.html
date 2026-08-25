@@ -485,7 +485,7 @@
       <div class="section" style="${bPag}"><div class="section-header"><div><div class="section-title">🔮 Página de venda — ${F.page}</div><div class="section-sub">comportamento (Clarity) + auditoria</div></div></div><div class="section-body"><div class="page-metrics">${pm}</div></div></div>
       <div class="section" style="${bVer}"><div class="section-header"><div><div class="section-title">🧪 Histórico da página</div><div class="section-sub">cada versão nomeada, com o que conversamos e o que ajustamos</div></div></div><div class="section-body">${versoes}</div></div>`;
     }
-    const SELO_ESTEIRA = { campeao:{t:'🏆 Campeão',c:'#4ade80',bg:'rgba(74,222,128,.14)'}, foi_bem:{t:'✅ Foi bem',c:'#60a5fa',bg:'rgba(96,165,250,.14)'}, cortar:{t:'✂️ Cortar',c:'#f87171',bg:'rgba(248,113,113,.14)'}, aquecendo:{t:'🔥 Aquecendo',c:'#fbbf24',bg:'rgba(251,191,36,.14)'} };
+    const SELO_ESTEIRA = { campeao:{t:'🏆 Campeão',c:'#4ade80',bg:'rgba(74,222,128,.14)'}, foi_bem:{t:'✅ Foi bem',c:'#60a5fa',bg:'rgba(96,165,250,.14)'}, observar:{t:'⏳ Observar',c:'#fb923c',bg:'rgba(251,146,60,.14)'}, cortar:{t:'✂️ Cortar',c:'#f87171',bg:'rgba(248,113,113,.14)'}, aquecendo:{t:'🔥 Aquecendo',c:'#fbbf24',bg:'rgba(251,191,36,.14)'} };
     function _esteiraLinha(c){ const s=SELO_ESTEIRA[c.selo]||SELO_ESTEIRA.cortar; return `<tr style="border-bottom:1px solid #1e1e26">
       <td style="padding:7px 10px"><span style="font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;background:${s.bg};color:${s.c};white-space:nowrap">${s.t}</span></td>
       <td style="padding:7px 10px;font-size:13px">${esc(c.nome)}</td>
@@ -498,9 +498,10 @@
         <tbody>${arr.map(_esteiraLinha).join('')}</tbody></table></div>`; }
     // Esteira de criativos DESTE funil: Ativos (rodando) em cima, Cortados/pausados embaixo, e a Fila (pra testar)
     function esteiraSecao(fk){
-      const lst = (DATA.esteira||{})[fk] || [];
+      const pe = (DATA.periodos&&DATA.periodos[state.per]&&DATA.periodos[state.per].esteira) || DATA.esteira || {};
+      const lst = pe[fk] || [];
       const fila = (DATA.esteira_fila||{})[fk] || [];
-      const ord = {campeao:0,foi_bem:1,aquecendo:2,cortar:3};
+      const ord = {campeao:0,foi_bem:1,observar:2,aquecendo:3,cortar:4};
       const srt = a => a.slice().sort((x,y)=>(ord[x.selo]-ord[y.selo])||(y.gasto-x.gasto)); // foi bem/campeão em cima, cortar no fim
       const ativos = srt(lst.filter(c=>c.ativo));
       const parados = srt(lst.filter(c=>!c.ativo));
@@ -509,7 +510,7 @@
       const boxCort='background:rgba(248,113,113,.05);border-left:3px solid rgba(248,113,113,.5);border-radius:10px';
       const boxFila='background:rgba(96,165,250,.06);border-left:3px solid rgba(96,165,250,.5);border-radius:10px';
       return `
-      <div class="section" style="${boxAtivo}"><div class="section-header"><div><div class="section-title">🟢 Ativos (rodando agora)</div><div class="section-sub">selo pela venda REAL da Greenn (14d). 🏆 campeão ≥1,8 · ✅ foi bem ≥1,3 · ✂️ cortar &lt;1,3 ou R$50 sem venda · 🔥 aquecendo &lt;R$30 (ROAS ainda não confiável)</div></div></div><div class="section-body" style="padding:0">${_esteiraTabela(ativos)}</div></div>
+      <div class="section" style="${boxAtivo}"><div class="section-header"><div><div class="section-title">🟢 Ativos (rodando agora) · ${state.per}</div><div class="section-sub">venda REAL da Greenn NO PERÍODO selecionado (muda com o filtro lá em cima). 🏆 campeão ≥1,8 · ✅ foi bem ≥1,3 · ⏳ observar (ativo abaixo da meta — ainda pode virar, não corta) · ✂️ cortar (só o R$50 sem venda) · 🔥 aquecendo &lt;R$30</div></div></div><div class="section-body" style="padding:0">${_esteiraTabela(ativos)}</div></div>
       <div class="section" style="${boxCort}"><div class="section-header"><div><div class="section-title">⏸️ Já rodaram / cortados</div><div class="section-sub">pausados — o que já passou pela esteira (foi bem em cima, cortar embaixo)</div></div></div><div class="section-body" style="padding:0">${_esteiraTabela(parados)}</div></div>
       <div class="section" style="${boxFila}"><div class="section-header"><div><div class="section-title">🎬 Na fila — ${fila.length} pra testar</div><div class="section-sub">criativos prontos na pasta que ainda não rodaram (fluxo de teste a cada 4 dias: sobe os novos, depois revive os bons)</div></div></div><div class="section-body" style="padding:0">${filaChips}</div></div>`;
     }
