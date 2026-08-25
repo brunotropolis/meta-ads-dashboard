@@ -210,7 +210,6 @@
         <div class="subtab" data-tab="guia">🤱 Guia da Pega</div>
         <div class="subtab" data-tab="mat_calo">📰 Matéria Calo</div>
         <div class="subtab" data-tab="mat_ama">📰 Matéria Amam.</div>
-        <div class="subtab" data-tab="esteira">🔁 Esteira de Criativos</div>
         <div class="subtab" data-tab="engajamento">📣 Engajamento</div>
         <div class="subtab" data-tab="banco">📊 Base &amp; Métricas</div>
       </div>
@@ -474,38 +473,37 @@
       }).join('');
       return kpiStrip(r)+`
       <div class="section"><div class="section-header"><div><div class="section-title">🚀 Campanhas do funil</div><div class="section-sub">${p?p.since+' → '+p.until:''}</div></div></div><div class="section-body" style="padding:0">${tabela(rows)}</div></div>
+      ${esteiraSecao(fkey)}
       ${abBlock}
       <div class="section"><div class="section-header"><div><div class="section-title">📜 Histórico de mudanças</div><div class="section-sub">cada aumento/pausa que o piloto fez aqui — quando e quanto · e o que está agendado</div></div></div><div class="section-body" id="histBox"><div style="color:var(--muted);font-size:12.5px;padding:6px 2px">carregando…</div></div></div>
       <div class="section"><div class="section-header"><div><div class="section-title">🧠 Estratégias tentadas</div><div class="section-sub">o que o Austin e o Sherlock já propuseram aqui · você marca o resultado</div></div></div><div class="section-body" id="estrBox"><div style="color:var(--muted);font-size:12.5px;padding:6px 2px">carregando…</div></div></div>
       <div class="section"><div class="section-header"><div><div class="section-title">🔮 Página de venda — ${F.page}</div><div class="section-sub">comportamento (Clarity) + auditoria</div></div></div><div class="section-body"><div class="page-metrics">${pm}</div></div></div>
       <div class="section"><div class="section-header"><div><div class="section-title">🧪 Histórico da página</div><div class="section-sub">cada versão nomeada, com o que conversamos e o que ajustamos</div></div></div><div class="section-body">${versoes}</div></div>`;
     }
-    function renderEsteira() {
-      const est = DATA.esteira || {};
-      const FUNORD = ['pocket','quiz','guia','mat_calo','mat_ama'];
-      const NOMES = {pocket:'👶 Dream Baby Pocket', quiz:'🎯 Quiz Dream Baby', guia:'🤱 Guia da Pega', mat_calo:'📰 Matéria Calo', mat_ama:'📰 Matéria Amamentação'};
-      const SELO = { campeao:{t:'🏆 Campeão',c:'#4ade80',bg:'rgba(74,222,128,.14)'}, foi_bem:{t:'✅ Foi bem',c:'#60a5fa',bg:'rgba(96,165,250,.14)'}, cortar:{t:'✂️ Cortar',c:'#f87171',bg:'rgba(248,113,113,.14)'}, aquecendo:{t:'🔥 Aquecendo',c:'#fbbf24',bg:'rgba(251,191,36,.14)'} };
+    const SELO_ESTEIRA = { campeao:{t:'🏆 Campeão',c:'#4ade80',bg:'rgba(74,222,128,.14)'}, foi_bem:{t:'✅ Foi bem',c:'#60a5fa',bg:'rgba(96,165,250,.14)'}, cortar:{t:'✂️ Cortar',c:'#f87171',bg:'rgba(248,113,113,.14)'}, aquecendo:{t:'🔥 Aquecendo',c:'#fbbf24',bg:'rgba(251,191,36,.14)'} };
+    function _esteiraLinha(c){ const s=SELO_ESTEIRA[c.selo]||SELO_ESTEIRA.cortar; return `<tr style="border-bottom:1px solid #1e1e26">
+      <td style="padding:7px 10px"><span style="font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;background:${s.bg};color:${s.c};white-space:nowrap">${s.t}</span></td>
+      <td style="padding:7px 10px;font-size:13px">${esc(c.nome)}</td>
+      <td style="padding:7px 10px;text-align:right;font-size:12px;color:#9aa">${money(c.gasto)}</td>
+      <td style="padding:7px 10px;text-align:right;font-size:12px">${c.vendas} <small style="color:#9aa">${money(c.receita)}</small></td>
+      <td style="padding:7px 10px;text-align:right;font-weight:700;font-size:13px;color:${c.roas>=1.8?'#4ade80':c.roas>=1.3?'#fbbf24':'#f87171'}">${c.roas?c.roas.toFixed(2)+'x':'—'}</td></tr>`; }
+    function _esteiraTabela(arr){ if(!arr.length) return '<div style="padding:12px 10px;color:var(--muted);font-size:12.5px">nenhum aqui ainda.</div>';
+      return `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
+        <thead><tr style="color:#9aa;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px"><th style="text-align:left;padding:6px 10px">selo</th><th style="text-align:left;padding:6px 10px">criativo</th><th style="text-align:right;padding:6px 10px">gasto</th><th style="text-align:right;padding:6px 10px">vendas</th><th style="text-align:right;padding:6px 10px">ROAS real</th></tr></thead>
+        <tbody>${arr.map(_esteiraLinha).join('')}</tbody></table></div>`; }
+    // Esteira de criativos DESTE funil: Ativos (rodando) em cima, Cortados/pausados embaixo, e a Fila (pra testar)
+    function esteiraSecao(fk){
+      const lst = (DATA.esteira||{})[fk] || [];
+      const fila = (DATA.esteira_fila||{})[fk] || [];
       const ord = {campeao:0,foi_bem:1,aquecendo:2,cortar:3};
-      const secs = FUNORD.filter(fk=>(est[fk]||[]).length).map(fk=>{
-        const lst = est[fk].slice().sort((a,b)=>(ord[a.selo]-ord[b.selo])||(b.gasto-a.gasto));
-        const cont={campeao:0,foi_bem:0,cortar:0,aquecendo:0}; est[fk].forEach(c=>cont[c.selo]=(cont[c.selo]||0)+1);
-        const rows = lst.map(c=>{const s=SELO[c.selo]||SELO.cortar; return `<tr style="border-bottom:1px solid #1e1e26">
-          <td style="padding:7px 10px"><span style="font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;background:${s.bg};color:${s.c};white-space:nowrap">${s.t}</span></td>
-          <td style="padding:7px 10px;font-size:13px">${esc(c.nome)}${c.ativo?' <span style="font-size:9px;color:#4ade80">●ativo</span>':''}</td>
-          <td style="padding:7px 10px;text-align:right;font-size:12px;color:#9aa">${money(c.gasto)}</td>
-          <td style="padding:7px 10px;text-align:right;font-size:12px">${c.vendas} <small style="color:#9aa">${money(c.receita)}</small></td>
-          <td style="padding:7px 10px;text-align:right;font-weight:700;font-size:13px;color:${c.roas>=1.8?'#4ade80':c.roas>=1.3?'#fbbf24':'#f87171'}">${c.roas?c.roas.toFixed(2)+'x':'—'}</td></tr>`;}).join('');
-        return `<div class="section" style="margin-bottom:16px">
-          <div class="section-header"><div><div class="section-title">${NOMES[fk]||fk}</div><div class="section-sub">🏆 ${cont.campeao} · ✅ ${cont.foi_bem} · 🔥 ${cont.aquecendo} · ✂️ ${cont.cortar}</div></div></div>
-          <div class="section-body" style="padding:0"><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
-          <thead><tr style="color:#9aa;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px"><th style="text-align:left;padding:6px 10px">selo</th><th style="text-align:left;padding:6px 10px">criativo</th><th style="text-align:right;padding:6px 10px">gasto</th><th style="text-align:right;padding:6px 10px">vendas</th><th style="text-align:right;padding:6px 10px">ROAS real</th></tr></thead>
-          <tbody>${rows}</tbody></table></div></div></div>`;
-      }).join('');
-      const intro = `<div class="section" style="margin-bottom:14px;background:rgba(96,165,250,.05)"><div class="section-body" style="font-size:12.5px;color:var(--muted);line-height:1.7">
-        <b style="color:var(--text)">🔁 Fluxo de criativos — o que já rodou, por funil.</b> Selo pela venda REAL da Greenn (casada por utm_content), últimos 60 dias:
-        <b style="color:#4ade80">🏆 Campeão</b> ROAS ≥ 1,8 · <b style="color:#60a5fa">✅ Foi bem</b> ≥ 1,3 · <b style="color:#f87171">✂️ Cortar</b> &lt; 1,3 ou R$50 sem venda · <b style="color:#fbbf24">🔥 Aquecendo</b> &lt; R$30 gasto.
-        <br><span style="font-size:11.5px">As campanhas novas (matérias + esteira Pocket, agendadas 25/08 05h) aparecem aqui depois que rodarem.</span></div></div>`;
-      return intro + (secs || '<div class="empty" style="padding:40px">Sem criativos com gasto ainda. Volta depois que as campanhas rodarem.</div>');
+      const srt = a => a.slice().sort((x,y)=>(ord[x.selo]-ord[y.selo])||(y.gasto-x.gasto)); // foi bem/campeão em cima, cortar no fim
+      const ativos = srt(lst.filter(c=>c.ativo));
+      const parados = srt(lst.filter(c=>!c.ativo));
+      const filaChips = fila.length ? `<div style="display:flex;flex-wrap:wrap;gap:6px;padding:10px">${fila.map(f=>`<span style="font-size:11.5px;padding:3px 9px;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid #2a2a34">${f.tipo==='imagem'?'🖼️':'🎬'} ${esc(f.nome)}</span>`).join('')}</div>` : '<div style="padding:12px 10px;color:var(--muted);font-size:12.5px">sem criativos na pasta pra esse funil.</div>';
+      return `
+      <div class="section" style="margin-top:16px"><div class="section-header"><div><div class="section-title">🔁 Esteira — Ativos (rodando agora)</div><div class="section-sub">selo pela venda REAL da Greenn (60d). 🏆 campeão ≥1,8 · ✅ foi bem ≥1,3 · ✂️ cortar &lt;1,3 ou R$50 sem venda · 🔥 aquecendo &lt;R$30</div></div></div><div class="section-body" style="padding:0">${_esteiraTabela(ativos)}</div></div>
+      <div class="section"><div class="section-header"><div><div class="section-title">⏸️ Já rodaram / cortados</div><div class="section-sub">pausados — o que já passou pela esteira (foi bem em cima, cortar embaixo)</div></div></div><div class="section-body" style="padding:0">${_esteiraTabela(parados)}</div></div>
+      <div class="section"><div class="section-header"><div><div class="section-title">🎬 Na fila — ${fila.length} pra testar</div><div class="section-sub">criativos prontos na pasta que ainda não rodaram (fluxo de teste a cada 4 dias: sobe os novos, depois revive os bons)</div></div></div><div class="section-body" style="padding:0">${filaChips}</div></div>`;
     }
     const BASELINE = {
       pocket:{ nome:'Dream Baby Pocket', icon:'👶', linhas:[
@@ -603,7 +601,7 @@
     function render() {
       const view=document.getElementById('view');
       if(!DATA.periodos){ view.innerHTML='<div class="empty" style="padding:60px">Sem dados. (snapshot não carregou)<br><small style="opacity:.6">'+(window.__snapErr?('motivo: '+window.__snapErr):'sem erro reportado')+'</small></div>'; return; }
-      view.innerHTML = state.tab==='geral'?renderGeral():state.tab==='banco'?renderBanco():state.tab==='engajamento'?renderEngajamento():state.tab==='esteira'?renderEsteira():renderFunil(state.tab);
+      view.innerHTML = state.tab==='geral'?renderGeral():state.tab==='banco'?renderBanco():state.tab==='engajamento'?renderEngajamento():renderFunil(state.tab);
       if(['pocket','quiz','guia','mat_calo','mat_ama'].includes(state.tab)){ loadEstrategias(state.tab); loadHistorico(state.tab); }
       const p=periodo();
       document.getElementById('perHint').textContent = p?(p.since==p.until?p.since:p.dias+' dias'):'';
