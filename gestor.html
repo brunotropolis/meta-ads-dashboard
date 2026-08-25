@@ -390,8 +390,8 @@
         <div class="section-body" style="padding:0">${tabela(rows)}</div></div>`;
     }
     function abPanel(ab, vkey, hist) {
-      if (!ab || !ab.base || !ab[vkey]) return '';
-      const B = ab.base, V = ab[vkey], CB = '#a78bfa', CV = '#34d399';
+      if (!ab || !ab.base || !(ab[vkey]||ab.v4)) return '';
+      const B = ab.base, V = ab[vkey]||ab.v4, CB = '#a78bfa', CV = '#34d399'; // .v4 = slot interno do desafiante atual (/curta)
       const pct = n => (n==null?'—':(+n).toFixed(2).replace('.',',')+'%');
       const retMsg = s => s==null?'—':(s>=45?'passa da metade':s>=30?'chega ~1/3 da página':s>=20?'chega ~1/4 da página':'para no topo ('+Math.round(s)+'%)');
       // VALIDAÇÃO (19/Ago): prazo por DIAS + piso de amostra (não mais "30 sessões"). Aprova a troca se o
@@ -460,7 +460,9 @@
     }
     function renderFunil(fkey) {
       const F=FUNIS[fkey], p=periodo(), rows=campanhas(fkey), r=resumo(rows,p,fkey);
-      const abBlock = fkey==='pocket' ? abPanel(DATA.ab_pocket,'v4',DATA.historico_ab) : (fkey==='guia' ? abPanel(DATA.ab_guia,'v2',null) : '');
+      const abBlock = fkey==='pocket' ? abPanel(DATA.ab_pocket,'curta',DATA.historico_ab) : (fkey==='guia' ? abPanel(DATA.ab_guia,'v2',null) : '');
+      const arq=(DATA.ab_arquivo||[]).filter(a=>a.funil===fkey);
+      const arqBlock = arq.length ? `<div class="section"><div class="section-header"><div><div class="section-title">📚 Versões arquivadas (livro-razão)</div><div class="section-sub">testes de página já encerrados — o resultado congelado de quem não venceu</div></div></div><div class="section-body" style="padding:0"><table><thead><tr><th class="l">Versão</th><th>Veredito</th><th>Conv. desafiante</th><th>Conv. base</th><th>Amostra</th><th>Arquivada</th></tr></thead><tbody>`+arq.map(a=>`<tr><td class="l"><b>/${esc(a.versao)}</b> <small style="color:var(--muted)">${esc(a.apelido||'')}</small></td><td><span style="color:${a.veredito==='perdeu'?'var(--red)':'var(--green)'}">${a.veredito==='perdeu'?'❌ perdeu':'✅ '+esc(a.veredito)}</span></td><td style="color:#34d399">${a.des_conv!=null?a.des_conv+'%':'—'} <small style="color:var(--muted)">(${a.des_vendas}v/${a.des_sessoes}s)</small></td><td style="color:#a78bfa">${a.base_conv!=null?a.base_conv+'%':'—'} <small style="color:var(--muted)">(${a.base_vendas}v/${a.base_sessoes}s)</small></td><td style="color:var(--muted)">${esc(a.janela||'')}</td><td style="color:var(--muted)">${a.arquivado_em||''}</td></tr>`).join('')+`</tbody></table></div></div>` : '';
       const pm=F.pageMetrics.map(m=>`<div class="pm"><div class="pl">${m.l}${m.faq?qb(m.faq):''}</div><div class="pv ${m.cls}">${m.v}${m.cls==='bad'?metaTag(m.meta):''}</div></div>`).join('');
       const versoes=F.versoes.map(v=>{
         const talk=v.conversamos.map(t=>`<div class="talk">${t}</div>`).join('');
@@ -479,6 +481,7 @@
       <div class="section" style="${bCamp}"><div class="section-header"><div><div class="section-title">🚀 Campanhas do funil</div><div class="section-sub">${p?p.since+' → '+p.until:''}</div></div></div><div class="section-body" style="padding:0">${tabela(rows)}</div></div>
       ${esteiraSecao(fkey)}
       ${abBlock}
+      ${arqBlock}
       <div class="section" style="${bHist}"><div class="section-header"><div><div class="section-title">📜 Histórico de mudanças</div><div class="section-sub">cada aumento/pausa que o piloto fez aqui — quando e quanto · e o que está agendado</div></div></div><div class="section-body" id="histBox"><div style="color:var(--muted);font-size:12.5px;padding:6px 2px">carregando…</div></div></div>
       <div class="section" style="${bEstr}"><div class="section-header"><div><div class="section-title">🧠 Estratégias tentadas</div><div class="section-sub">o que o Austin e o Sherlock já propuseram aqui · você marca o resultado</div></div></div><div class="section-body" id="estrBox"><div style="color:var(--muted);font-size:12.5px;padding:6px 2px">carregando…</div></div></div>
       <div class="section" style="${bPag}"><div class="section-header"><div><div class="section-title">🔮 Página de venda — ${F.page}</div><div class="section-sub">comportamento (Clarity) + auditoria</div></div></div><div class="section-body"><div class="page-metrics">${pm}</div></div></div>
