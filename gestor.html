@@ -471,14 +471,19 @@
           <div class="ver-body"><div class="ver-col"><h4>💬 O que conversamos</h4>${talk}</div><div class="ver-col"><h4>📐 O que ajustamos</h4>${adj}</div></div>
         </div>`;
       }).join('');
+      const bCamp='background:rgba(168,85,247,.045);border-left:3px solid rgba(168,85,247,.45);border-radius:10px';
+      const bHist='background:rgba(251,191,36,.045);border-left:3px solid rgba(251,191,36,.45);border-radius:10px';
+      const bEstr='background:rgba(45,212,191,.045);border-left:3px solid rgba(45,212,191,.45);border-radius:10px';
+      const bPag='background:rgba(34,211,238,.045);border-left:3px solid rgba(34,211,238,.45);border-radius:10px';
+      const bVer='background:rgba(148,163,184,.04);border-left:3px solid rgba(148,163,184,.4);border-radius:10px';
       return kpiStrip(r)+`
-      <div class="section"><div class="section-header"><div><div class="section-title">🚀 Campanhas do funil</div><div class="section-sub">${p?p.since+' → '+p.until:''}</div></div></div><div class="section-body" style="padding:0">${tabela(rows)}</div></div>
+      <div class="section" style="${bCamp}"><div class="section-header"><div><div class="section-title">🚀 Campanhas do funil</div><div class="section-sub">${p?p.since+' → '+p.until:''}</div></div></div><div class="section-body" style="padding:0">${tabela(rows)}</div></div>
       ${esteiraSecao(fkey)}
       ${abBlock}
-      <div class="section"><div class="section-header"><div><div class="section-title">📜 Histórico de mudanças</div><div class="section-sub">cada aumento/pausa que o piloto fez aqui — quando e quanto · e o que está agendado</div></div></div><div class="section-body" id="histBox"><div style="color:var(--muted);font-size:12.5px;padding:6px 2px">carregando…</div></div></div>
-      <div class="section"><div class="section-header"><div><div class="section-title">🧠 Estratégias tentadas</div><div class="section-sub">o que o Austin e o Sherlock já propuseram aqui · você marca o resultado</div></div></div><div class="section-body" id="estrBox"><div style="color:var(--muted);font-size:12.5px;padding:6px 2px">carregando…</div></div></div>
-      <div class="section"><div class="section-header"><div><div class="section-title">🔮 Página de venda — ${F.page}</div><div class="section-sub">comportamento (Clarity) + auditoria</div></div></div><div class="section-body"><div class="page-metrics">${pm}</div></div></div>
-      <div class="section"><div class="section-header"><div><div class="section-title">🧪 Histórico da página</div><div class="section-sub">cada versão nomeada, com o que conversamos e o que ajustamos</div></div></div><div class="section-body">${versoes}</div></div>`;
+      <div class="section" style="${bHist}"><div class="section-header"><div><div class="section-title">📜 Histórico de mudanças</div><div class="section-sub">cada aumento/pausa que o piloto fez aqui — quando e quanto · e o que está agendado</div></div></div><div class="section-body" id="histBox"><div style="color:var(--muted);font-size:12.5px;padding:6px 2px">carregando…</div></div></div>
+      <div class="section" style="${bEstr}"><div class="section-header"><div><div class="section-title">🧠 Estratégias tentadas</div><div class="section-sub">o que o Austin e o Sherlock já propuseram aqui · você marca o resultado</div></div></div><div class="section-body" id="estrBox"><div style="color:var(--muted);font-size:12.5px;padding:6px 2px">carregando…</div></div></div>
+      <div class="section" style="${bPag}"><div class="section-header"><div><div class="section-title">🔮 Página de venda — ${F.page}</div><div class="section-sub">comportamento (Clarity) + auditoria</div></div></div><div class="section-body"><div class="page-metrics">${pm}</div></div></div>
+      <div class="section" style="${bVer}"><div class="section-header"><div><div class="section-title">🧪 Histórico da página</div><div class="section-sub">cada versão nomeada, com o que conversamos e o que ajustamos</div></div></div><div class="section-body">${versoes}</div></div>`;
     }
     const SELO_ESTEIRA = { campeao:{t:'🏆 Campeão',c:'#4ade80',bg:'rgba(74,222,128,.14)'}, foi_bem:{t:'✅ Foi bem',c:'#60a5fa',bg:'rgba(96,165,250,.14)'}, cortar:{t:'✂️ Cortar',c:'#f87171',bg:'rgba(248,113,113,.14)'}, aquecendo:{t:'🔥 Aquecendo',c:'#fbbf24',bg:'rgba(251,191,36,.14)'} };
     function _esteiraLinha(c){ const s=SELO_ESTEIRA[c.selo]||SELO_ESTEIRA.cortar; return `<tr style="border-bottom:1px solid #1e1e26">
@@ -486,7 +491,7 @@
       <td style="padding:7px 10px;font-size:13px">${esc(c.nome)}</td>
       <td style="padding:7px 10px;text-align:right;font-size:12px;color:#9aa">${money(c.gasto)}</td>
       <td style="padding:7px 10px;text-align:right;font-size:12px">${c.vendas} <small style="color:#9aa">${money(c.receita)}</small></td>
-      <td style="padding:7px 10px;text-align:right;font-weight:700;font-size:13px;color:${c.roas>=1.8?'#4ade80':c.roas>=1.3?'#fbbf24':'#f87171'}">${c.roas?c.roas.toFixed(2)+'x':'—'}</td></tr>`; }
+      <td style="padding:7px 10px;text-align:right;font-weight:700;font-size:13px;color:${c.roas==null?'#7d8590':c.roas>=1.8?'#4ade80':c.roas>=1.3?'#fbbf24':'#f87171'}">${c.roas==null?'<span style="font-size:10px;font-weight:600">aquecendo</span>':c.roas.toFixed(2)+'x'}</td></tr>`; }
     function _esteiraTabela(arr){ if(!arr.length) return '<div style="padding:12px 10px;color:var(--muted);font-size:12.5px">nenhum aqui ainda.</div>';
       return `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
         <thead><tr style="color:#9aa;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px"><th style="text-align:left;padding:6px 10px">selo</th><th style="text-align:left;padding:6px 10px">criativo</th><th style="text-align:right;padding:6px 10px">gasto</th><th style="text-align:right;padding:6px 10px">vendas</th><th style="text-align:right;padding:6px 10px">ROAS real</th></tr></thead>
@@ -500,10 +505,13 @@
       const ativos = srt(lst.filter(c=>c.ativo));
       const parados = srt(lst.filter(c=>!c.ativo));
       const filaChips = fila.length ? `<div style="display:flex;flex-wrap:wrap;gap:6px;padding:10px">${fila.map(f=>`<span style="font-size:11.5px;padding:3px 9px;border-radius:20px;background:rgba(255,255,255,.05);border:1px solid #2a2a34">${f.tipo==='imagem'?'🖼️':'🎬'} ${esc(f.nome)}</span>`).join('')}</div>` : '<div style="padding:12px 10px;color:var(--muted);font-size:12.5px">sem criativos na pasta pra esse funil.</div>';
+      const boxAtivo='margin-top:16px;background:rgba(74,222,128,.055);border-left:3px solid rgba(74,222,128,.5);border-radius:10px';
+      const boxCort='background:rgba(248,113,113,.05);border-left:3px solid rgba(248,113,113,.5);border-radius:10px';
+      const boxFila='background:rgba(96,165,250,.06);border-left:3px solid rgba(96,165,250,.5);border-radius:10px';
       return `
-      <div class="section" style="margin-top:16px"><div class="section-header"><div><div class="section-title">🔁 Esteira — Ativos (rodando agora)</div><div class="section-sub">selo pela venda REAL da Greenn (60d). 🏆 campeão ≥1,8 · ✅ foi bem ≥1,3 · ✂️ cortar &lt;1,3 ou R$50 sem venda · 🔥 aquecendo &lt;R$30</div></div></div><div class="section-body" style="padding:0">${_esteiraTabela(ativos)}</div></div>
-      <div class="section"><div class="section-header"><div><div class="section-title">⏸️ Já rodaram / cortados</div><div class="section-sub">pausados — o que já passou pela esteira (foi bem em cima, cortar embaixo)</div></div></div><div class="section-body" style="padding:0">${_esteiraTabela(parados)}</div></div>
-      <div class="section"><div class="section-header"><div><div class="section-title">🎬 Na fila — ${fila.length} pra testar</div><div class="section-sub">criativos prontos na pasta que ainda não rodaram (fluxo de teste a cada 4 dias: sobe os novos, depois revive os bons)</div></div></div><div class="section-body" style="padding:0">${filaChips}</div></div>`;
+      <div class="section" style="${boxAtivo}"><div class="section-header"><div><div class="section-title">🟢 Ativos (rodando agora)</div><div class="section-sub">selo pela venda REAL da Greenn (14d). 🏆 campeão ≥1,8 · ✅ foi bem ≥1,3 · ✂️ cortar &lt;1,3 ou R$50 sem venda · 🔥 aquecendo &lt;R$30 (ROAS ainda não confiável)</div></div></div><div class="section-body" style="padding:0">${_esteiraTabela(ativos)}</div></div>
+      <div class="section" style="${boxCort}"><div class="section-header"><div><div class="section-title">⏸️ Já rodaram / cortados</div><div class="section-sub">pausados — o que já passou pela esteira (foi bem em cima, cortar embaixo)</div></div></div><div class="section-body" style="padding:0">${_esteiraTabela(parados)}</div></div>
+      <div class="section" style="${boxFila}"><div class="section-header"><div><div class="section-title">🎬 Na fila — ${fila.length} pra testar</div><div class="section-sub">criativos prontos na pasta que ainda não rodaram (fluxo de teste a cada 4 dias: sobe os novos, depois revive os bons)</div></div></div><div class="section-body" style="padding:0">${filaChips}</div></div>`;
     }
     const BASELINE = {
       pocket:{ nome:'Dream Baby Pocket', icon:'👶', linhas:[
