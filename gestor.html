@@ -211,7 +211,6 @@
         <div class="subtab" data-tab="mat_calo">📰 Matéria Calo</div>
         <div class="subtab" data-tab="mat_ama">📰 Matéria Amam.</div>
         <div class="subtab" data-tab="engajamento">📣 Engajamento</div>
-        <div class="subtab" data-tab="banco">📊 Base &amp; Métricas</div>
       </div>
       <div class="periodo-wrap">
         <div class="periodo">
@@ -610,7 +609,7 @@
     function render() {
       const view=document.getElementById('view');
       if(!DATA.periodos){ view.innerHTML='<div class="empty" style="padding:60px">Sem dados. (snapshot não carregou)<br><small style="opacity:.6">'+(window.__snapErr?('motivo: '+window.__snapErr):'sem erro reportado')+'</small></div>'; return; }
-      view.innerHTML = state.tab==='geral'?renderGeral():state.tab==='banco'?renderBanco():state.tab==='engajamento'?renderEngajamento():renderFunil(state.tab);
+      view.innerHTML = state.tab==='geral'?renderGeral():state.tab==='engajamento'?renderEngajamento():renderFunil(state.tab);
       if(['pocket','quiz','guia','mat_calo','mat_ama'].includes(state.tab)){ loadEstrategias(state.tab); loadHistorico(state.tab); }
       const p=periodo();
       document.getElementById('perHint').textContent = p?(p.since==p.until?p.since:p.dias+' dias'):'';
@@ -624,11 +623,8 @@
       wireQ();
     }
     function wireQ() {
-      document.querySelectorAll('.q').forEach(q=>q.onclick=e=>{
-        e.preventDefault(); state.tab='banco';
-        document.querySelectorAll('.subtab').forEach(t=>t.classList.toggle('active',t.dataset.tab==='banco'));
-        render(); window.scrollTo({top:0,behavior:'smooth'});
-      });
+      // a aba "Base & Métricas" saiu do gestor e foi pro menu principal (banco.html). O "?" agora só mostra o tooltip no hover (title).
+      document.querySelectorAll('.q').forEach(q=>q.onclick=e=>{ e.preventDefault(); });
     }
     document.querySelectorAll('.subtab').forEach(t=>t.onclick=()=>{ state.tab=t.dataset.tab; document.querySelectorAll('.subtab').forEach(x=>x.classList.toggle('active',x===t)); render(); });
     document.querySelectorAll('.per').forEach(pp=>pp.onclick=()=>{ state.per=pp.dataset.per; document.querySelectorAll('.per').forEach(x=>x.classList.toggle('active',x===pp)); render(); });
