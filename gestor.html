@@ -236,7 +236,7 @@
       <button class="chat-x" id="chatX">×</button>
     </div>
     <div class="chat-msgs" id="chatMsgs"></div>
-    <div class="chat-mesa-row"><button class="chat-mesa" id="chatMesa" title="Chama o Sherlock (análise de página) pra pensar junto com o Austin. Fica mais lento — são os dois analisando.">🔍 Chamar o Sherlock</button></div>
+    <div class="chat-mesa-row"><button class="chat-mesa" id="chatMesa" title="Chama o Poirot (análise de página) pra pensar junto com o Austin. Fica mais lento — são os dois analisando.">🔍 Chamar o Poirot</button></div>
     <div class="chat-input">
       <textarea id="chatIn" rows="1" placeholder="Pergunta pro Gestor…"></textarea>
       <button class="chat-send" id="chatSend">➤</button>
@@ -483,7 +483,7 @@
       ${abBlock}
       ${arqBlock}
       <div class="section" style="${bHist}"><div class="section-header"><div><div class="section-title">📜 Histórico de mudanças</div><div class="section-sub">cada aumento/pausa que o piloto fez aqui — quando e quanto · e o que está agendado</div></div></div><div class="section-body" id="histBox"><div style="color:var(--muted);font-size:12.5px;padding:6px 2px">carregando…</div></div></div>
-      <div class="section" style="${bEstr}"><div class="section-header"><div><div class="section-title">🧠 Estratégias tentadas</div><div class="section-sub">o que o Austin e o Sherlock já propuseram aqui · você marca o resultado</div></div></div><div class="section-body" id="estrBox"><div style="color:var(--muted);font-size:12.5px;padding:6px 2px">carregando…</div></div></div>
+      <div class="section" style="${bEstr}"><div class="section-header"><div><div class="section-title">🧠 Estratégias tentadas</div><div class="section-sub">o que o Austin e o Poirot já propuseram aqui · você marca o resultado</div></div></div><div class="section-body" id="estrBox"><div style="color:var(--muted);font-size:12.5px;padding:6px 2px">carregando…</div></div></div>
       <div class="section" style="${bPag}"><div class="section-header"><div><div class="section-title">🔮 Página de venda — ${F.page}</div><div class="section-sub">comportamento (Clarity) + auditoria</div></div></div><div class="section-body"><div class="page-metrics">${pm}</div></div></div>
       <div class="section" style="${bVer}"><div class="section-header"><div><div class="section-title">🧪 Histórico da página</div><div class="section-sub">cada versão nomeada, com o que conversamos e o que ajustamos</div></div></div><div class="section-body">${versoes}</div></div>`;
     }
@@ -683,11 +683,11 @@
     }
     let mesaOn=false;
     const mesaBtn=document.getElementById('chatMesa');
-    mesaBtn.onclick=()=>{ mesaOn=!mesaOn; mesaBtn.classList.toggle('on',mesaOn); mesaBtn.textContent = mesaOn ? '🕵️ Sherlock na mesa (clique pra tirar)' : '🔍 Chamar o Sherlock'; };
+    mesaBtn.onclick=()=>{ mesaOn=!mesaOn; mesaBtn.classList.toggle('on',mesaOn); mesaBtn.textContent = mesaOn ? '🕵️ Poirot na mesa (clique pra tirar)' : '🔍 Chamar o Poirot'; };
     async function send(){
       const v=inp.value.trim(); if(!v||sending) return;
       addMsg(esc(v),'me'); historico.push({role:'me',content:v}); inp.value=''; inp.style.height='auto';
-      const typing=document.createElement('div'); typing.className='msg bot'; typing.innerHTML= mesaOn ? '<span class="typing">🕵️ Austin e Sherlock analisando juntos…</span>' : '<span class="typing">•••</span>'; msgs.appendChild(typing); msgs.scrollTop=msgs.scrollHeight;
+      const typing=document.createElement('div'); typing.className='msg bot'; typing.innerHTML= mesaOn ? '<span class="typing">🕵️ Austin e Poirot analisando juntos…</span>' : '<span class="typing">•••</span>'; msgs.appendChild(typing); msgs.scrollTop=msgs.scrollHeight;
       sending=true;
       try {
         const r=await fetch(CHAT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({message:v,periodo:state.per,tab:state.tab,mesa:mesaOn,dados:dadosContexto(),historico:historico.slice(-6)})});
@@ -742,13 +742,13 @@
       const box=document.getElementById('estrBox'); if(!box) return;
       const j=await apiEstr({op:'list',funil:fkey});
       const list=(j&&j.estrategias)||[];
-      if(!list.length){ box.innerHTML='<div style="color:var(--muted);font-size:12.5px;padding:6px 2px">Nenhuma estratégia registrada aqui ainda. Quando o Austin (ou a mesa com o Sherlock) fechar um plano, aparece um botão pra salvar — e ele fica aqui pra você marcar o resultado.</div>'; return; }
+      if(!list.length){ box.innerHTML='<div style="color:var(--muted);font-size:12.5px;padding:6px 2px">Nenhuma estratégia registrada aqui ainda. Quando o Austin (ou a mesa com o Poirot) fechar um plano, aparece um botão pra salvar — e ele fica aqui pra você marcar o resultado.</div>'; return; }
       box.innerHTML=list.map(e=>estrCard(e,fkey)).join('');
     }
     function estrCard(e,fkey){
       const cor=ESTR_COR[e.status]||'#818cf8';
       const chips=ESTR_STATUS.map(s=>`<button class="estr-chip${s===e.status?' on':''}" style="${s===e.status?('background:'+cor+';border-color:'+cor+';color:#0a0a0a'):''}" onclick="setEstrStatus('${e.id}','${s}','${fkey}')">${s}</button>`).join('');
-      const orig=e.origem==='mesa'?'🕵️ mesa (Austin+Sherlock)':(e.origem==='sherlock'?'🔍 Sherlock':'🎛️ Austin');
+      const orig=e.origem==='mesa'?'🕵️ mesa (Austin+Poirot)':(e.origem==='sherlock'?'🔍 Poirot':'🎛️ Austin');
       return `<div style="background:linear-gradient(160deg,#181820,#131319);border:1px solid #2a2a35;border-left:3px solid ${cor};border-radius:12px;padding:12px 14px;margin-bottom:10px">
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:5px"><b style="font-size:13.5px">${esc(e.titulo)}</b><span style="font-size:10px;color:var(--muted)">${orig} · ${e.criada_em||''}</span></div>
         ${e.hipotese?`<div style="font-size:12px;color:var(--muted);margin:2px 0"><b style="color:#a9a9b8">Hipótese:</b> ${esc(e.hipotese)}</div>`:''}
