@@ -798,6 +798,16 @@
     .tab-content tbody td::before{ content:attr(data-label); color:var(--muted,#9aa); font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; text-align:left; flex:0 0 auto; white-space:nowrap; opacity:.85; }
     .tab-content tbody td:first-child{ font-weight:700; font-size:14.5px !important; }
     #periodSelector{ font-size:12px; }
+    /* --- FILTROS viram CAIXA (dropdown): mostra só o ativo + seta, abre ao tocar --- */
+    #periodSelector > span:first-child, #periodLabel{ display:none !important; }
+    #periodSelector:not(.mopen) .period-btn:not(.active), #periodSelector:not(.mopen) #customDates{ display:none !important; }
+    #periodSelector:not(.mopen) .period-btn.active::after{ content:' ⌄'; opacity:.7; font-weight:800; }
+    #periodSelector.mopen{ flex-direction:column; align-items:stretch; }
+    #periodSelector.mopen .period-btn{ width:100%; justify-content:flex-start; text-align:left; }
+    .fmac-group:not(.mopen) .fsub-btn:not(.active){ display:none !important; }
+    .fmac-group:not(.mopen) .fsub-btn.active::after{ content:' ⌄'; opacity:.7; font-weight:800; }
+    .fmac-group.mopen{ flex-direction:column !important; align-items:stretch; }
+    .fmac-group.mopen .fsub-btn{ width:100%; justify-content:flex-start; text-align:left; }
   }
   .mtabbar{ position:fixed; left:0; right:0; bottom:0; z-index:400; background:rgba(14,16,28,.95); backdrop-filter:blur(18px) saturate(160%); -webkit-backdrop-filter:blur(18px) saturate(160%); border-top:1px solid rgba(148,163,255,.16); padding:7px 3px calc(7px + env(safe-area-inset-bottom,0px)); justify-content:space-around; align-items:stretch; }
   .mtab{ flex:1 1 0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:3px 1px; border:none; background:none; color:#8b90a8; font-size:9px; font-weight:700; letter-spacing:.2px; font-family:inherit; cursor:pointer; border-radius:11px; transition:color .15s, transform .15s; -webkit-tap-highlight-color:transparent; }
@@ -1233,7 +1243,7 @@
     <div class="section">
       <div class="section-header" style="flex-wrap:wrap;gap:8px">
         <div style="width:100%">
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div class="fmac-group" style="display:flex;gap:8px;flex-wrap:wrap">
             <button id="fmacPano" class="fsub-btn active" onclick="switchMacro('panorama')">🗺️ Panorama</button>
             <button id="fmacDream" class="fsub-btn" onclick="switchMacro('dream')">🌙 Dream Baby</button>
             <button id="fmacGuia" class="fsub-btn" onclick="switchMacro('guia')">🤱 Guia da Pega</button>
@@ -4025,6 +4035,29 @@ window.startDashboard = startDashboard;
   }
   if(document.readyState!=='loading') watch(); else document.addEventListener('DOMContentLoaded', watch);
   window.addEventListener('resize', function(){ clearTimeout(window._mtr); window._mtr = setTimeout(window.mobilizeTables, 150); });
+})();
+</script>
+<script>
+/* MOBILE: filtros (período + funis) viram dropdown compacto — toca abre, escolhe fecha+carrega */
+(function(){
+  var MQ = window.matchMedia('(max-width:760px)');
+  document.addEventListener('click', function(e){
+    if(!MQ.matches) return;
+    var pill = e.target.closest('.period-btn, .fsub-btn');
+    if(pill){
+      var g = pill.classList.contains('period-btn') ? document.getElementById('periodSelector') : pill.closest('.fmac-group');
+      if(!g) return;
+      if(!g.classList.contains('mopen')){
+        document.querySelectorAll('#periodSelector.mopen, .fmac-group.mopen').forEach(function(o){ if(o!==g) o.classList.remove('mopen'); });
+        g.classList.add('mopen');
+        e.stopPropagation(); e.preventDefault();
+      } else {
+        setTimeout(function(){ g.classList.remove('mopen'); }, 60);
+      }
+      return;
+    }
+    document.querySelectorAll('#periodSelector.mopen, .fmac-group.mopen').forEach(function(g){ g.classList.remove('mopen'); });
+  }, true);
 })();
 </script>
 </body>
