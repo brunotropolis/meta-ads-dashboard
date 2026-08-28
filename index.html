@@ -782,6 +782,28 @@
     .vt-badge.vt-wait { background: rgba(248,113,113,.13); color: #f87171; }
     .vt-badge.vt-na { background: rgba(255,255,255,.06); color: var(--muted); }
     @media (max-width: 600px) { .vt-camp-name { max-width: 100%; } }
+
+  /* ==================== MOBILE NATIVO (só <=760px — desktop 100% intocado) ==================== */
+  .mtabbar{ display:none; }
+  @media (max-width:760px){
+    body{ padding-bottom:70px; }
+    .tabs{ display:none !important; }
+    .mtabbar{ display:flex; }
+    .tab-content table, .tab-content tbody, .tab-content tr, .tab-content td{ display:block; width:auto; }
+    .tab-content thead{ display:none; }
+    .tab-content table{ width:100%; border-collapse:separate; }
+    .tab-content tbody tr{ background:rgba(255,255,255,.035); border:1px solid rgba(148,163,255,.14); border-radius:14px; padding:4px 14px; margin-bottom:10px; box-shadow:0 1px 4px rgba(0,0,0,.18); }
+    .tab-content tbody td{ display:flex !important; justify-content:space-between; align-items:center; gap:14px; padding:8px 0 !important; margin:0 !important; border:0 !important; border-bottom:1px solid rgba(255,255,255,.055) !important; white-space:normal !important; text-align:right; min-width:0 !important; max-width:none !important; width:auto !important; font-size:13.5px !important; }
+    .tab-content tbody td:last-child{ border-bottom:0 !important; }
+    .tab-content tbody td::before{ content:attr(data-label); color:var(--muted,#9aa); font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; text-align:left; flex:0 0 auto; white-space:nowrap; opacity:.85; }
+    .tab-content tbody td:first-child{ font-weight:700; font-size:14.5px !important; }
+    #periodSelector{ font-size:12px; }
+  }
+  .mtabbar{ position:fixed; left:0; right:0; bottom:0; z-index:400; background:rgba(14,16,28,.95); backdrop-filter:blur(18px) saturate(160%); -webkit-backdrop-filter:blur(18px) saturate(160%); border-top:1px solid rgba(148,163,255,.16); padding:7px 3px calc(7px + env(safe-area-inset-bottom,0px)); justify-content:space-around; align-items:stretch; }
+  .mtab{ flex:1 1 0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:3px 1px; border:none; background:none; color:#8b90a8; font-size:9px; font-weight:700; letter-spacing:.2px; font-family:inherit; cursor:pointer; border-radius:11px; transition:color .15s, transform .15s; -webkit-tap-highlight-color:transparent; }
+  .mtab .mi{ font-size:20px; line-height:1; filter:grayscale(.4) opacity(.7); transition:.15s; }
+  .mtab.active{ color:#fff; }
+  .mtab.active .mi{ filter:none; transform:translateY(-2px) scale(1.08); }
   </style>
 </head>
 <body>
@@ -3963,5 +3985,47 @@ window.startDashboard = startDashboard;
 
 <!-- Link pro Sherlock (float removido — agora tem pagina propria) -->
 <a href="/sherlock.html" id="sh-link" title="Abrir o Sherlock — detetive de paginas" style="position:fixed;bottom:24px;right:92px;height:46px;display:flex;align-items:center;gap:8px;padding:0 17px;border-radius:24px;background:linear-gradient(145deg,#1f3a34,#0f221e);color:#e7d9b8;font:700 13px/1 Segoe UI,system-ui,sans-serif;text-decoration:none;border:1px solid #2c463f;box-shadow:0 6px 20px rgba(0,0,0,.45);z-index:9998">🔍 Sherlock</a>
+
+<!-- ===================== BARRA INFERIOR MOBILE (nativo) ===================== -->
+<style>@media(max-width:760px){ #sh-link{display:none!important;} #ap-fab{bottom:84px!important;right:16px!important;width:54px!important;height:54px!important;} #ap-drawer{bottom:84px!important;right:8px!important;left:8px!important;width:auto!important;max-width:none!important;max-height:calc(100vh - 170px)!important;} }</style>
+<nav class="mtabbar" aria-label="Navegação">
+  <button class="mtab active" data-tab="overview" onclick="mgo('overview')"><span class="mi">🎮</span>Visão</button>
+  <button class="mtab" data-tab="funis" onclick="mgo('funis')"><span class="mi">🌪️</span>Funis</button>
+  <button class="mtab" data-tab="vendas" onclick="mgo('vendas')"><span class="mi">💎</span>Vendas</button>
+  <button class="mtab" data-tab="reembolsos" onclick="mgo('reembolsos')"><span class="mi">↩️</span>Reemb</button>
+  <button class="mtab" data-tab="gestor" onclick="mgo('gestor')"><span class="mi">🕵️</span>Austin</button>
+  <button class="mtab" data-tab="banco" onclick="mgo('banco')"><span class="mi">🗂️</span>Base</button>
+</nav>
+<script>
+(function(){
+  var MQ = window.matchMedia('(max-width:760px)');
+  window.mobilizeTables = function(){
+    if(!MQ.matches) return;
+    document.querySelectorAll('.tab-content table').forEach(function(tb){
+      var heads = [].slice.call(tb.querySelectorAll('thead th')).map(function(th){ return th.textContent.trim(); });
+      if(!heads.length) return;
+      tb.querySelectorAll('tbody tr').forEach(function(tr){
+        [].slice.call(tr.children).forEach(function(td,i){ if(heads[i]!=null && !td.hasAttribute('data-label')) td.setAttribute('data-label', heads[i]); });
+      });
+    });
+  };
+  window.mgo = function(name){
+    try{ switchTab(name); }catch(e){}
+    window.scrollTo(0,0);
+    document.querySelectorAll('.mtab').forEach(function(t){ t.classList.toggle('active', t.dataset.tab===name); });
+    setTimeout(window.mobilizeTables, 50);
+  };
+  function watch(){
+    if(!MQ.matches) return;
+    try{
+      var mo = new MutationObserver(function(){ clearTimeout(window._mt); window._mt = setTimeout(window.mobilizeTables, 90); });
+      document.querySelectorAll('.tab-content').forEach(function(c){ mo.observe(c, {childList:true, subtree:true}); });
+    }catch(e){}
+    window.mobilizeTables();
+  }
+  if(document.readyState!=='loading') watch(); else document.addEventListener('DOMContentLoaded', watch);
+  window.addEventListener('resize', function(){ clearTimeout(window._mtr); window._mtr = setTimeout(window.mobilizeTables, 150); });
+})();
+</script>
 </body>
 </html>
