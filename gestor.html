@@ -186,7 +186,7 @@
   @media(max-width:640px){
     .main{ padding:14px 11px 50px; }
     .header{ padding:11px 14px; }
-    .kpis{ grid-template-columns:repeat(2,1fr); gap:9px; margin-bottom:14px; }
+    .kpis{ grid-template-columns:1fr; gap:9px; margin-bottom:14px; }
     .kpi{ padding:11px 12px; } .kpi .v{ font-size:19px; } .kpi .l{ font-size:10.5px; }
     .section-body{ padding:13px 12px; }
     .section-header{ padding:12px 13px; }
@@ -197,12 +197,15 @@
   }
   /* MENUS DE FILTRO viram CAIXAS (dropdown) no mobile — economiza tela */
   @media(max-width:760px){
-    .subtabs, .fpills, .periodo{ justify-content:flex-start; }
-    .periodo-wrap{ justify-content:flex-start; flex-wrap:wrap; }
-    /* colapsado: só o item ativo (a "caixa") + seta */
+    .subtabs, .fpills, .periodo{ justify-content:flex-start; width:100%; box-sizing:border-box; }
+    .periodo-wrap{ justify-content:flex-start; flex-wrap:wrap; width:100%; }
+    /* colapsado: só o item ativo (a "caixa") + seta, preenchendo a largura toda */
     .subtabs:not(.mopen) .subtab:not(.active),
     .fpills:not(.mopen) .fp:not(.active),
     .periodo:not(.mopen) .per:not(.active){ display:none !important; }
+    .subtabs:not(.mopen) .subtab.active,
+    .fpills:not(.mopen) .fp.active,
+    .periodo:not(.mopen) .per.active{ flex:1 1 100%; width:100%; justify-content:space-between; }
     .subtabs:not(.mopen) .subtab.active::after,
     .fpills:not(.mopen) .fp.active::after,
     .periodo:not(.mopen) .per.active::after{ content:'⌄'; margin-left:8px; opacity:.7; font-weight:800; }
