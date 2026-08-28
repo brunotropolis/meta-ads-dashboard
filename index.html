@@ -803,16 +803,19 @@
     #periodSelector > span:first-child, #periodLabel{ display:none !important; }
     #periodSelector{ display:flex !important; flex-wrap:wrap; gap:6px; align-items:stretch; }
     #periodSelector .period-btn{ flex:1 1 22%; min-width:0; justify-content:center; }
-    #periodSelector .period-more{ flex:0 0 auto; padding:8px 13px; }
+    #periodSelector .period-more{ display:inline-flex !important; flex:0 0 auto; padding:8px 13px; }
     #periodSelector:not(.mopen) .period-extra:not(.active){ display:none !important; }
     #periodSelector:not(.mopen) #customDates{ display:none !important; }
     #periodSelector.mopen .period-extra{ display:inline-flex !important; }
     #periodSelector.mopen .period-more{ background:rgba(167,139,250,.3); }
-    /* --- FUNIS: botões full-width empilhados; sub-funil aparece ao clicar --- */
+    /* --- FUNIS: macro (roxo) full-width; sub-funil numa caixa recuada tom teal pra separar o nível --- */
     .fmac-group{ flex-direction:column !important; align-items:stretch !important; }
     .fmac-group .fsub-btn{ width:100%; justify-content:flex-start; }
-    #funisSubRow{ flex-direction:column !important; }
+    #funisSubRow{ flex-direction:column !important; background:rgba(45,212,160,.07); border:1px solid rgba(45,212,160,.22); border-radius:12px; padding:8px; }
+    #funisSubRow:empty{ display:none !important; padding:0; border:0; }
     #funisSubRow > *{ width:100% !important; justify-content:flex-start !important; }
+    #funisSubRow .fsub-btn{ background:rgba(45,212,160,.05); }
+    #funisSubRow .fsub-btn.active{ background:linear-gradient(135deg,#123a30,#0e2c24) !important; border-color:#2dd4a0 !important; box-shadow:0 0 12px rgba(45,212,160,.28) !important; }
   }
   .mtabbar{ position:fixed; left:0; right:0; bottom:0; z-index:400; background:rgba(14,16,28,.95); backdrop-filter:blur(18px) saturate(160%); -webkit-backdrop-filter:blur(18px) saturate(160%); border-top:1px solid rgba(148,163,255,.16); padding:7px 3px calc(7px + env(safe-area-inset-bottom,0px)); justify-content:space-around; align-items:stretch; }
   .mtab{ flex:1 1 0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:3px 1px; border:none; background:none; color:#8b90a8; font-size:9px; font-weight:700; letter-spacing:.2px; font-family:inherit; cursor:pointer; border-radius:11px; transition:color .15s, transform .15s; -webkit-tap-highlight-color:transparent; }
