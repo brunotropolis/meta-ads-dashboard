@@ -714,6 +714,9 @@
       .finance-grid { grid-template-columns: 1fr; }
       .criativos-grid { grid-template-columns: repeat(2, 1fr); }
       .vendas-summary { grid-template-columns: 1fr; }
+      /* qualquer tabela ROLA em vez de encavalar (inclui as sem wrap) */
+      table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%; }
+      table th, table td{ white-space:nowrap; }
 
       /* Header compacto: título à esquerda, ações em linha própria */
       .header {
