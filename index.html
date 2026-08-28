@@ -755,9 +755,9 @@
       #periodLabel { margin-left: 0 !important; width: 100%; margin-top: 4px; }
 
       /* ── Funis no mobile ── */
-      /* KPIs em 2 colunas (4 viram 2×2; bumps 2+1) em vez de espremidos numa linha */
+      /* KPIs empilhados (1 por linha) pra não dividir a tela no celular */
       .section .funis-kpi-grid,
-      .section .funis-bumps-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .section .funis-bumps-grid { grid-template-columns: 1fr; gap: 10px; }
       .funis-kpi-grid .fc-value { font-size: 22px; }
       .funis-kpi-grid .fc-label { font-size: 10px; letter-spacing: .4px; }
 
