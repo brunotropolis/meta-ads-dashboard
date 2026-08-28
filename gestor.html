@@ -195,6 +195,22 @@
     table th, table td{ white-space:nowrap; }
     .subtab{ padding:7px 12px; font-size:12px; }
   }
+  /* MENUS DE FILTRO viram CAIXAS (dropdown) no mobile — economiza tela */
+  @media(max-width:760px){
+    .subtabs, .fpills, .periodo{ justify-content:flex-start; }
+    .periodo-wrap{ justify-content:flex-start; flex-wrap:wrap; }
+    /* colapsado: só o item ativo (a "caixa") + seta */
+    .subtabs:not(.mopen) .subtab:not(.active),
+    .fpills:not(.mopen) .fp:not(.active),
+    .periodo:not(.mopen) .per:not(.active){ display:none !important; }
+    .subtabs:not(.mopen) .subtab.active::after,
+    .fpills:not(.mopen) .fp.active::after,
+    .periodo:not(.mopen) .per.active::after{ content:'⌄'; margin-left:8px; opacity:.7; font-weight:800; }
+    /* aberto: vira lista vertical (dropdown) */
+    .subtabs.mopen, .fpills.mopen, .periodo.mopen{ flex-direction:column; align-items:stretch; gap:3px; }
+    .subtabs.mopen .subtab, .fpills.mopen .fp, .periodo.mopen .per{ display:flex !important; width:100%; justify-content:flex-start; }
+    .subtabs.mopen .subtab.active::after, .fpills.mopen .fp.active::after, .periodo.mopen .per.active::after{ content:'✓'; margin-left:auto; opacity:.9; }
+  }
   footer { margin-top:30px; padding-top:16px; border-top:1px solid var(--border); color:var(--muted); font-size:11.5px; }
   /* modo embed: dentro do dashboard (sem header/chat proprios) */
   html[data-embed] .header, html[data-embed] .chat, html[data-embed] .chat-bg, html[data-embed] #chatToggle, html[data-embed] footer, html[data-embed] .periodo-wrap { display:none !important; }
@@ -809,5 +825,28 @@
     fetch('snapshot.json?cb='+Date.now()).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status+' ('+(r.headers.get('content-type')||'?')+')'); return r.json(); }).then(function(d){ DATA=d; window.__snapErr=null; initGestor(); }).catch(function(e){ window.__snapErr=String(e&&e.message||e); initGestor(); });
     addMsg('Oi! Sou o <b>Gestor</b>. Pergunta o que quiser sobre as campanhas — <i>"como tá o ROAS?"</i>, <i>"qual está sangrando?"</i>, <i>"e a página?"</i>. Respondo com os dados reais desta tela.','bot');
   </script>
+<script>
+/* MOBILE: filtros (seção / funil / período) viram dropdown compacto — toca abre, escolhe fecha+carrega */
+(function(){
+  var MQ = window.matchMedia('(max-width:760px)');
+  document.addEventListener('click', function(e){
+    if(!MQ.matches) return;
+    var pill = e.target.closest('.subtab, .fp, .per');
+    if(pill){
+      var g = pill.closest('.subtabs, .fpills, .periodo');
+      if(!g) return;
+      if(!g.classList.contains('mopen')){
+        document.querySelectorAll('.subtabs.mopen,.fpills.mopen,.periodo.mopen').forEach(function(o){ if(o!==g) o.classList.remove('mopen'); });
+        g.classList.add('mopen');
+        e.stopPropagation(); e.preventDefault();   /* colapsado: só abre, não seleciona */
+      } else {
+        setTimeout(function(){ g.classList.remove('mopen'); }, 60);   /* aberto: deixa selecionar+carregar, fecha */
+      }
+      return;
+    }
+    document.querySelectorAll('.subtabs.mopen,.fpills.mopen,.periodo.mopen').forEach(function(g){ g.classList.remove('mopen'); });
+  }, true);
+})();
+</script>
 </body>
 </html>
