@@ -159,16 +159,20 @@
   }
 
   const REGUAS = [
-    {n:'ROAS meta de mídia', v:'1,8', d:'Alvo de retorno sobre o gasto de anúncio (só receita de campanha ÷ gasto Meta).'},
-    {n:'CORTAR', v:'pausa', d:'ROAS < 1,3 com R$ 60+ gastos, OU passou de R$ 72 (1 ticket) sem 1 venda. Daí em diante é prejuízo garantido.'},
-    {n:'OBSERVAR', v:'zona cinza', d:'ROAS entre 1,3 e 1,8 — não corta, acompanha a tendência.'},
-    {n:'AQUECENDO', v:'< R$ 60', d:'Menos de R$ 60 gastos na janela: sem base pra julgar, deixa rodar.'},
-    {n:'WINNER', v:'escalar', d:'ROAS ≥ 2 com 50+ vendas. Só aí vira candidato a escala.'},
-    {n:'Janela que decide', v:'7 dias', d:'O diário só serve pra ver o que quebrou; quem decide corte/escala é a janela de 7 dias.'},
-    {n:'Ticket médio', v:'R$ 72', d:'Ticket médio dos funis Pocket/Quiz. É o limiar do "gastou 1 ticket sem vender".'},
+    {n:'ROAS meta de mídia', v:'1,8', d:'Alvo de retorno sobre o gasto de anúncio (só receita de campanha ÷ gasto Meta). Régua consolidada 28/Ago — é UMA régua só.'},
+    {n:'Corte por gasto', v:'R$ 50', d:'Gastou R$ 50 sem UMA venda Greenn → pausa. Limiar ÚNICO (o R$ 72 foi aposentado).'},
+    {n:'Bandas de gasto', v:'30 · 60', d:'< R$ 30 = aquecendo (não julga nada) · R$ 30-60 = leitura precoce (só sinais: custo/finalização, IC) · ≥ R$ 60 = julgável pela régua completa.'},
+    {n:'MANTER', v:'≥ 1,8', d:'Mantém; se o 3d estiver forte (ROAS ≥ 2 + tend ok), escala +10%/dia.'},
+    {n:'1,6 – 1,8', v:'nunca corta', d:'Se esfriando → reduz pro piso R$ 32/dia e observa 2-3 dias. Campanha com ROAS > 1,6 NUNCA morre.'},
+    {n:'1,3 – 1,6', v:'observar', d:'Se esfriando/piorando 2 janelas → piso primeiro; não recuperou em 2-3d no piso → corta.'},
+    {n:'CORTAR', v:'< 1,3', d:'Corta em 7d com R$ 60+. EXCEÇÃO: se o histórico 30d era ≥ 1,8 (já foi bom), última chance no piso 2-3d antes de matar.'},
+    {n:'Piso de verba', v:'R$ 32/dia', d:'O degrau entre observar e cortar — quase nada morre sem passar por ele. (Não confundir com CPA ideal R$ 36, outra métrica.)'},
+    {n:'Winner de ciclo', v:'1,8 + 3v', d:'ROAS ≥ 1,8 com ≥ 3 vendas na janela → promove na esteira, propõe escala, selo 🏆.'},
+    {n:'Winner consolidado', v:'2,0 + 50v', d:'ROAS ≥ 2 com 50+ vendas acumuladas → 10X, duplicação, próximos criativos saem dele (ProAlt).'},
+    {n:'Janelas', v:'7d corta · 3d escala', d:'7 dias decide CORTE definitivo; 3d/hoje decide ESCALA e redução. Papéis diferentes, nunca trocar.'},
   ];
   const MODELOS = [
-    {n:'Teste', c:'validar criativo', d:'1 campanha → 1 conjunto Advantage+ → <b>5 a 20 criativos</b> competindo entre si.', meta:[['Verba','nº criativos × ~R$ 36'],['Quando','testar criativos novos']]},
+    {n:'Teste', c:'validar criativo', d:'1 campanha → 1 conjunto Advantage+ → <b>5 a 20 criativos</b> competindo entre si.', meta:[['Verba','nº criativos × ~R$ 30 (padrão da casa)'],['Quando','testar criativos novos']]},
     {n:'1-1-1', c:'1 winner', d:'1 campanha → 1 conjunto → <b>1 criativo</b>. Só quando existe UM winner com ROAS 2 consistente em 7d.', meta:[['Verba','5-10× ticket (~R$ 360-720)'],['Quando','só na terça · repetir muito sobe o CPM']]},
     {n:'10X', c:'2+ winners', d:'1 campanha Advantage+ com <b>todos os winners juntos</b>.', meta:[['Verba','10× ticket (~R$ 720)'],['Quando','tem 2+ winners validados']]},
     {n:'Volume', c:'muito volume', d:'<b>3 a 5 criativos</b> com 20+ vendas em 7d, ignorando o ROAS — o que vale é o nº de clientes.', meta:[['Verba','5-10× ticket'],['Quando','vários criativos vendendo em volume']]},
@@ -184,7 +188,7 @@
     {n:'7', t:'Testei a hipótese contra TODOS os casos?', s:'Ou só contra o que a confirma? (o erro do "cost cap é bom" veio de 1 caso favorável).'},
     {n:'★', t:'Gerenciador × Dashboard', s:'Gerenciador mede entrega/custo · Dashboard/Greenn mede venda/ROAS/origem. ROAS de mídia = só canais pagos ÷ gasto.'},
     {n:'★', t:'Janela de atribuição de 7 dias', s:'Venda de link-da-bio aparece no dash/Greenn ANTES de aparecer atribuída no gerenciador. Olhar só o gerenciador subestima e corta campanha boa.'},
-    {n:'8', t:'Gastou o suficiente pra julgar?', s:'Abaixo de ~R$ 60 / 1 ticket na janela, o dado é ruído. Dos 27 anúncios que passaram de R$ 67, 26 venderam — não mate criativo que só precisa de mais verba pra provar.'},
+    {n:'8', t:'Gastou o suficiente pra julgar?', s:'Bandas: < R$ 30 aquecendo (não julga) · R$ 30-60 leitura precoce (só sinais) · ≥ R$ 60 julgável. Dos 27 anúncios que passaram de R$ 67, 26 venderam — não mate criativo que só precisa de mais verba (a exceção dura é o R$ 50 sem venda nenhuma).'},
     {n:'9', t:'Mexi em algo nas últimas 72h?', s:'Mudança de verba acima de 20% reseta o aprendizado da Meta; uma mudança por vez. Não julgar campanha logo depois de mexer nela (39 mudanças numa hora, 04/08, derrubaram a conversão pela metade).'},
     {n:'10', t:'O prejuízo bate em 2+ métricas? (harmonia)', s:'Prejuízo real sempre tem 2 ou mais métricas ruins juntas. Uma métrica isolada ruim costuma ser ruído — não corte por causa dela sozinha.'},
     {n:'11', t:'Não estou decidindo por CPM?', s:'Medido: quem vendeu teve CPM mediano R$ 29,54 vs R$ 25,22 de quem não vendeu. CPM não prevê conversão nesta conta — não é critério de corte.'},
