@@ -390,7 +390,7 @@
         <td>${c.receita?money(c.receita):'—'}</td>
         <td class="${c.roas>=1.8?'ok':c.roas>=1.3?'warn2':c.roas?'bad':''}">${c.roas?c.roas.toFixed(2):'—'}${roasBad?metaTag('meta 1,8'):''}</td>
         <td>${c.cpa?money(c.cpa):'—'}</td>
-        <td>${c.ativa ? '<span class="estado e-'+c.estado+'">'+c.estado+'</span>'+(c.fadiga?' <span title="Sinal precoce de desgaste: CPA 3d bem pior que o 30d e/ou CTR caindo. Preparar substituto." style="font-size:11px;cursor:help">🥀</span>':'') : '<span style="color:var(--muted);opacity:.45;font-size:11px">—</span>'}</td>
+        <td>${c.ativa ? '<span class="estado e-'+c.estado+'">'+c.estado+'</span>'+(c.fadiga?' <span title="Sinal precoce de desgaste: CPA 3d bem pior que o 30d e/ou CTR caindo. Preparar substituto." style="font-size:11px;cursor:help">🥀</span>':'')+(c.score!=null?' <span title="Score de saúde 0-100 (ROAS + tendência + fadiga + custo/finalização). Ordena e compara; quem decide é a régua." style="font-size:10px;font-weight:700;cursor:help;color:'+(c.score>=70?'#4ade80':c.score>=40?'#fbbf24':'#f87171')+'">'+c.score+'</span>':'') : '<span style="color:var(--muted);opacity:.45;font-size:11px">—</span>'}</td>
       </tr>`; }).join('');
       return `<div class="table-wrap"><table>
         <thead><tr>
