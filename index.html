@@ -4012,7 +4012,9 @@ window.startDashboard = startDashboard;
 <a href="/sherlock.html" id="sh-link" title="Abrir o Sherlock — detetive de paginas" style="position:fixed;bottom:24px;right:92px;height:46px;display:flex;align-items:center;gap:8px;padding:0 17px;border-radius:24px;background:linear-gradient(145deg,#1f3a34,#0f221e);color:#e7d9b8;font:700 13px/1 Segoe UI,system-ui,sans-serif;text-decoration:none;border:1px solid #2c463f;box-shadow:0 6px 20px rgba(0,0,0,.45);z-index:9998">🔍 Sherlock</a>
 
 <!-- ===================== BARRA INFERIOR MOBILE (nativo) ===================== -->
-<style>@media(max-width:760px){ #sh-link{display:none!important;} #ap-fab{bottom:84px!important;right:16px!important;width:54px!important;height:54px!important;} #ap-drawer{bottom:84px!important;right:8px!important;left:8px!important;width:auto!important;max-width:none!important;max-height:calc(100vh - 170px)!important;} }</style>
+<style>/* chat migrou pras skills /austin e /sherlock no Claude Code (31/08) — pra religar os widgets, apague a linha abaixo */
+#ap-fab,#ap-drawer,#sh-link{display:none!important;}
+@media(max-width:760px){ #sh-link{display:none!important;} #ap-fab{bottom:84px!important;right:16px!important;width:54px!important;height:54px!important;} #ap-drawer{bottom:84px!important;right:8px!important;left:8px!important;width:auto!important;max-width:none!important;max-height:calc(100vh - 170px)!important;} }</style>
 <nav class="mtabbar" aria-label="Navegação">
   <button class="mtab active" data-tab="overview" onclick="mgo('overview')"><span class="mi">🎮</span>Visão</button>
   <button class="mtab" data-tab="funis" onclick="mgo('funis')"><span class="mi">🌪️</span>Funis</button>
