@@ -1057,7 +1057,7 @@
       <div class="section-header">
         <div>
           <div class="section-title glow">📏 Régua Low Ticket por Funil</div>
-          <div class="section-sub">Janela móvel de 14 dias · ROAS real (Greenn, com bumps) · 🟢 ≥1,8 · 🟡 1,5–1,8 · 🔴 &lt;1,5 = agir</div>
+          <div class="section-sub">Janela móvel de 14 dias · ROAS real (Greenn, com bumps) · 🟢 ≥1,5 saudável (≥2,0 winner) · 🟡 1,2–1,5 · 🔴 &lt;1,2 = agir</div>
         </div>
       </div>
       <div id="reguaBody"><div class="loading"><div class="spinner"></div></div></div>
@@ -2172,7 +2172,7 @@ function renderRegua(b) {
     </tr>`;
   }
   html += '</tbody></table></div>';
-  html += `<div style="font-size:11px;color:var(--muted);padding:8px 6px 0">📏 Mediana (p25–p75) dos dias com gasto ≥ R$ 20 na janela ${b.janela ? b.janela.inicio + ' → ' + b.janela.fim : ''}. ROAS real = vendas Greenn atribuídas por UTM (principal + order bumps) ÷ gasto Meta — sem inflação de atribuição do gerenciador. <b>Regra combinada 24/Jul:</b> meta ≥ 1,8–2,0 · na faixa 1,5–1,8 acompanhar de perto · abaixo de 1,5 por 3 dias = reduzir verba ou pausar e duplicar campanha/criativos.</div>`;
+  html += `<div style="font-size:11px;color:var(--muted);padding:8px 6px 0">📏 Mediana (p25–p75) dos dias com gasto ≥ R$ 20 na janela ${b.janela ? b.janela.inicio + ' → ' + b.janela.fim : ''}. ROAS real = vendas Greenn atribuídas por UTM (principal + order bumps) ÷ gasto Meta — sem inflação de atribuição do gerenciador. <b>Régua 10/Set:</b> saudável ≥ 1,5 (winner ≥ 2,0) · faixa 1,2–1,5 observar · abaixo de 1,2 por 3 dias = reduzir verba ou pausar e duplicar campanha/criativos (nunca corta acima de 1,5, reduz pro piso antes).</div>`;
 
   // Vendas por dia da semana + formatos (30d)
   const vs = b.vendas_semana || [], td = b.top_dias || [], fm = b.formatos || [];
@@ -2250,8 +2250,8 @@ function renderMonitor(d) {
   // ── medidores: ROAS e CPA reais na frente (o pixel nao decide mais) ──
   const medidores = [
     { rot: 'ROAS real', val: a.roas, fmt: v => n(v, '', 'x'),
-      ideal: `≥ ${br(L.roas_meta)}x`, det: `corta abaixo de ${br(L.roas_corte)}x`,
-      st: cor(a.roas, L.roas_meta, L.roas_corte, true), peso: 1 },
+      ideal: `≥ ${br(L.roas_saud)}x`, det: `corta abaixo de ${br(L.roas_corte)}x`,
+      st: cor(a.roas, L.roas_saud, L.roas_corte, true), peso: 1 },
     { rot: 'CPA real', val: a.cpa, fmt: v => n(v, 'R$ '),
       ideal: `≤ R$ ${br(L.cpa_bom, 0)}`, det: `atenção até R$ ${br(L.cpa_max, 0)}`,
       st: cor(a.cpa, L.cpa_bom, L.cpa_max, false), peso: 1 },
@@ -2314,7 +2314,7 @@ function renderMonitor(d) {
       <td><strong>${c.nome}</strong><br><span style="color:var(--muted);font-size:11px">${c.conjunto || ''}</span></td>
       <td>R$ ${fmt(c.spend)}</td>
       <td><strong>${c.vendas || 0}</strong>${gapPixel}${c.receita ? `<br><span style="color:var(--muted);font-size:11px">R$ ${fmt(c.receita)}</span>` : ''}</td>
-      ${cel(c.roas, cor(c.roas, L.roas_meta, L.roas_corte, true), c.vendas ? br(c.roas) + 'x' : '—')}
+      ${cel(c.roas, cor(c.roas, L.roas_saud, L.roas_corte, true), c.vendas ? br(c.roas) + 'x' : '—')}
       ${cel(c.cpa, cor(c.cpa, L.cpa_bom, L.cpa_max, false), n(c.cpa, 'R$ '))}
       ${cel(c.ctr, cor(c.ctr, L.ctr_bom, L.ctr_min, true), br(c.ctr) + '%')}
       ${cel(c.custo_finalizacao, 'none', n(c.custo_finalizacao, 'R$ '))}
@@ -2425,8 +2425,8 @@ function renderBreakdowns(d) {
   const plcCards = (d.placements || []).slice(0, 12).map(p => {
     const sp = p.spend, roas = p.roas;
     let cls = '';
-    if (roas >= 1.8) cls = 'demo-green';
-    else if (roas >= 1.0) cls = 'demo-blue';
+    if (roas >= 1.5) cls = 'demo-green';
+    else if (roas >= 1.2) cls = 'demo-blue';
     else if (roas > 0) cls = 'demo-yellow';
     else cls = 'demo-red';
     const platIcon = p.plataforma === 'instagram' ? '📸' : (p.plataforma === 'facebook' ? '📘' : (p.plataforma === 'threads' ? '🧵' : '📡'));
