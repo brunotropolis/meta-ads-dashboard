@@ -286,7 +286,7 @@
       pocket: {
         nome:'Dream Baby Pocket', icon:'👶', page:'dbpocket.manualdorecemnascido.com.br',
         pageMetrics:[
-          {l:'Ida pro checkout', v:'12,7%', cls:'bad', meta:'ideal 25%', faq:'ida'},
+          {l:'Ida pro checkout', v:'12,7%', cls:'bad', meta:'alvo 12-18%', faq:'ida'},
           {l:'Passam do hero', v:'31,5%', cls:'bad', meta:'', faq:'hero'},
           {l:'Dead-clicks', v:'13,3%', cls:'', meta:'', faq:'dead'},
           {l:'LCP', v:'4,3s', cls:'bad', meta:'ideal < 2,5s', faq:'lcp'},
@@ -308,7 +308,7 @@
       quiz: {
         nome:'Quiz Dream Baby', icon:'🎯', page:'perfis.manualdorecemnascido.com.br',
         pageMetrics:[
-          {l:'Ida pro checkout', v:'9,9%', cls:'bad', meta:'ideal 25%', faq:'ida'},
+          {l:'Ida pro checkout', v:'9,9%', cls:'bad', meta:'alvo 12-18%', faq:'ida'},
           {l:'Scroll médio', v:'70%', cls:'', meta:'', faq:'scroll'},
           {l:'Dead-click (sessões)', v:'50%', cls:'', meta:'', faq:'dead'},
           {l:'Rage / quickback', v:'0%', cls:'ok', meta:'', faq:'rage'},
@@ -357,7 +357,7 @@
     const fb = f => `<span class="fbadge fb-${f}">${f==='pocket'?'POCKET':f==='quiz'?'QUIZ':f==='guia'?'GUIA':'OUTRO'}</span>`;
     const metaTag = t => t ? `<span class="meta-tag">${t}</span>` : '';
     const nomeCurto = c => c.nome.replace(/\[dream pocket\]/i,'').replace(/\[|\]/g,'').replace(/\s+/g,' ').trim().slice(0,34);
-    const DEFS = { roas:'Receita real ÷ gasto. Meta 1,8.', cpa:'Custo por venda (gasto ÷ vendas). Ideal ~R$ 36.', freq:'Vezes que a mesma pessoa viu o anúncio. Ideal até 2-3.', ctr:'Cliques no link ÷ quem viu. Bom acima de 1,3%.', connect:'Quem carregou a página ÷ cliques. Abaixo de 80% = quebra técnica.', ida:'Quem foi pro checkout ÷ quem chegou na página. Ideal 25% — nosso gargalo.', receita:'O que sobra da venda depois da taxa da plataforma.', vendas:'Vendas casadas à campanha por UTM (fora = orgânico/resíduo).', principal:'Vendas do produto principal do funil (sem os order bumps), pela venda real da Greenn. pago = veio de anúncio · org = orgânico (bio/stories/direto). Distribui por funil e por período.', bumps:'Order bumps vendidos junto com o principal deste funil (linha separada no checkout), casados à venda principal pelo checkout.', roasmidia:'Receita PAGA do funil (com os bumps das vendas pagas) ÷ gasto de mídia. Mesma conta do Panorama e do Austin.', dead:'Cliques em algo que parece botão mas não é.', rage:'Cliques de raiva no mesmo lugar / voltar na hora.', scroll:'Quão fundo as pessoas rolam a página.', hero:'% que passa da 1ª tela (10% da página). Baixo = o topo não segura.', lcp:'Tempo até o maior elemento carregar. Acima de 2,5s = lento.' };
+    const DEFS = { roas:'Receita real ÷ gasto. Saudável ≥1,5, winner 2,0 (break-even ~1,15).', cpa:'Custo por venda (gasto ÷ vendas). Ideal ~R$ 36.', freq:'Vezes que a mesma pessoa viu o anúncio. Ideal até 2-3.', ctr:'Cliques no link ÷ quem viu. Bom acima de 1,2%.', connect:'Quem carregou a página ÷ cliques. Abaixo de 85% = quebra técnica.', ida:'Quem foi pro checkout ÷ quem chegou na página. Alvo 12-18% (tráfego frio) — nosso gargalo.', receita:'O que sobra da venda depois da taxa da plataforma.', vendas:'Vendas casadas à campanha por UTM (fora = orgânico/resíduo).', principal:'Vendas do produto principal do funil (sem os order bumps), pela venda real da Greenn. pago = veio de anúncio · org = orgânico (bio/stories/direto). Distribui por funil e por período.', bumps:'Order bumps vendidos junto com o principal deste funil (linha separada no checkout), casados à venda principal pelo checkout.', roasmidia:'Receita PAGA do funil (com os bumps das vendas pagas) ÷ gasto de mídia. Mesma conta do Panorama e do Austin.', dead:'Cliques em algo que parece botão mas não é.', rage:'Cliques de raiva no mesmo lugar / voltar na hora.', scroll:'Quão fundo as pessoas rolam a página.', hero:'% que passa da 1ª tela (10% da página). Baixo = o topo não segura.', lcp:'Tempo até o maior elemento carregar. Acima de 2,5s = lento.' };
     const qb = f => `<a class="q" data-faq="${f}" title="${(DEFS[f]||'').replace(/"/g,'&quot;')}">?</a>`;
 
     function periodo() { return DATA.periodos ? DATA.periodos[state.per] : null; }
@@ -375,7 +375,7 @@
     function tabela(rows) {
       if (!rows.length) return `<div class="empty"><div class="big">Nenhuma campanha com gasto nesse período.</div>Troque o período acima, ou este funil está sem verba agora.</div>`;
       const tr = rows.map(c => {
-        const roasBad=c.roas>0&&c.roas<1.3, idaBad=c.ida!=null&&c.ida<15, freqBad=c.freq>=3;
+        const roasBad=c.roas>0&&c.roas<1.2, idaBad=c.ida!=null&&c.ida<12, freqBad=c.freq>=3;
         const paused = c.ativa===false;
         const stb = c.ativa===true ? `<span class="stdot on" title="ativa agora"></span>`
                   : paused ? `<span class="stpill" title="${esc(c.status||'pausada')}">pausada</span>` : '';
@@ -383,12 +383,12 @@
         <td class="l"><span class="cname">${stb}${fb(c.funil)}${esc(c.nome)}</span></td>
         <td>${money(c.gasto)}</td>
         <td class="${freqBad?'bad':c.freq>=2?'warn2':''}">${c.freq||'—'}${freqBad?metaTag('máx 2'):''}</td>
-        <td class="${c.ctr>=1.3?'ok':''}">${c.ctr?c.ctr+'%':'—'}</td>
+        <td class="${c.ctr>=1.2?'ok':''}">${c.ctr?c.ctr+'%':'—'}</td>
         <td>${c.connect!=null?c.connect+'%':'—'}</td>
-        <td class="${idaBad?'bad':''}">${c.ida!=null?c.ida+'%':'—'}${idaBad?metaTag('ideal 25%'):''}</td>
+        <td class="${idaBad?'bad':''}">${c.ida!=null?c.ida+'%':'—'}${idaBad?metaTag('alvo 12-18%'):''}</td>
         <td>${c.vendas}</td>
         <td>${c.receita?money(c.receita):'—'}</td>
-        <td class="${c.roas>=1.8?'ok':c.roas>=1.3?'warn2':c.roas?'bad':''}">${c.roas?c.roas.toFixed(2):'—'}${roasBad?metaTag('meta 1,8'):''}</td>
+        <td class="${c.roas>=1.5?'ok':c.roas>=1.2?'warn2':c.roas?'bad':''}">${c.roas?c.roas.toFixed(2):'—'}${roasBad?metaTag('saudável 1,5'):''}</td>
         <td>${c.cpa?money(c.cpa):'—'}</td>
         <td>${c.ativa ? '<span class="estado e-'+c.estado+'">'+c.estado+'</span>'+(c.fadiga?' <span title="Sinal precoce de desgaste: CPA 3d bem pior que o 30d e/ou CTR caindo. Preparar substituto." style="font-size:11px;cursor:help">🥀</span>':'')+(c.score!=null?' <span title="Score de saúde 0-100 (ROAS + tendência + fadiga + custo/finalização). Ordena e compara; quem decide é a régua." style="font-size:10px;font-weight:700;cursor:help;color:'+(c.score>=70?'#4ade80':c.score>=40?'#fbbf24':'#f87171')+'">'+c.score+'</span>':'') : '<span style="color:var(--muted);opacity:.45;font-size:11px">—</span>'}</td>
       </tr>`; }).join('');
@@ -402,12 +402,12 @@
         </tr></thead><tbody>${tr}</tbody></table></div>`;
     }
     function kpiStrip(r) {
-      const roasBad=r.roasMidia>0&&r.roasMidia<1.3;
+      const roasBad=r.roasMidia>0&&r.roasMidia<1.2;
       return `<div class="kpis">
         <div class="kpi"><div class="l">Gasto de mídia</div><div class="v num">${money(r.gasto)}</div></div>
         <div class="kpi"><div class="l">Produto principal${qb('principal')}</div><div class="v num">${r.main} <small>· pago ${r.pago} · org ${r.org}</small></div></div>
         <div class="kpi"><div class="l">Order bumps${qb('bumps')}</div><div class="v num">${r.bumps} <small>· ${money(r.recBumps)}</small></div></div>
-        <div class="kpi"><div class="l">ROAS de mídia${qb('roasmidia')}</div><div class="v num" style="color:${r.roasMidia>=1.8?'var(--green)':r.roasMidia>=1.3?'var(--yellow)':'var(--red)'}">${r.roasMidia?r.roasMidia.toFixed(2):'—'}${roasBad?metaTag('meta 1,8'):''}</div></div>
+        <div class="kpi"><div class="l">ROAS de mídia${qb('roasmidia')}</div><div class="v num" style="color:${r.roasMidia>=1.5?'var(--green)':r.roasMidia>=1.2?'var(--yellow)':'var(--red)'}">${r.roasMidia?r.roasMidia.toFixed(2):'—'}${roasBad?metaTag('saudável 1,5'):''}</div></div>
       </div>`;
     }
     function renderGeral() {
@@ -453,7 +453,7 @@
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 12px">
             <div><div style="font-size:11px;color:var(--muted)">Conversão</div><div style="font-size:20px;font-weight:700;color:${cor}">${pct(D.conv)}</div></div>
             <div><div style="font-size:11px;color:var(--muted)">Vendas</div><div style="font-size:20px;font-weight:700">${D.vendas} <small style="font-size:11px;color:var(--muted)">/ ${D.sessoes} sess.</small></div></div>
-            <div style="grid-column:1/3"><div style="font-size:11px;color:var(--muted)">Ida pro checkout ${D.ic!=null?'<small style="opacity:.7">('+D.ic+' cliques)</small>':''}</div><div style="font-size:20px;font-weight:700;color:${D.ida_checkout==null?'var(--muted)':(D.ida_checkout>=30?cor:'#fbbf24')}">${D.ida_checkout!=null?D.ida_checkout+'%':'medindo…'} <small style="font-size:10px;color:var(--muted)">/ meta 30%</small></div></div>
+            <div style="grid-column:1/3"><div style="font-size:11px;color:var(--muted)">Ida pro checkout ${D.ic!=null?'<small style="opacity:.7">('+D.ic+' cliques)</small>':''}</div><div style="font-size:20px;font-weight:700;color:${D.ida_checkout==null?'var(--muted)':(D.ida_checkout>=12?cor:'#fbbf24')}">${D.ida_checkout!=null?D.ida_checkout+'%':'medindo…'} <small style="font-size:10px;color:var(--muted)">/ alvo 12-18%</small></div></div>
             <div style="grid-column:1/3"><div style="font-size:11px;color:var(--muted)">Retenção (rolagem média) · ${retMsg(D.scroll_medio)}</div>
               <div style="height:8px;background:#23232e;border-radius:6px;overflow:hidden;margin-top:4px"><div style="height:100%;width:${Math.min(100,D.scroll_medio||0)}%;background:${cor}"></div></div>
               <div style="font-size:11px;color:var(--muted);margin-top:2px">desce ~${Math.round(D.scroll_medio||0)}% da página · clique-morto ${pct(D.dead_pct)}</div></div>
@@ -478,7 +478,7 @@
       return `<div class="section"><div class="section-header"><div><div class="section-title">🧪 Teste A/B ao vivo — base vs /${vkey}</div><div class="section-sub">split 50/50 na borda (Cloudflare) · ${esc(ab.janela||'janela 3 dias')} · a retenção é quanto da página a pessoa desce em média</div></div></div>
         <div class="section-body">
           <div style="display:flex;gap:12px;flex-wrap:wrap">${card('Base (atual)',B,CB,amostraOk&&cB>cV&&!aprovado)}${card('/'+vkey+' (desafiante)',V,CV,aprovado)}</div>
-          <div style="margin-top:12px;padding:10px 12px;background:${vcor}18;border:1px solid ${vcor}44;border-radius:12px;font-size:13px"><b style="color:${vcor}">Veredito:</b> ${veredito}<br><span style="font-size:11px;color:var(--muted)">Regra (19/Ago): valida por PRAZO (~4-5 dias) + piso de ${300} sessões/lado — não mais só "30 sessões". Aprova a troca se o desafiante <b>iguala ou supera a base</b> em conversão + retenção. Meta-estrela: 30% de ida-pro-checkout (medição por variante em breve) — mas <b>não precisa bater 30% pra aprovar</b>.</span></div>
+          <div style="margin-top:12px;padding:10px 12px;background:${vcor}18;border:1px solid ${vcor}44;border-radius:12px;font-size:13px"><b style="color:${vcor}">Veredito:</b> ${veredito}<br><span style="font-size:11px;color:var(--muted)">Regra (19/Ago): valida por PRAZO (~4-5 dias) + piso de ${300} sessões/lado — não mais só "30 sessões". Aprova a troca se o desafiante <b>iguala ou supera a base</b> em conversão + retenção. Alvo de ida-pro-checkout: 12-18% (frio in-app; medição por variante em breve) — mas <b>não precisa bater o topo pra aprovar</b>.</span></div>
           <div style="margin-top:14px"><div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:2px">📈 Linha do tempo (histórico diário)</div>${tl}</div>
         </div></div>`;
     }
@@ -531,7 +531,7 @@
       <td style="padding:7px 10px;font-size:13px">${esc(c.nome)}</td>
       <td style="padding:7px 10px;text-align:right;font-size:12px;color:#9aa">${money(c.gasto)}</td>
       <td style="padding:7px 10px;text-align:right;font-size:12px">${c.vendas} <small style="color:#9aa">${money(c.receita)}</small></td>
-      <td style="padding:7px 10px;text-align:right;font-weight:700;font-size:13px;color:${c.roas==null?'#7d8590':c.roas>=1.8?'#4ade80':c.roas>=1.3?'#fbbf24':'#f87171'}">${c.roas==null?'<span style="font-size:10px;font-weight:600">aquecendo</span>':c.roas.toFixed(2)+'x'}</td></tr>`; }
+      <td style="padding:7px 10px;text-align:right;font-weight:700;font-size:13px;color:${c.roas==null?'#7d8590':c.roas>=1.5?'#4ade80':c.roas>=1.2?'#fbbf24':'#f87171'}">${c.roas==null?'<span style="font-size:10px;font-weight:600">aquecendo</span>':c.roas.toFixed(2)+'x'}</td></tr>`; }
     function _esteiraTabela(arr){ if(!arr.length) return '<div style="padding:12px 10px;color:var(--muted);font-size:12.5px">nenhum aqui ainda.</div>';
       return `<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse">
         <thead><tr style="color:#9aa;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px"><th style="text-align:left;padding:6px 10px">selo</th><th style="text-align:left;padding:6px 10px">criativo</th><th style="text-align:right;padding:6px 10px">gasto</th><th style="text-align:right;padding:6px 10px">vendas</th><th style="text-align:right;padding:6px 10px">ROAS real</th></tr></thead>
@@ -550,14 +550,14 @@
       const boxCort='background:rgba(248,113,113,.05);border-left:3px solid rgba(248,113,113,.5);border-radius:10px';
       const boxFila='background:rgba(96,165,250,.06);border-left:3px solid rgba(96,165,250,.5);border-radius:10px';
       return `
-      <div class="section" style="${boxAtivo}"><div class="section-header"><div><div class="section-title">🟢 Ativos (rodando agora) · ${state.per}</div><div class="section-sub">venda REAL da Greenn NO PERÍODO selecionado (muda com o filtro lá em cima). 🏆 campeão ≥1,8 + ≥3 vendas (winner de ciclo) · ✅ foi bem ≥1,3 · ⏳ observar (ativo abaixo da meta — ainda pode virar, não corta) · ✂️ cortar (só o R$50 sem venda) · 🔥 aquecendo &lt;R$30</div></div></div><div class="section-body" style="padding:0">${_esteiraTabela(ativos)}</div></div>
+      <div class="section" style="${boxAtivo}"><div class="section-header"><div><div class="section-title">🟢 Ativos (rodando agora) · ${state.per}</div><div class="section-sub">venda REAL da Greenn NO PERÍODO selecionado (muda com o filtro lá em cima). 🏆 campeão ≥1,5 + ≥3 vendas (winner de ciclo · ≥2,0 = escala) · ✅ foi bem ≥1,2 · ⏳ observar (ativo abaixo de 1,5 — ainda pode virar, não corta acima de 1,5) · ✂️ cortar (só o R$50 sem venda) · 🔥 aquecendo &lt;R$30</div></div></div><div class="section-body" style="padding:0">${_esteiraTabela(ativos)}</div></div>
       <div class="section" style="${boxCort}"><div class="section-header"><div><div class="section-title">⏸️ Já rodaram / cortados</div><div class="section-sub">pausados — o que já passou pela esteira (foi bem em cima, cortar embaixo)</div></div></div><div class="section-body" style="padding:0">${_esteiraTabela(parados)}</div></div>
       <div class="section" style="${boxFila}"><div class="section-header"><div><div class="section-title">🎬 Na fila — ${fila.length} pra testar</div><div class="section-sub">criativos prontos na pasta que ainda não rodaram (fluxo de teste a cada 4 dias: sobe os novos, depois revive os bons)</div></div></div><div class="section-body" style="padding:0">${filaChips}</div></div>`;
     }
     const BASELINE = {
       pocket:{ nome:'Dream Baby Pocket', icon:'👶', linhas:[
-        {m:'CTR (link)', ideal:'1,3%', media:'1,71%', k:'ctr', f:'pct', dir:'up'},
-        {m:'Connect rate', ideal:'80%', media:'94%', k:'connect', f:'pct', dir:'up'},
+        {m:'CTR (link)', ideal:'1,2%', media:'1,71%', k:'ctr', f:'pct', dir:'up'},
+        {m:'Connect rate', ideal:'85%', media:'94%', k:'connect', f:'pct', dir:'up'},
         {m:'Ida pro checkout', ideal:'25%', media:'12,7%', k:'ida', f:'pct', dir:'up', gargalo:true},
         {m:'Conversão do checkout', ideal:'40%', media:'26%', k:null, f:'pct'},
         {m:'CPM', ideal:'—', media:'R$ 27', k:'cpm', f:'rs', dir:'down'},
@@ -569,8 +569,8 @@
         {m:'Retenção 3s', ideal:'20-25%', media:'38%', k:null, f:'pct'},
       ]},
       quiz:{ nome:'Quiz Dream Baby', icon:'🎯', linhas:[
-        {m:'CTR (link)', ideal:'1,3%', media:'1,46%', k:'ctr', f:'pct', dir:'up'},
-        {m:'Connect rate', ideal:'80%', media:'98%', k:'connect', f:'pct', dir:'up'},
+        {m:'CTR (link)', ideal:'1,2%', media:'1,46%', k:'ctr', f:'pct', dir:'up'},
+        {m:'Connect rate', ideal:'85%', media:'98%', k:'connect', f:'pct', dir:'up'},
         {m:'Ida pro checkout', ideal:'25%', media:'9,9%', k:'ida', f:'pct', dir:'up', gargalo:true},
         {m:'Conversão do checkout', ideal:'40%', media:'42%', k:null, f:'pct'},
         {m:'CPM', ideal:'—', media:'R$ 29', k:'cpm', f:'rs', dir:'down'},
@@ -582,8 +582,8 @@
         {m:'Retenção 3s', ideal:'20-25%', media:'31%', k:null, f:'pct'},
       ]},
       guia:{ nome:'Guia da Pega', icon:'🤱', linhas:[
-        {m:'CTR (link)', ideal:'1,3%', media:'2,3%', k:'ctr', f:'pct', dir:'up'},
-        {m:'Connect rate', ideal:'80%', media:'—', k:'connect', f:'pct', dir:'up'},
+        {m:'CTR (link)', ideal:'1,2%', media:'2,3%', k:'ctr', f:'pct', dir:'up'},
+        {m:'Connect rate', ideal:'85%', media:'—', k:'connect', f:'pct', dir:'up'},
         {m:'Ida pro checkout', ideal:'25%', media:'pixel restrito*', k:null, f:'pct', gargalo:true},
         {m:'CPM', ideal:'—', media:'R$ 23', k:'cpm', f:'rs', dir:'down'},
         {m:'CPA (real)', ideal:'R$ 36', media:'R$ 32', k:'cpa', f:'rs', dir:'down'},
@@ -640,12 +640,14 @@
       </div></div>`;
       const reguaDecisao=`<div class="section" style="background:rgba(129,140,248,.08);border-color:rgba(129,140,248,.3)"><div class="section-header"><div><div class="section-title">🎯 Régua consolidada — escalar × reduzir × cortar</div><div class="section-sub">UMA régua só (martelo 28/Ago) · mesmas regras do Austin, do tick e da esteira</div></div></div><div class="section-body" style="font-size:12.5px;color:var(--muted);line-height:1.85">
         <b style="color:var(--text)">Janelas:</b> <b>7 dias decide CORTE</b> definitivo · <b>3d/hoje decide ESCALA e redução</b>. Papéis diferentes, nunca trocar. Venda sem lag (Greenn por UTM na hora).<br>
-        <b style="color:var(--text)">Corte por gasto (único):</b> gastou <b>R$ 50 sem UMA venda</b> → pausa (o R$ 72 foi aposentado). Bandas: &lt;R$30 aquecendo · R$30-60 leitura precoce (só sinais) · ≥R$60 julgável.<br>
-        <b style="color:#4ade80">≥ 1,8 forte AGORA</b> (3d ROAS ≥2 + tend ok) → <b>ESCALAR +10%/dia, todo dia</b> (nunca pulo grande — +20-50% reseta o aprendizado). Terça = pra LANÇAR; subir verba é "pouco e sempre".<br>
-        <b style="color:#fbbf24">1,6 – 1,8 esfriando</b> → <b>NUNCA cortar.</b> Reduzir até o <b>piso R$ 32/dia</b>, observar 2-3 dias: recuperou → sobe de volta; seguiu ruim no piso → corta. <b>1,3 – 1,6</b> = observar; esfriando → piso primeiro.<br>
-        <b style="color:#f87171">&lt; 1,3 em 7d</b> (R$60+) → <b>corta</b>. Exceção: histórico 30d ≥ 1,8 (já foi bom) → última chance no piso 2-3d antes de matar. O piso é o degrau entre observar e cortar.<br>
-        <b style="color:var(--text)">Winner:</b> <b>de ciclo</b> = ROAS ≥1,8 + ≥3 vendas na janela (promove/escala/selo 🏆) · <b>consolidado</b> = ROAS ≥2 sustentado + 10 vendas acumuladas (10X/duplicação; o gate de 50 do ProAlt foi aposentado 31/08). Sempre dizer qual.<br>
-        <b style="color:#818cf8">Teste A/B de página:</b> valida por <b>prazo (~4-5 dias) + piso de ~300 sessões/lado</b> (não mais "30 sessões"). Aprova trocar o desafiante pela principal se ele <b>iguala ou supera a base em conversão + retenção</b>. Meta-estrela: 30% de ida-pro-checkout (não obrigatória pra aprovar). Sem lag — venda casa por UTM |versão na hora.
+        <b style="color:var(--text)">Corte por gasto (criativo):</b> gastou <b>R$ 50 sem UMA venda</b> → pausa. Bandas: &lt;R$30 aquecendo · R$30-60 leitura precoce (só sinais) · ≥R$60 julgável.<br>
+        <b style="color:var(--text)">Guarda de cadáver (campanha, backstop automático):</b> ≥ R$ 150 gastos, <b>zero venda Greenn E zero pixel</b> → auto-pausa. Alerta a partir de R$ 72 sem venda. Pixel &gt;0 mas Greenn 0 = possível descasamento → só sinaliza, não corta.<br>
+        <b style="color:#4ade80">≥ 1,5 saudável (≥2,0 winner)</b> (3d forte + tend ok) → <b>ESCALAR +10%/dia, todo dia</b> (nunca pulo grande — +20-50% reseta o aprendizado). Terça = pra LANÇAR; subir verba é "pouco e sempre".<br>
+        <b style="color:#fbbf24">1,2 – 1,5 zona morna</b> → <b>NUNCA cortar acima de 1,5.</b> Reduzir até o <b>piso R$ 32/dia</b>, observar 2-3 dias: recuperou → sobe de volta; seguiu ruim no piso → corta.<br>
+        <b style="color:#f87171">&lt; 1,2 em 7d</b> (R$60+) → <b>corta/baixa</b>. Exceção: histórico 30d ≥ 1,5 (já foi bom) → última chance no piso 2-3d antes de matar. Break-even ~1,15 (low ticket, margem ~90%).<br>
+        <b style="color:var(--text)">Winner:</b> <b>de ciclo</b> = ROAS ≥1,5 + ≥3 vendas na janela (promove/escala/selo 🏆) · <b>consolidado</b> = ROAS ≥2,0 sustentado + 10 vendas acumuladas (o gate de 50 do ProAlt foi aposentado). Sempre dizer qual.<br>
+        <b style="color:var(--text)">Estrutura (10/Set):</b> <b>CBO BANIDO</b> — só teste=ABO (1 criativo/conjunto ~R$30) e escala=1-1-1 (winner isolado). Medido 30d: CBO 0,80 (prejuízo) vs 1-1-1 1,50 e ABO 1,19.<br>
+        <b style="color:#818cf8">Teste A/B de página:</b> valida por <b>prazo (~4-5 dias) + piso de ~300 sessões/lado</b> (não mais "30 sessões"). Aprova trocar o desafiante pela principal se ele <b>iguala ou supera a base em conversão + retenção</b>. Alvo de ida-pro-checkout: 12-18% (frio in-app; não obrigatório pra aprovar). Sem lag — venda casa por UTM |versão na hora.
       </div></div>`;
       return nota + reguaDecisao + tabelaFunil('pocket') + tabelaFunil('quiz') + tabelaFunil('guia') + guiaNota + bumpNota + engaj;
     }
@@ -680,7 +682,7 @@
       if(!rows.length) return `No período <b>${state.per}</b> nenhuma campanha teve gasto. Troca o período aí em cima.`;
       if(/roas|retorno|como.*(tá|ta|esta|vai)/.test(t)){
         const ruins=rows.filter(c=>c.roas>0&&c.roas<1.3).map(c=>`${nomeCurto(c)} (${c.roas.toFixed(2)})`);
-        return `No <b>${state.per}</b>, o ROAS de mídia está em <b>${tot.roas.toFixed(2)}</b> (meta 1,8), com ${money(tot.gasto)} gastos e ${tot.vendas} vendas.` + (ruins.length?` Abaixo da linha: ${ruins.join(', ')}.`:' Tudo na meta. 👏');
+        return `No <b>${state.per}</b>, o ROAS de mídia está em <b>${tot.roas.toFixed(2)}</b> (saudável ≥1,5), com ${money(tot.gasto)} gastos e ${tot.vendas} vendas.` + (ruins.length?` Abaixo da linha: ${ruins.join(', ')}.`:' Tudo saudável. 👏');
       }
       if(/sangr|pior|corta|ruim|perdendo|preju/.test(t)){
         const pior=[...rows].sort((a,b)=>a.roas-b.roas)[0];
@@ -688,9 +690,9 @@
       }
       if(/melhor|winner|escala|top/.test(t)){
         const best=[...rows].sort((a,b)=>b.roas-a.roas)[0];
-        return `A melhor no <b>${state.per}</b> é <b>${nomeCurto(best)}</b> — ROAS ${best.roas.toFixed(2)}, ${best.vendas} vendas. ${best.roas>=1.8?'Na meta.':'Ainda abaixo de 1,8.'}`;
+        return `A melhor no <b>${state.per}</b> é <b>${nomeCurto(best)}</b> — ROAS ${best.roas.toFixed(2)}, ${best.vendas} vendas. ${best.roas>=1.5?'Saudável.':'Ainda abaixo de 1,5.'}`;
       }
-      if(/página|pagina|checkout|ida|converte/.test(t)) return 'O gargalo dos dois funis é a <b>ida pro checkout</b>: Pocket 12,7% e Quiz 9,9%, contra 25% ideal. É onde tem mais dinheiro parado — dobrar isso dobra a venda sem gastar mais. Abre a aba do funil pra ver.';
+      if(/página|pagina|checkout|ida|converte/.test(t)) return 'O gargalo dos dois funis é a <b>ida pro checkout</b>: Pocket 12,7% e Quiz 9,9%, contra alvo 12-18% (frio in-app). É onde tem mais dinheiro parado — dobrar isso dobra a venda sem gastar mais. Abre a aba do funil pra ver.';
       if(/quiz/.test(t)) return 'O funil <b>Quiz</b> está sem verba no período (nenhuma campanha ativa). Histórico e página dele estão na aba 🎯 Quiz Dream Baby.';
       if(/oi|olá|ola|bom dia|boa|ajuda|pode|consegue|o que/.test(t)) return 'Posso te dizer o <b>ROAS</b> do período, qual campanha está <b>sangrando</b>, a <b>melhor</b>, e explicar qualquer métrica. Em breve, com o motor completo, eu também <b>executo</b> (pausa, verba) e <b>registro no histórico</b>.';
       return 'Essa eu respondo de verdade quando o Bruno ligar meu motor completo (o Austin) — aí converso sobre qualquer coisa, executo e registro nossos ajustes no histórico. Por agora te ajudo com: <b>ROAS</b>, <b>pior/melhor campanha</b> e o <b>gargalo das páginas</b>.';
