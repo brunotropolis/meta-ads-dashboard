@@ -1544,6 +1544,25 @@ function renderFunilPano(key){
       +'</div>';
     var bumpLine = f.bumps ? ('<br>🎁 <b style="color:#fbbf24">'+f.bumps+' order bumps</b> · R$ '+fmt(f.rec_bumps||0)+' · <b style="color:#fbbf24">'+(f.receita?((f.rec_bumps||0)/f.receita*100).toFixed(1):0)+'%</b> da receita · attach <b style="color:'+((f.vendas&&f.bumps/f.vendas>=0.25)?'#4ade80':'var(--text,#fff)')+'">'+(f.vendas?(f.bumps/f.vendas*100).toFixed(0):0)+'%</b> (meta 25%)') : '';
     var origem='<div style="padding:8px 6px;color:var(--muted);font-size:13px">'+f.vendas+' vendas · Pago <b style="color:var(--text,#fff)">'+f.pago+'</b> (R$ '+fmt(f.pago_receita||0)+') · Orgânico <b style="color:var(--text,#fff)">'+f.org+'</b> (R$ '+fmt(f.org_receita||0)+')'+(f.vendas?(' · ticket médio R$ '+fmt(f.receita/f.vendas)):'')+bumpLine+'<br><span style="color:var(--muted);font-size:11.5px">ROAS de mídia = só pago ÷ gasto (comparável ao Austin) · ROAS do funil = tudo, com orgânico ÷ gasto · order bump entra na receita e no ROAS</span></div>';
+    // ── Atribuição da Meta (clique 7d + view 1d = Meta TOTAL) — sinal, a verdade continua Greenn (regra 17/Set) ──
+    var metaVT='';
+    if(f.gasto>0 && (f.roas_meta_click!=null || f.roas_meta_view!=null)){
+      var mt=f.roas_meta_total;
+      var mtCor = mt==null?'var(--muted)':(mt>=1.5?'#4ade80':(mt>=1.15?'#fbbf24':'#f87171'));
+      var gv=f.roas_midia; var descasa = (gv!=null && mt!=null && gv<1.15 && mt>=1.15);
+      metaVT='<div style="padding:8px 8px 6px;margin:2px 6px 0;border-top:1px dashed rgba(255,255,255,.09)">'
+        +'<div style="font-size:11.5px;color:var(--muted);margin-bottom:5px">📐 <b>Atribuição da Meta</b> (sinal, NÃO é dinheiro — a verdade continua sendo a venda real Greenn):</div>'
+        +'<div style="display:flex;flex-wrap:wrap;gap:6px;font-size:12px;align-items:center">'
+        +'<span class="pano-b" style="background:rgba(74,222,128,.14);color:#4ade80;font-weight:700">💚 Greenn '+(gv!=null?gv.toFixed(2):'—')+'x</span>'
+        +'<span class="pano-b" style="background:rgba(34,211,238,.12);color:#22d3ee">👆 clique '+(f.roas_meta_click!=null?f.roas_meta_click.toFixed(2):'—')+'x</span>'
+        +'<span class="pano-b" style="background:rgba(148,163,184,.14);color:#94a3b8">👁 view '+(f.roas_meta_view!=null?f.roas_meta_view.toFixed(2):'—')+'x</span>'
+        +'<span style="color:var(--muted)">=</span>'
+        +'<span class="pano-b" style="background:rgba(255,255,255,.06);color:'+mtCor+';font-weight:700">Σ Meta TOTAL '+(mt!=null?mt.toFixed(2):'—')+'x</span>'
+        +'</div>'
+        +(descasa?'<div style="font-size:11.5px;color:#fbbf24;margin-top:5px">🟡 <b>Descasamento:</b> Greenn abaixo do breakeven mas Meta TOTAL ≥ 1,15 — influência real que não casou por clique. <b>Não corta</b>: investiga casamento/página.</div>':'')
+        +'<div style="font-size:11px;color:var(--muted);margin-top:5px;line-height:1.5">Regra 17/Set: o view (1d) é o sinal mais inflado, nunca entra no ROAS de dinheiro. Antes de cortar, olha o <b>Meta TOTAL</b> — se ≥ <b>1,15</b> (breakeven) não mata (marca 🟡 e investiga); só corta quando até o TOTAL fica abaixo de 1,15 e a Greenn também.</div>'
+        +'</div>';
+    }
     var flow='';
     if(key==='ebook'){
       if(f.sessoes_3d){
@@ -1568,7 +1587,7 @@ function renderFunilPano(key){
           +'</div>';
       } else { flow='<div style="padding:14px;color:var(--muted);font-size:13px">Sem tráfego pago no período nesse funil.</div>'; }
     }
-    el.innerHTML='<div id="panoramaBody"><div class="section" style="margin-bottom:16px"><div class="section-header"><div class="section-title">'+f.nome+'</div></div>'+kpis+origem+flow+'</div></div>';
+    el.innerHTML='<div id="panoramaBody"><div class="section" style="margin-bottom:16px"><div class="section-header"><div class="section-title">'+f.nome+'</div></div>'+kpis+origem+metaVT+flow+'</div></div>';
   }
   if(_panoData && _panoPer!==currentPeriodo) _panoData=null;
   if(_panoData) paint(_panoData);
