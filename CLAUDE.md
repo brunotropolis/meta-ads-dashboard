@@ -326,6 +326,16 @@ for (const v of (dash.vendas?.hoje || [])) {
 ```
 O webhook (`appendOrUpdate` matching por `transaction_id`) atualiza as linhas existentes — não cria duplicatas.
 
+## View-through / Meta TOTAL no detalhe do funil (21/Set/2026)
+
+O detalhe de cada sub-funil (aba Funis) agora mostra, além do ROAS de dinheiro (Greenn), as **3 leituras de atribuição da Meta** — igual ao Austin desde 17/Set. O `GESTOR | Funis Dash` (`7q564c1xIGkXyy9Y`, nó FUNIS / `_funis_node.js`) passou a puxar a receita de compra da Meta com `action_attribution_windows=['7d_click','1d_view']` e a expor por sub-funil e no `agg`: **`meta_click_rev`/`meta_view_rev`** e **`roas_meta_click`/`roas_meta_view`/`roas_meta_total`** (`roas_meta_total = (click_rev+view_rev)/gasto`). O front (`index.html`, `renderFunilPano`, bloco `metaVT`) renderiza `💚 Greenn | 👆 clique | 👁 view = Σ Meta TOTAL`, com o TOTAL colorido pelo breakeven (verde ≥1,5 · amarelo ≥1,15 · vermelho <1,15) e aviso 🟡 de **descasamento** quando Greenn <1,15 mas Meta TOTAL ≥1,15 (regra 17/Set: não corta, investiga casamento/página). O view NUNCA entra no ROAS de dinheiro — é só sinal; a verdade continua Greenn.
+
+Na mesma sessão, a régua da aba **Régua Low Ticket** (`META | Dashboard API` `1mpyzhlC5Nt5LjH0`, nó PROCESSAR DADOS, view=baselines) foi alinhada à régua vigente: status `≥1,5 verde / 1,2–1,5 amarelo / <1,2 vermelho` (winner ≥2,0). Antes usava a aposentada `≥1,8 / ≥1,5 / <1,5`.
+
+## Order bumps na aba Funis (02/Set/2026)
+
+Os funis SEMPRE somaram os order bumps na receita e no ROAS — o **ROAS de mídia = `pago_receita ÷ gasto`, e `pago_receita` inclui os bumps pagos** (não é só o produto principal). O que faltava era EXIBIR o peso deles. O `GESTOR | Funis Dash` (`7q564c1xIGkXyy9Y`, nó FUNIS) passou a expor **`rec_bumps`** (receita só dos bumps, por sub-funil e no `agg`), e o frontend mostra, no card de cada funil, a linha **"🎁 N order bumps · R$X · Y% da receita · attach Z% (meta 25%)"** (attach fica verde quando ≥25%) + o % no Panorama. Bumps casam com a principal por `email|checkout_id|minuto`; ~93% casam (órfãos raros, todos orgânicos → não afetam ROAS de mídia). Os 3 bumps ativos: OB Entre Sonecas (119672, R$19,90), Cólica (119627, R$37), Alta Produção (119667, R$19,90 — Guia). Peso medido (30d): pocket 10,3% · quiz 7,6% · guia 15,0% · mat_calo 19,2%.
+
 ## Pendente
 
 - **Painel de funil** — Após dados de produtos preenchidos, criar painel visual no dashboard.
