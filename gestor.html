@@ -85,6 +85,7 @@
   .fb-pocket { background:rgba(96,165,250,.16); color:var(--blue); }
   .fb-quiz { background:rgba(244,114,182,.16); color:var(--pink); }
   .fb-guia { background:rgba(52,211,153,.16); color:var(--green); }
+  .fb-mathias { background:rgba(167,139,250,.16); color:#a78bfa; }
   .stdot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align:middle; }
   .stdot.on { background:var(--green); box-shadow:0 0 6px var(--green); }
   .stpill { display:inline-block; font-size:9px; font-weight:700; letter-spacing:.3px; text-transform:uppercase; padding:1px 6px; border-radius:6px; margin-right:6px; background:rgba(156,163,184,.16); color:var(--muted); vertical-align:middle; }
@@ -242,6 +243,7 @@
         <div class="subtab active" data-tab="geral">Geral</div>
         <div class="subtab" data-tab="pocket">👶 Dream Baby Pocket</div>
         <div class="subtab" data-tab="quiz">🎯 Quiz Dream Baby</div>
+        <div class="subtab" data-tab="mathias">🌙 Mathias</div>
         <div class="subtab" data-tab="guia">🤱 Guia da Pega</div>
         <div class="subtab" data-tab="mat_calo">📰 Matéria Calo</div>
         <div class="subtab" data-tab="mat_ama">📰 Matéria Amam.</div>
@@ -336,6 +338,28 @@
             ajustes:[] },
         ],
       },
+      mathias: {
+        nome:'Dream Baby Mathias', icon:'🌙', page:'mathiasdb.manualdorecemnascido.com.br',
+        pageMetrics:[
+          {l:'Ida pro checkout', v:'~10%', cls:'bad', meta:'alvo 12-18%', faq:'ida'},
+          {l:'Chegam na oferta', v:'29%', cls:'bad', meta:'71% saem antes do preço', faq:'De cada 100 mães que abrem a página, só 29 chegam a ver o preço (beacon próprio, 3 dias, 23/09).'},
+          {l:'Clique no botão do topo', v:'18%', cls:'', meta:'384 cliques', faq:'Clarity 01-23/09: o botão do hero recebeu 384 cliques (18% das visitas) contra 168 nos botões de compra — mas levava pro método, não pro preço.'},
+          {l:'Cliques mortos no método', v:'~600', cls:'bad', meta:'selo 30 min = nº1', faq:'Clarity 01-23/09: o selo "Do quiz ao plano na mão em cerca de 30 minutos" foi o elemento MAIS clicado da página (278) e não levava a lugar nenhum; os passos do quiz somam ~330.'},
+          {l:'Conv. do checkout', v:'~25%', cls:'', meta:'estável 4 semanas', faq:'Compra ÷ início de checkout: 25/26/25/24% nas últimas 4 semanas. Não é o gargalo.'},
+        ],
+        versoes:[
+          { nome:'v2 — atalho pro preço (desafiante)', when:'no ar 23/09 (split 50/50)', status:'atual',
+            conversamos:['Mesa Austin + Sherlock 23/09: 71% saem antes de ver o preço e o botão do topo (o mais clicado) levava pro método.','Pacote de 3 mudanças num teste só (decisão Bruno) — se ganhar, sabemos que o conjunto funciona.','Split same-URL na borda (worker mathiasdb-split, cookie pvm). Venda da v2 carimba |v2 no utm_content.'],
+            ajustes:[
+              {when:'23 set', what:'Botão do topo leva pra faixa de valor', goal:'mais gente chegando no preço (29% → 40%+)', ba:'medindo desde 24/09'},
+              {when:'23 set', what:'Selo "30 minutos" vira link pra faixa de valor', goal:'transformar o clique morto nº1 em ida pro preço', ba:'278 cliques mortos → medindo'},
+              {when:'23 set', what:'Preço ancorado: De R$ 97,00 / por apenas / R$ 67', goal:'subir o clique no botão de compra de quem vê o preço (35%)', ba:'medindo'},
+            ] },
+          { nome:'Base — landing dedicada Mathias', when:'no ar desde 01/09', status:'anterior',
+            conversamos:['Landing própria pro criativo Mathias (congruência anúncio → página), offer Greenn própria I2WDZg.','Paleta azul-bebê/blush, gancho "seu colo é o único berço que seu bebê aceita?".'],
+            ajustes:[{when:'17 set', what:'Fix de tracking (#id do nome da campanha)', goal:'venda casar com a campanha certa', ba:'—'}] },
+        ],
+      },
       mat_calo: {
         nome:'Matéria Calo', icon:'📰', page:'materia.manualdorecemnascido.com.br/v2',
         pageMetrics:[{l:'Campanhas', v:'no ar', cls:'', meta:'', faq:'Funil de matéria (calo). Página materia.../v2. Venda casada por UTM da Greenn (pixel do Guia restrito). Vendas/ROAS reais na tabela abaixo.'}],
@@ -354,7 +378,7 @@
     let fFiltro = 'todos';
     const money = n => 'R$ ' + Math.round(n).toLocaleString('pt-BR');
     const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-    const fb = f => `<span class="fbadge fb-${f}">${f==='pocket'?'POCKET':f==='quiz'?'QUIZ':f==='guia'?'GUIA':'OUTRO'}</span>`;
+    const fb = f => `<span class="fbadge fb-${f}">${f==='pocket'?'POCKET':f==='quiz'?'QUIZ':f==='guia'?'GUIA':f==='mathias'?'MATHIAS':'OUTRO'}</span>`;
     const metaTag = t => t ? `<span class="meta-tag">${t}</span>` : '';
     const nomeCurto = c => c.nome.replace(/\[dream pocket\]/i,'').replace(/\[|\]/g,'').replace(/\s+/g,' ').trim().slice(0,34);
     const DEFS = { roas:'Receita real ÷ gasto. Saudável ≥1,5, winner 2,0 (break-even ~1,15).', cpa:'Custo por venda (gasto ÷ vendas). Ideal ~R$ 36.', freq:'Vezes que a mesma pessoa viu o anúncio. Ideal até 2-3.', ctr:'Cliques no link ÷ quem viu. Bom acima de 1,2%.', connect:'Quem carregou a página ÷ cliques. Abaixo de 85% = quebra técnica.', ida:'Quem foi pro checkout ÷ quem chegou na página. Alvo 12-18% (tráfego frio) — nosso gargalo.', receita:'O que sobra da venda depois da taxa da plataforma.', vendas:'Vendas casadas à campanha por UTM (fora = orgânico/resíduo).', principal:'Vendas do produto principal do funil (sem os order bumps), pela venda real da Greenn. pago = veio de anúncio · org = orgânico (bio/stories/direto). Distribui por funil e por período.', bumps:'Order bumps vendidos junto com o principal deste funil (linha separada no checkout), casados à venda principal pelo checkout.', roasmidia:'Receita PAGA do funil (com os bumps das vendas pagas) ÷ gasto de mídia. Mesma conta do Panorama e do Austin.', dead:'Cliques em algo que parece botão mas não é.', rage:'Cliques de raiva no mesmo lugar / voltar na hora.', scroll:'Quão fundo as pessoas rolam a página.', hero:'% que passa da 1ª tela (10% da página). Baixo = o topo não segura.', lcp:'Tempo até o maior elemento carregar. Acima de 2,5s = lento.' };
@@ -482,6 +506,41 @@
           <div style="margin-top:14px"><div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:2px">📈 Linha do tempo (histórico diário)</div>${tl}</div>
         </div></div>`;
     }
+    // A/B MATHIAS (23/09): base x /v2 — sessoes/IC/oferta pelo beacon proprio (mesma URL, Clarity nao separa), venda por |v2
+    function abPanelMathias(ab) {
+      if (!ab || !ab.base || !ab.v2) return '';
+      const B = ab.base, V = ab.v2, CB = '#a78bfa', CV = '#34d399', FLOOR = 300;
+      const pct = n => (n==null?'—':(+n).toFixed(1).replace('.',',')+'%');
+      const pctTopo = D => D.sessoes ? pct(D.clique_topo/D.sessoes*100) : '—';
+      const amostraOk = (B.sessoes||0)>=FLOOR && (V.sessoes||0)>=FLOOR;
+      const cB=B.conv||0, cV=V.conv||0, oB=B.chegou_oferta||0, oV=V.chegou_oferta||0;
+      let veredito, vcor, aprovado=false;
+      if ((V.sessoes||0)<20) { veredito='Split ligado 23/09 — a contagem começa em 24/09. Volte em ~1 dia.'; vcor='var(--muted)'; }
+      else if (!amostraOk) { veredito='Coletando — precisa ~'+FLOOR+' sessões/lado (≈ 5 dias). Parcial: '+(cV>cB?'/v2 converte melhor':cB>cV?'base converte melhor':'empate na conversão')+' · '+(oV>oB?'/v2':'base')+' leva mais gente até o preço'; vcor='var(--yellow)'; }
+      else if (cV>=cB && oV>=oB) { veredito='✅ /v2 APROVADA — iguala/supera a base em conversão E leva mais gente até o preço. Pode virar a principal.'; vcor='var(--green)'; aprovado=true; }
+      else if (cV>=cB*0.9 && oV>oB) { veredito='✅ /v2 pode virar — perto na conversão e melhor em levar até o preço.'; vcor='var(--green)'; aprovado=true; }
+      else if (cV<cB*0.9) { veredito='❌ Base ganha — /v2 converte bem menos. Mantém a base.'; vcor='var(--red)'; }
+      else { veredito='Empate/misto — mais 1-2 dias pra cravar.'; vcor='var(--yellow)'; }
+      const bar = (v,cor) => `<div style="height:8px;background:#23232e;border-radius:6px;overflow:hidden;margin-top:4px"><div style="height:100%;width:${Math.min(100,v||0)}%;background:${cor}"></div></div>`;
+      const card = (nome, D, cor, ganha) => `
+        <div style="flex:1;min-width:180px;background:linear-gradient(160deg,#181820,#131319);border:1px solid ${ganha?cor:'#2a2a35'};border-radius:16px;padding:14px;position:relative">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${cor};border-radius:16px 16px 0 0"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><b style="color:${cor}">${nome}</b>${ganha?`<span style="font-size:10px;background:${cor}22;color:${cor};border-radius:20px;padding:2px 8px">na frente</span>`:''}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 12px">
+            <div><div style="font-size:11px;color:var(--muted)">Conversão</div><div style="font-size:20px;font-weight:700;color:${cor}">${D.conv==null?'—':(+D.conv).toFixed(2).replace('.',',')+'%'}</div></div>
+            <div><div style="font-size:11px;color:var(--muted)">Vendas</div><div style="font-size:20px;font-weight:700">${D.vendas} <small style="font-size:11px;color:var(--muted)">/ ${D.sessoes} sess.</small></div></div>
+            <div><div style="font-size:11px;color:var(--muted)">Ida pro checkout <small style="opacity:.7">(${D.ic})</small></div><div style="font-size:18px;font-weight:700;color:${D.ida_checkout==null?'var(--muted)':(D.ida_checkout>=12?cor:'#fbbf24')}">${pct(D.ida_checkout)}</div></div>
+            <div><div style="font-size:11px;color:var(--muted)">Clique no botão do topo</div><div style="font-size:18px;font-weight:700">${pctTopo(D)} <small style="font-size:11px;color:var(--muted)">(${D.clique_topo})</small></div></div>
+            <div style="grid-column:1/3"><div style="font-size:11px;color:var(--muted)">Chegam até o preço · ${pct(D.chegou_oferta)}</div>${bar(D.chegou_oferta,cor)}</div>
+            <div style="grid-column:1/3;font-size:11px;color:var(--muted)">Receita ${money(D.receita||0)}</div>
+          </div>
+        </div>`;
+      return `<div class="section"><div class="section-header"><div><div class="section-title">🧪 Teste A/B ao vivo — base vs /v2 (atalho pro preço)</div><div class="section-sub">split 50/50 na borda (mesma URL) · desde ${esc(ab.inicio||'24/09')} · ${ab.dias||0} dia(s) · sessões e cliques pelo beacon próprio</div></div></div>
+        <div class="section-body">
+          <div style="display:flex;gap:12px;flex-wrap:wrap">${card('Base (atual)',B,CB,amostraOk&&cB>cV&&!aprovado)}${card('/v2 (desafiante)',V,CV,aprovado)}</div>
+          <div style="margin-top:12px;padding:10px 12px;background:${vcor}18;border:1px solid ${vcor}44;border-radius:12px;font-size:13px"><b style="color:${vcor}">Veredito:</b> ${veredito}<br><span style="font-size:11px;color:var(--muted)">/v2 = botão do topo e selo "30 minutos" levam pra faixa de valor + preço ancorado (De R$ 97,00 / por apenas / R$ 67). Aprova se iguala/supera a base em conversão E leva mais gente até o preço, com ~${FLOOR} sessões/lado.</span></div>
+        </div></div>`;
+    }
     function renderEngajamento() {
       const eng=(DATA.engajamento&&DATA.engajamento.d30)||[], seg=DATA.seguidores||{}, posts=DATA.posts_ig||[];
       const num=n=>(Number(n)||0).toLocaleString('pt-BR'), rs=n=>'R$ '+Math.round(n).toLocaleString('pt-BR');
@@ -498,7 +557,7 @@
     }
     function renderFunil(fkey) {
       const F=FUNIS[fkey], p=periodo(), rows=campanhas(fkey), r=resumo(rows,p,fkey);
-      const abBlock = fkey==='pocket' ? abPanel(DATA.ab_pocket,'curta',DATA.historico_ab) : (fkey==='guia' ? `<div class="section" style="background:rgba(107,114,136,.06)"><div class="section-body" style="font-size:12px;color:var(--muted)">📚 A/B do Guia encerrado em 26/08: a <b>base venceu</b> (conv 8,22% × 2,94% da /v2). Split desligado, 100% do tráfego na base. Próximo teste: mudar UMA variável por vez.</div></div>` : '');
+      const abBlock = fkey==='pocket' ? abPanel(DATA.ab_pocket,'curta',DATA.historico_ab) : fkey==='mathias' ? abPanelMathias(DATA.ab_mathias) : (fkey==='guia' ? `<div class="section" style="background:rgba(107,114,136,.06)"><div class="section-body" style="font-size:12px;color:var(--muted)">📚 A/B do Guia encerrado em 26/08: a <b>base venceu</b> (conv 8,22% × 2,94% da /v2). Split desligado, 100% do tráfego na base. Próximo teste: mudar UMA variável por vez.</div></div>` : '');
       const arq=(DATA.ab_arquivo||[]).filter(a=>a.funil===fkey);
       const arqBlock = arq.length ? `<div class="section"><div class="section-header"><div><div class="section-title">📚 Versões arquivadas (livro-razão)</div><div class="section-sub">testes de página já encerrados — o resultado congelado de quem não venceu</div></div></div><div class="section-body" style="padding:0"><table><thead><tr><th class="l">Versão</th><th>Veredito</th><th>Conv. desafiante</th><th>Conv. base</th><th>Amostra</th><th>Arquivada</th></tr></thead><tbody>`+arq.map(a=>`<tr><td class="l"><b>/${esc(a.versao)}</b> <small style="color:var(--muted)">${esc(a.apelido||'')}</small></td><td><span style="color:${a.veredito==='perdeu'?'var(--red)':'var(--green)'}">${a.veredito==='perdeu'?'❌ perdeu':'✅ '+esc(a.veredito)}</span></td><td style="color:#34d399">${a.des_conv!=null?a.des_conv+'%':'—'} <small style="color:var(--muted)">(${a.des_vendas}v/${a.des_sessoes}s)</small></td><td style="color:#a78bfa">${a.base_conv!=null?a.base_conv+'%':'—'} <small style="color:var(--muted)">(${a.base_vendas}v/${a.base_sessoes}s)</small></td><td style="color:var(--muted)">${esc(a.janela||'')}</td><td style="color:var(--muted)">${a.arquivado_em||''}</td></tr>`).join('')+`</tbody></table></div></div>` : '';
       const pm=F.pageMetrics.map(m=>`<div class="pm"><div class="pl">${m.l}${m.faq?qb(m.faq):''}</div><div class="pv ${m.cls}">${m.v}${m.cls==='bad'?metaTag(m.meta):''}</div></div>`).join('');
