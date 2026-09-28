@@ -171,6 +171,47 @@
       box-shadow: 0 2px 8px var(--purple-glow);
     }
 
+    /* ── Sidebar (menu lateral — desktop; no mobile vale a mtabbar de baixo) ── */
+    .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 226px; z-index: 120;
+      display: flex; flex-direction: column;
+      background: rgba(13, 15, 27, 0.92);
+      backdrop-filter: blur(20px) saturate(170%); -webkit-backdrop-filter: blur(20px) saturate(170%);
+      border-right: 1px solid var(--border); }
+    .sidebar::before { content: ''; position: absolute; top: 0; right: -1px; bottom: 0; width: 2px;
+      background: var(--grad-vibrant); opacity: .35; }
+    .sb-logo { display: flex; align-items: center; gap: 10px; padding: 18px 14px 14px; border-bottom: 1px solid var(--border); }
+    .sb-logo h1 { font-size: 14.5px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.25;
+      background: var(--grad-vibrant); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .sb-logo .tagline { font-size: 10px; color: var(--purple); font-style: italic; margin-top: 2px; }
+    .sb-nav { flex: 1; overflow-y: auto; padding: 10px 9px; display: flex; flex-direction: column; gap: 2px; }
+    .sb-nav::-webkit-scrollbar { width: 6px; }
+    .sb-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .sb-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 11px; cursor: pointer;
+      color: var(--muted); font-weight: 700; font-size: 13.5px; transition: all .15s; border: 1px solid transparent; user-select: none; }
+    .sb-item .ico { font-size: 17px; filter: grayscale(40%); transition: all .2s; }
+    .sb-item:hover { color: var(--text); background: rgba(99, 102, 241, 0.10); }
+    .sb-item:hover .ico { filter: grayscale(0%); }
+    .sb-item.active { color: var(--text);
+      background: linear-gradient(135deg, rgba(167, 139, 250, 0.16), rgba(34, 211, 238, 0.07));
+      border-color: rgba(167, 139, 250, 0.30); }
+    .sb-item.active .ico { filter: grayscale(0%) drop-shadow(0 0 9px var(--purple-glow)); transform: scale(1.08); }
+    .sb-caret { margin-left: auto; font-size: 9px; color: var(--muted); transition: transform .18s; }
+    .sb-cat.open .sb-caret { transform: rotate(90deg); }
+    .sb-subs { display: none; flex-direction: column; gap: 1px; margin: 2px 0 5px; padding-left: 15px; }
+    .sb-subs.open { display: flex; }
+    .sb-sub { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 0 9px 9px 0;
+      font-size: 12.5px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .15s;
+      border-left: 2px solid var(--border); user-select: none; }
+    .sb-sub:hover { color: var(--text); background: rgba(99, 102, 241, 0.08); }
+    .sb-sub.active { color: var(--text); border-left-color: var(--purple);
+      background: rgba(167, 139, 250, 0.11); }
+    .sb-foot { border-top: 1px solid var(--border); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .sb-foot .last-update { text-align: center; }
+    .sb-foot .btn { width: 100%; justify-content: center; text-align: center; }
+    @media (max-width: 760px) { .sidebar { display: none; } }
+    /* o conteúdo inteiro (navrow + main) desloca pela padding do body; a sidebar é fixed e não entra */
+    @media (min-width: 761px) { body { padding-left: 226px; } }
+
     /* ── Layout ── */
     .main { padding: 24px; max-width: 1440px; margin: 0 auto; }
     .tab-content { display: none; }
@@ -216,7 +257,8 @@
     .fc-sub { font-size: 11px; color: var(--muted); margin-top: 8px; }
 
     /* ── Funis (grids + esteira) ── */
-    .section .funis-kpi-grid { grid-template-columns: repeat(4, 1fr); }
+    .section .funis-kpi-grid { grid-template-columns: repeat(5, 1fr); } /* 5 KPIs: investido · faturamento · ROAS principal · ROAS c/ bumps · ROAS funil (era 4 → card órfão na 2ª linha) */
+    @media (max-width: 1100px) { .section .funis-kpi-grid { grid-template-columns: repeat(2, 1fr); } }
     .section .funis-bumps-grid { grid-template-columns: repeat(3, 1fr); }
     .funil-arrow { transition: transform .2s; }
     .fsub-btn { background: var(--bg2,#16161f); color: var(--muted,#8a8a9a); border: 1px solid var(--border,#262633); border-radius: 10px; padding: 8px 16px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .15s; }
@@ -419,7 +461,7 @@
       backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
       border-bottom: 1px solid var(--border);
       padding: 0 14px;
-      position: sticky; top: 73px; z-index: 99;
+      position: sticky; top: 0; z-index: 99;
     }
     .navrow .tabs {
       background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none;
@@ -834,39 +876,39 @@
 
 <!-- Login unico: Cloudflare Access protege o dash. (Login Supabase removido 15/Ago — era redundante e um ponto de falha.) -->
 
-<div class="header">
-  <div class="header-left">
-    <span style="font-size:28px;filter:drop-shadow(0 0 14px var(--purple-glow))" title="May the ROAS be with you ✨">⚡</span>
+<!-- ═══ MENU LATERAL (28/Set: substitui o menu de abas do topo; Atualizar mora aqui embaixo) ═══ -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <span style="font-size:24px;filter:drop-shadow(0 0 14px var(--purple-glow))" title="May the ROAS be with you ✨">⚡</span>
     <div>
-      <h1>Meta Ads Command Center</h1>
-      <div class="header-subtitle">
-        <span class="tagline">⚔️ que a força do ROAS esteja com você</span>
-      </div>
+      <h1>Meta Ads<br>Command Center</h1>
+      <div class="tagline">⚔️ que a força do ROAS esteja com você</div>
     </div>
   </div>
-  <div class="header-right">
+  <nav class="sb-nav" id="sbNav">
+    <div class="sb-item active" data-go="overview" onclick="sbGo('overview')"><span class="ico">🎮</span> Overview</div>
+    <div class="sb-item sb-cat" id="cat-austin" onclick="sbCat('austin')"><span class="ico">🕵️</span> Austin <span class="sb-caret">▶</span></div>
+    <div class="sb-subs" id="subs-austin">
+      <div class="sb-sub" data-go="funis" onclick="sbGo('funis')">🗺️ Funis</div>
+      <div class="sb-sub" data-go="gestor" onclick="sbGo('gestor')">💬 Operação &amp; chat</div>
+    </div>
+    <div class="sb-item" data-go="vendas" onclick="sbGo('vendas')"><span class="ico">💎</span> Vendas</div>
+    <div class="sb-item" data-go="reembolsos" onclick="sbGo('reembolsos')"><span class="ico">↩️</span> Reembolsos</div>
+    <div class="sb-item sb-cat" id="cat-base" onclick="sbCat('base')"><span class="ico">🗂️</span> Base &amp; métricas <span class="sb-caret">▶</span></div>
+    <div class="sb-subs" id="subs-base">
+      <div class="sb-sub" data-go="banco" onclick="sbGo('banco')">🗂️ Criativos</div>
+      <div class="sb-sub" data-go="termometro" onclick="sbGo('termometro')">🌡️ Termômetro</div>
+      <div class="sb-sub" data-go="regua" onclick="sbGo('regua')">📏 Régua</div>
+    </div>
+  </nav>
+  <div class="sb-foot">
     <span class="last-update" id="lastUpdate">Carregando...</span>
     <button class="btn btn-green" onclick="loadData()" title="Recarrega o dashboard com os dados que já estão na planilha (instantâneo). Auto-refresh a cada 10 min.">↻ Atualizar</button>
-    <div style="position:relative">
-      <button class="btn btn-sm" onclick="toggleMoreMenu()" title="Mais opções" style="padding:8px 12px">⋯</button>
-      <div id="moreMenu" style="display:none;position:absolute;right:0;top:115%;background:var(--card,#16161f);border:1px solid var(--border,#262633);border-radius:10px;padding:6px;z-index:300;min-width:190px;box-shadow:0 12px 34px rgba(0,0,0,.55)">
-        <button class="btn btn-sm" style="width:100%;justify-content:flex-start" onclick="toggleMoreMenu();populateData(this)" title="Força refresh dos dados da Meta API → atualiza o banco (use quando os números estiverem desatualizados). Demora ~8s.">🛸 Sync Meta API</button>
-      </div>
-    </div>
+    <button class="btn btn-sm" onclick="populateData(this)" title="Força refresh dos dados da Meta API → atualiza o banco (use quando os números estiverem desatualizados). Demora ~8s.">🛸 Sync Meta API</button>
   </div>
-</div>
+</aside>
 
 <div class="navrow">
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('overview')"><span class="tab-icon">🎮</span> Overview</div>
-    <div class="tab" onclick="switchTab('funis')"><span class="tab-icon">🌪️</span> Funis</div>
-    <div class="tab" onclick="switchTab('campanhas')" style="display:none"><span class="tab-icon">🚀</span> Campanhas</div>
-    <div class="tab" onclick="switchTab('vendas')" id="tabVendas"><span class="tab-icon">💎</span> Vendas</div>
-    <div class="tab" onclick="switchTab('reembolsos')"><span class="tab-icon">↩️</span> Reembolsos</div>
-    <div class="tab" onclick="switchTab('analise')" style="display:none"><span class="tab-icon">🔮</span> Análise & Baseline</div>
-    <div class="tab" onclick="switchTab('gestor')"><span class="tab-icon">🕵️</span> Austin</div>
-    <div class="tab" onclick="switchTab('banco')"><span class="tab-icon">🗂️</span> Base &amp; métricas</div>
-  </div>
   <div id="periodSelector" style="display:flex;align-items:center;flex-wrap:wrap">
     <span>⏱ Período</span>
     <button class="period-btn period-common active" onclick="setPeriodo('hoje')">🌟 Hoje</button>
@@ -1044,15 +1086,8 @@
   </div>
 
   <!-- TAB: ANÁLISE & BASELINE -->
-  <div class="tab-content" id="tab-analise">
-
-    <!-- Hero -->
-    <div class="analise-hero">
-      <h2>🛰️ Análise & Baseline</h2>
-      <p>Padrão de comparação pra decisões de scale/pause. Dados dinâmicos do período selecionado + snapshot de breakdowns. <span style="color:var(--purple)">"Não há tentativa, há ROAS ou não há ROAS."</span> — Mestre Yoda</p>
-    </div>
-
-    <!-- Régua Low Ticket por funil (janela móvel 14d) -->
+  <!-- TELA: RÉGUA (sub-item de Base & métricas no menu lateral) -->
+  <div class="tab-content" id="tab-regua">
     <div class="section" style="margin-bottom:16px">
       <div class="section-header">
         <div>
@@ -1062,8 +1097,10 @@
       </div>
       <div id="reguaBody"><div class="loading"><div class="spinner"></div></div></div>
     </div>
+  </div>
 
-    <!-- Termômetro dos criativos: como estamos hoje × faixa ideal da conta -->
+  <!-- TELA: TERMÔMETRO (sub-item de Base & métricas no menu lateral) -->
+  <div class="tab-content" id="tab-termometro">
     <div class="section" style="margin-bottom:16px">
       <div class="section-header">
         <div>
@@ -1081,6 +1118,17 @@
         </div>
       </div>
       <div id="monitorBody"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+  </div>
+
+  <!-- ⚫ MORTO desde 28/Set: aba Análise sem entrada no menu (Régua e Termômetro migraram pra Base & métricas;
+       o resto — benchmarks, Idade×Gênero, Placement, Vídeo — dependia do webhook meta-dashboard-breakdowns que nem existe mais (404)). -->
+  <div class="tab-content" id="tab-analise">
+
+    <!-- Hero -->
+    <div class="analise-hero">
+      <h2>🛰️ Análise & Baseline</h2>
+      <p>Padrão de comparação pra decisões de scale/pause. Dados dinâmicos do período selecionado + snapshot de breakdowns. <span style="color:var(--purple)">"Não há tentativa, há ROAS ou não há ROAS."</span> — Mestre Yoda</p>
     </div>
 
     <!-- KPIs principais -->
@@ -1311,7 +1359,6 @@ function setPeriodo(periodo) {
 
   if (periodo !== 'personalizado') {
     loadData();
-    if (activeTab === 'analise') loadBreakdowns();
     if (activeTab === 'funis') _renderFunisState();
   }
 }
@@ -1321,7 +1368,6 @@ function applyCustomPeriod() {
   const fim = document.getElementById('dataFim').value;
   if (!inicio || !fim) { alert('Selecione as datas'); return; }
   loadData();
-  if (activeTab === 'analise') loadBreakdowns();
   if (activeTab === 'funis') _renderFunisState();
 }
 
@@ -1536,14 +1582,16 @@ function renderFunilPano(key){
     if(!f){ el.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted)">Funil não encontrado.</div>'; return; }
     var roasM = f.roas_midia!=null ? f.roas_midia.toFixed(2)+'x' : (f.gasto>0?'—':'sem mídia');
     var roasF = f.roas!=null ? f.roas.toFixed(2)+'x' : (f.vendas>0?'orgânico':'—');
+    var roasP = f.roas_principal!=null ? f.roas_principal.toFixed(2)+'x' : '—';
     var kpis='<div class="finance-grid funis-kpi-grid" style="padding:4px">'
       +'<div class="finance-card fc-red"><span class="fc-icon">📢</span><div class="fc-label">Investido Meta</div><div class="fc-value">R$ '+fmt(f.gasto)+'</div></div>'
       +'<div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento'+(f.bumps?' (c/ '+f.bumps+' bumps)':'')+'</div><div class="fc-value">R$ '+fmt(f.receita)+'</div></div>'
-      +'<div class="finance-card fc-yellow"><span class="fc-icon">📊</span><div class="fc-label">ROAS de mídia</div><div class="fc-value">'+roasM+'</div></div>'
+      +'<div class="finance-card fc-purple"><span class="fc-icon">🏷️</span><div class="fc-label">ROAS produto principal</div><div class="fc-value">'+roasP+'</div></div>'
+      +'<div class="finance-card fc-yellow"><span class="fc-icon">📊</span><div class="fc-label">ROAS c/ bumps (mídia)</div><div class="fc-value">'+roasM+'</div></div>'
       +'<div class="finance-card fc-cyan"><span class="fc-icon">🌱</span><div class="fc-label">ROAS do funil</div><div class="fc-value">'+roasF+'</div></div>'
       +'</div>';
     var bumpLine = f.bumps ? ('<br>🎁 <b style="color:#fbbf24">'+f.bumps+' order bumps</b> · R$ '+fmt(f.rec_bumps||0)+' · <b style="color:#fbbf24">'+(f.receita?((f.rec_bumps||0)/f.receita*100).toFixed(1):0)+'%</b> da receita · attach <b style="color:'+((f.vendas&&f.bumps/f.vendas>=0.25)?'#4ade80':'var(--text,#fff)')+'">'+(f.vendas?(f.bumps/f.vendas*100).toFixed(0):0)+'%</b> (meta 25%)') : '';
-    var origem='<div style="padding:8px 6px;color:var(--muted);font-size:13px">'+f.vendas+' vendas · Pago <b style="color:var(--text,#fff)">'+f.pago+'</b> (R$ '+fmt(f.pago_receita||0)+') · Orgânico <b style="color:var(--text,#fff)">'+f.org+'</b> (R$ '+fmt(f.org_receita||0)+')'+(f.vendas?(' · ticket médio R$ '+fmt(f.receita/f.vendas)):'')+bumpLine+'<br><span style="color:var(--muted);font-size:11.5px">ROAS de mídia = só pago ÷ gasto (comparável ao Austin) · ROAS do funil = tudo, com orgânico ÷ gasto · order bump entra na receita e no ROAS</span></div>';
+    var origem='<div style="padding:8px 6px;color:var(--muted);font-size:13px">'+f.vendas+' vendas · Pago <b style="color:var(--text,#fff)">'+f.pago+'</b> (R$ '+fmt(f.pago_receita||0)+') · Orgânico <b style="color:var(--text,#fff)">'+f.org+'</b> (R$ '+fmt(f.org_receita||0)+')'+(f.vendas?(' · ticket médio R$ '+fmt(f.receita/f.vendas)):'')+bumpLine+'<br><span style="color:var(--muted);font-size:11.5px">🏷️ ROAS principal = só o produto principal (sem bumps) ÷ gasto · 📊 ROAS c/ bumps (mídia) = só pago, bumps inclusos ÷ gasto (comparável ao Austin) · 🌱 ROAS do funil = tudo, com orgânico ÷ gasto</span></div>';
     // ── Atribuição da Meta (clique 7d + view 1d = Meta TOTAL) — sinal, a verdade continua Greenn (regra 17/Set) ──
     var metaVT='';
     if(f.gasto>0 && (f.roas_meta_click!=null || f.roas_meta_view!=null)){
@@ -1594,14 +1642,28 @@ function renderFunilPano(key){
   else { el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px"><div class="spinner"></div>carregando…</div>';
     fetch('/api/funis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(panoDatas())}).then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){_panoData=j; _panoPer=currentPeriodo; if(currentFunisSub===key) paint(j);} }).catch(function(){ el.innerHTML='<div style="text-align:center;color:var(--muted);padding:50px">falha ao carregar</div>'; }); }
 }
+// ─── Navegação (menu lateral 28/Set) ────────────────────────────────────────
+const SB_CAT_OF = { funis: 'austin', gestor: 'austin', banco: 'base', termometro: 'base', regua: 'base' };
+function sbCat(cat) { // clicar na categoria abre/fecha os sub-itens dentro dela
+  const subs = document.getElementById('subs-' + cat), item = document.getElementById('cat-' + cat);
+  if (!subs || !item) return;
+  const open = !subs.classList.contains('open');
+  subs.classList.toggle('open', open); item.classList.toggle('open', open);
+}
+function sbGo(name) { switchTab(name); }
 function switchTab(name) {
   activeTab = name;
-  const names = ['overview','funis','campanhas','vendas','reembolsos','analise','gestor','banco'];
-  document.querySelectorAll('.tab').forEach((t, i) => {
-    t.classList.toggle('active', names[i] === name);
-  });
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
+  const el = document.getElementById('tab-' + name);
+  if (el) el.classList.add('active');
+  // marca ativo no menu lateral + garante a categoria dona aberta
+  document.querySelectorAll('.sb-item[data-go], .sb-sub').forEach(x => x.classList.toggle('active', x.dataset.go === name));
+  const cat = SB_CAT_OF[name];
+  if (cat) {
+    const subs = document.getElementById('subs-' + cat), item = document.getElementById('cat-' + cat);
+    if (subs) subs.classList.add('open'); if (item) { item.classList.add('open'); item.classList.add('active'); }
+  }
+  document.querySelectorAll('.sb-cat').forEach(c => { if (c.id !== 'cat-' + (cat || '')) c.classList.remove('active'); });
   if (name === 'gestor') {
     const f = document.getElementById('gestorFrame');
     if (f) f.src = 'gestor.html?embed=1&periodo=' + gestorPer();
@@ -1610,12 +1672,8 @@ function switchTab(name) {
     const f = document.getElementById('bancoFrame');
     if (f) f.src = 'banco.html?embed=1&periodo=' + gestorPer();
   }
-  if (name === 'analise' && DATA) {
-    renderAnalise();
-    loadBreakdowns(); // chama 2º endpoint pra placement/demografia/pausadas
-    loadRegua();      // régua low ticket por funil (14d)
-    loadMonitor();    // termômetro dos criativos (hoje × faixa ideal)
-  }
+  if (name === 'termometro') loadMonitor();  // 🌡️ (ex-aba Análise, oculta desde Mai — reviveu no menu Base & métricas)
+  if (name === 'regua') loadRegua();         // 📏 idem (busca view=baselines direto, não depende do DATA)
   if (name === 'funis') {
     _renderFunisState();
   }
@@ -2592,7 +2650,6 @@ function renderAll() {
   renderOverview();
   renderCampanhas();
   renderVendas();
-  if (activeTab === 'analise') renderAnalise();
 }
 
 // ─── ANÁLISE & BASELINE ─────────────────────────────────────────────────────
