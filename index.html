@@ -891,7 +891,7 @@
       <div class="sb-sub" data-go="funis" onclick="sbGo('funis')">🗺️ Funis</div>
       <div class="sb-sub" data-go="gestor" onclick="sbGo('gestor')">💬 Operação &amp; chat</div>
     </div>
-    <div class="sb-item" data-go="vendas" onclick="sbGo('vendas')"><span class="ico">💎</span> Vendas</div>
+    <div class="sb-item" data-go="vendas" id="tabVendas" onclick="sbGo('vendas')"><span class="ico">💎</span> Vendas</div>
     <div class="sb-item" data-go="reembolsos" onclick="sbGo('reembolsos')"><span class="ico">↩️</span> Reembolsos</div>
     <div class="sb-item sb-cat" id="cat-base" onclick="sbCat('base')"><span class="ico">🗂️</span> Base &amp; métricas <span class="sb-caret">▶</span></div>
     <div class="sb-subs" id="subs-base">
@@ -3366,11 +3366,11 @@ function renderVendas() {
   const roasReal = parseFloat(r.roas_real || 0);
   const ticketMedio = totalVendas > 0 ? (fatBruto / totalVendas) : 0;
 
-  // Tab badge
+  // Badge de vendas no item do menu lateral (o tab antigo do topo não existe mais)
   const tabVendas = document.getElementById('tabVendas');
-  tabVendas.innerHTML = totalVendas > 0
-    ? `💰 Vendas <span class="tab-badge">${totalVendas}</span>`
-    : '💰 Vendas';
+  if (tabVendas) tabVendas.innerHTML = totalVendas > 0
+    ? `<span class="ico">💎</span> Vendas <span class="tab-badge">${totalVendas}</span>`
+    : '<span class="ico">💎</span> Vendas';
 
   // Summary cards
   const receitaFinalV = fatLiquido - gHoje;
