@@ -3793,7 +3793,7 @@ function renderVendas() {
 }
 
 // Forma de pagamento (Greenn manda sale.method + installments; webhook grava metodo_pagamento desde 28/Set · antes só as parcelas)
-const _PG = { PIX: 'PIX', CREDIT_CARD: 'Cartão', APPLE_PAY: 'Apple Pay', GOOGLE_PAY: 'Google Pay', BOLETO: 'Boleto', BANK_SLIP: 'Boleto', TWO_CREDIT_CARDS: '2 cartões' };
+const _PG = { PIX: 'PIX', CREDIT_CARD: 'Cartão', APPLE_PAY: 'Apple Pay', GOOGLE_PAY: 'Google Pay', PAYPAL: 'PayPal', BOLETO: 'Boleto', BANK_SLIP: 'Boleto', TWO_CREDIT_CARDS: '2 cartões' };
 function _pagtoGrupo(v) {
   const m = String(v.metodo_pagamento || '').toUpperCase(), n = parseInt(v.parcelas || 0, 10);
   if (m) return _PG[m] || m;
