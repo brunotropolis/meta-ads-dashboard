@@ -224,6 +224,25 @@
     .pj-d { font-size: 11px; font-weight: 800; white-space: nowrap; color: var(--muted); }
     .pj-d.up { color: #4ade80; } .pj-d.dn { color: #f87171; }
     .pj-chartwrap { overflow-x: auto; }
+    .pj-chartbox { position: relative; width: 100%; overflow-x: auto; margin-top: 4px; }
+    .pj-chart2 { display: block; }
+    .pj-chart2 .pj-ax { fill: #8a8fa6; font-size: 11px; font-weight: 600; }
+    .pj-chart2 .pj-tl { fill: #c3c2b7; font-size: 12.5px; font-weight: 700; }
+    .pj-chart2 .pj-tv { fill: #f0f1f7; font-size: 13.5px; font-weight: 800; }
+    .pj-chart2 .pj-roas { fill: #c3c2b7; font-size: 11px; font-weight: 700; }
+    .pj-chart2 .pj-hit { cursor: crosshair; }
+    .pj-chart2 .pj-hit.on { fill: rgba(255,255,255,.035); }
+    .pj-tip { display: none; position: absolute; z-index: 5; min-width: 230px; background: rgba(12,14,26,.97); border: 1px solid rgba(167,139,250,.35); border-radius: 12px; padding: 10px 12px; box-shadow: 0 12px 30px rgba(0,0,0,.5); pointer-events: none; }
+    .pj-tt { font-weight: 800; font-size: 13px; margin-bottom: 6px; color: var(--text); }
+    .pj-tr { display: flex; justify-content: space-between; gap: 14px; font-size: 12px; color: var(--muted); padding: 2px 0; }
+    .pj-tr b { color: var(--text); font-variant-numeric: tabular-nums; }
+    .pj-tr i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+    .pj-tsep { border-top: 1px solid rgba(255,255,255,.08); margin: 5px 0; }
+    .pj-leg-proj { background: transparent !important; border: 1px dashed rgba(255,255,255,.55); box-sizing: border-box; }
+    .pj-rit { display: block; font-size: 10px; color: var(--muted); font-weight: 600; }
+    .pj-tab tr.pj-grp td { font-weight: 800; background: rgba(255,255,255,.03); border-top: 1px solid rgba(167,139,250,.25); }
+    .pj-tab tr.pj-child td.l { font-weight: 500; color: #c9cbe0; padding-left: 22px; }
+    .pj-ind { color: var(--muted); margin-right: 6px; }
     .pj-chart { width: 100%; min-width: 560px; height: 280px; display: block; }
     .pj-tv { fill: var(--text); font-size: 12px; font-weight: 800; }
     .pj-tl { fill: var(--muted); font-size: 12px; font-weight: 700; }
@@ -1790,53 +1809,53 @@ async function renderProjeto(force){
   const utmOk = M.filter(m=>m.utm_confiavel);
   if (utmOk.length>=2){ const a=utmOk[0], b=utmOk[utmOk.length-1]; leitura.push(`Orgânico: ${P(a.org_pct)} do faturamento em ${a.label} → ${P(b.org_pct)} em ${b.label}.`); }
 
-  // Gráfico de barras (SVG puro): faturamento empilhado pago/orgânico/recuperação + marcador de gasto
-  const W=Math.max(560, M.length*120), H=260, pad=38, bw=Math.min(64,(W-pad*2)/M.length*0.55);
-  const maxV = Math.max(...M.map(m=>Math.max(m.proj_fat||m.fat, m.gasto)))*1.12 || 1;
-  const y = v => H-pad - (v/maxV)*(H-pad*2);
-  let bars=''; const pts=[]; let viradaX=null;
-  M.forEach((m,i)=>{
-    if (viradaX==null && m.utm_confiavel && i>0) viradaX = pad + i*((W-pad*2)/M.length);
-    const cx = pad + (i+.5)*((W-pad*2)/M.length), x=cx-bw/2;
-    let acc=0; const seg=(v,cor)=>{ if(!v) return ''; const r='<rect x="'+x+'" y="'+y(acc+v)+'" width="'+bw+'" height="'+(y(acc)-y(acc+v))+'" fill="'+cor+'" rx="3"/>'; acc+=v; return r; };
-    if (m.utm_confiavel) { bars+=seg(m.pago_v,'#fb923c')+seg(m.org_v,'#4ade80')+seg(m.recup_v,'#38bdf8'); }
-    else bars+=seg(m.fat,'#a78bfa');
-    if (m.proj_fat) bars+='<rect x="'+x+'" y="'+y(m.proj_fat)+'" width="'+bw+'" height="'+(y(m.fat)-y(m.proj_fat))+'" fill="none" stroke="#a78bfa" stroke-dasharray="4 3" rx="3"/>';
-    pts.push([cx, y(m.proj_gasto||m.gasto)]);
-    bars+='<text x="'+cx+'" y="'+(y(m.proj_fat||m.fat)-8)+'" text-anchor="middle" class="pj-tv">'+(Math.round((m.proj_fat||m.fat)/100)/10).toString().replace('.',',')+'k'+(m.proj_fat?'*':'')+'</text>';
-    bars+='<text x="'+cx+'" y="'+(H-pad+18)+'" text-anchor="middle" class="pj-tl">'+m.label+'</text>';
-  });
-  const linhaG = '<polyline points="'+pts.map(q=>q[0]+','+q[1]).join(' ')+'" fill="none" stroke="#f87171" stroke-width="3" stroke-linejoin="round"/>'
-    + pts.map(q=>'<circle cx="'+q[0]+'" cy="'+q[1]+'" r="5" fill="#f87171" stroke="#0f1020" stroke-width="2"/>').join('');
-  const virada = viradaX==null ? '' : '<line x1="'+viradaX+'" x2="'+viradaX+'" y1="'+(pad-10)+'" y2="'+(H-pad)+'" stroke="rgba(255,255,255,.25)" stroke-dasharray="3 4"/><text x="'+(viradaX+6)+'" y="'+(pad-2)+'" class="pj-tl" style="font-size:11px">origem da venda rastreada a partir daqui →</text>';
-  const chart = '<div class="pj-chartwrap"><svg viewBox="0 0 '+W+' '+H+'" class="pj-chart" preserveAspectRatio="xMidYMid meet">'+virada+bars+linhaG+'</svg></div>'
-    +'<div class="pj-leg"><span><i style="background:#fb923c"></i>Tráfego pago</span><span><i style="background:#4ade80"></i>Orgânico</span><span><i style="background:#38bdf8"></i>Recuperação/WhatsApp</span><span><i style="background:#a78bfa"></i>Sem UTM confiável (abr/mai)</span><span><i style="background:#f87171;height:3px"></i>Gasto em anúncio (linha)</span><span>* projeção do mês</span></div>';
+  // Gráfico: desenhado depois do innerHTML (precisa da largura real do card) — ver drawProjChart()
+  const chart = '<div id="pjChart" class="pj-chartbox"></div>'
+    +'<div class="pj-leg"><span><i style="background:#d95926"></i>Tráfego pago</span><span><i style="background:#199e70"></i>Orgânico</span><span><i style="background:#3987e5"></i>Recuperação/WhatsApp</span><span><i style="background:#b9bccb"></i>Faturamento, origem não rastreada (abr/mai)</span><span><i style="background:#7c829b"></i>Gasto em anúncio (coluna da direita)</span><span><i class="pj-leg-proj"></i>Projeção do mês em andamento</span></div>';
 
   // Tabela mês a mês com deltas
-  const linhas = [
-    ['Vendas (pedidos)', m=>m.vendas, v=>v, 0],
-    ['Faturamento', m=>m.fat, R, 0],
-    ['Gasto Meta', m=>m.gasto, R, 1],
-    ['Sobra após mídia', m=>m.sobra, R, 0, 'bold'],
+  const linhas = [ // [nome, get, formato, inverso(caiu=bom), classe, somável]
+    ['Vendas (pedidos)', m=>m.vendas, v=>v, 0, '', 1],
+    ['Faturamento', m=>m.fat, R, 0, '', 1],
+    ['Gasto Meta', m=>m.gasto, R, 1, '', 1],
+    ['Sobra após mídia', m=>m.sobra, R, 0, 'bold', 1],
     ['ROAS total', m=>m.roas_total, X, 0],
     ['ROAS de mídia (só pago)', m=>m.roas_midia, (v,m)=>m.utm_confiavel?X(v):'<span class="pj-sub" title="webhook ainda não capturava UTM nesse mês">sem UTM</span>', 0],
-    ['Orgânico', m=>m.org_v, (v,m)=>m.utm_confiavel?R(v)+' <span class="pj-sub">'+P(m.org_pct)+'</span>':'<span class="pj-sub" title="webhook ainda não capturava UTM nesse mês">sem UTM</span>', 0],
+    ['Orgânico', m=>m.org_v, (v,m)=>m.utm_confiavel?R(v)+' <span class="pj-sub">'+P(m.org_pct)+'</span>':'<span class="pj-sub" title="webhook ainda não capturava UTM nesse mês">sem UTM</span>', 0, '', 1],
     ['Ticket médio', m=>m.ticket, R, 0],
-    ['Order bumps', m=>m.bump_n, (v,m)=>v+' <span class="pj-sub">'+m.attach+'% attach</span>', 0],
-    ['Reembolsos', m=>m.reemb_v, (v,m)=>R(v)+' <span class="pj-sub">'+m.reemb_n+'</span>', 1],
+    ['Order bumps', m=>m.bump_n, (v,m)=>v+' <span class="pj-sub">'+m.attach+'% attach</span>', 0, '', 1],
+    ['Reembolsos', m=>m.reemb_v, (v,m)=>R(v)+' <span class="pj-sub">'+m.reemb_n+'</span>', 1, '', 1],
   ];
   let tab = '<table class="pj-tab"><thead><tr><th class="l">Mês</th>'+M.map(m=>'<th>'+m.label+(m.parcial?'<span class="pj-sub">'+(m.corrente?'em andamento':'desde 08/04')+'</span>':'')+'</th>').join('')+'</tr></thead><tbody>';
-  linhas.forEach(([nome,get,fmtF,inv,cls])=>{
-    tab+='<tr'+(cls?' class="pj-'+cls+'"':'')+'><td class="l">'+nome+'</td>'+M.map((m,i)=>{ const v=get(m), prev=i>0?get(M[i-1]):null; const podeDelta = i>0 && !m.corrente && !M[i-1].parcial && (nome.indexOf('Orgânico')<0 || (m.utm_confiavel && M[i-1].utm_confiavel)) && (nome.indexOf('mídia')<0 || M[i-1].utm_confiavel); return '<td>'+fmtF(v,m)+(podeDelta?' '+delta(v,prev,inv):'')+'</td>'; }).join('')+'</tr>';
+  linhas.forEach(([nome,get,fmtF,inv,cls,somavel])=>{
+    tab+='<tr'+(cls?' class="pj-'+cls+'"':'')+'><td class="l">'+nome+'</td>'+M.map((m,i)=>{
+      const v=get(m), prev=i>0?get(M[i-1]):null;
+      const comparavel = i>0 && !M[i-1].parcial && (nome.indexOf('Orgânico')<0 || (m.utm_confiavel && M[i-1].utm_confiavel)) && (nome.indexOf('mídia')<0 || M[i-1].utm_confiavel);
+      if (!comparavel || (m.parcial && !m.corrente)) return '<td>'+fmtF(v,m)+'</td>';
+      // mês em andamento: métrica somável compara pelo RITMO (valor × dias do mês ÷ dias corridos); razão (ROAS, ticket) compara direto
+      if (m.corrente) { const vc = (somavel && m.fator_proj) ? v*m.fator_proj : v; return '<td>'+fmtF(v,m)+' '+delta(vc,prev,inv)+(somavel?'<span class="pj-rit">no ritmo</span>':'')+'</td>'; }
+      return '<td>'+fmtF(v,m)+' '+delta(v,prev,inv)+'</td>';
+    }).join('')+'</tr>';
   });
   tab+='</tbody></table>';
 
   // Receita por funil × mês (heat)
-  const FN = {pocket:'🌙 Dream Baby Pocket',quiz:'☁️ Quiz',mathias:'🧔 Mathias',guia:'🤱 Guia da Pega',meteorico:'💬 Meteórico',ebook:'📕 Ebook',alto_ticket:'💎 Alto ticket (Método, Manual, Consultas)',outros:'• Outros'};
-  const maxF = Math.max(1,...M.flatMap(m=>Object.values(m.funis).map(f=>f.v)));
+  const FN = {pocket:'🌙 Dream Baby Pocket',quiz:'☁️ Quiz',mathias:'🧔 Mathias',guia:'🤱 Guia da Pega',meteorico:'💬 Meteórico',ebook:'📕 Ebook'};
+  const fget = (m,k) => (m.funis && m.funis[k]) || {n:0,v:0};
+  const ftot = k => M.reduce((s,m)=>s+fget(m,k).v,0);
+  const atKeys = Object.keys(d.funis_label||{}).filter(k=>ftot(k)>0).sort((a,b)=>ftot(b)-ftot(a));
+  const PEQ = ['de','do','da','dos','das','e','com','a','o'];
+  const cap = t => String(t||'').toLowerCase().split(' ').map((w,i)=>(i>0&&PEQ.indexOf(w)>=0)?w:w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+  const maxF = Math.max(1,...M.flatMap(m=>Object.values(m.funis||{}).map(f=>f.v)));
+  const fRow = (k,label,cls) => { const tot=ftot(k); if(!tot) return ''; return '<tr'+(cls?' class="'+cls+'"':'')+'><td class="l">'+label+'</td>'+M.map(m=>{ const f=fget(m,k); const a=f.v/maxF; return '<td style="background:rgba(167,139,250,'+(a*0.55).toFixed(2)+')">'+(f.v?R(f.v)+'<span class="pj-sub">'+f.n+(f.n===1?' venda':' vendas')+'</span>':'<span class="pj-sub">—</span>')+'</td>'; }).join('')+'<td><b>'+R(tot)+'</b></td></tr>'; };
   let tf='<table class="pj-tab pj-heat"><thead><tr><th class="l">Funil</th>'+M.map(m=>'<th>'+m.label+'</th>').join('')+'<th>Total</th></tr></thead><tbody>';
-  Object.keys(FN).forEach(k=>{ const tot=M.reduce((s,m)=>s+m.funis[k].v,0); if(!tot) return;
-    tf+='<tr><td class="l">'+FN[k]+'</td>'+M.map(m=>{ const f=m.funis[k]; const a=f.v/maxF; return '<td style="background:rgba(167,139,250,'+(a*0.55).toFixed(2)+')">'+(f.v?R(f.v)+'<span class="pj-sub">'+f.n+' vendas</span>':'<span class="pj-sub">—</span>')+'</td>'; }).join('')+'<td><b>'+R(tot)+'</b></td></tr>'; });
+  Object.keys(FN).forEach(k=>{ tf+=fRow(k,FN[k]); });
+  if (atKeys.length) {
+    const atMes = M.map(m=>atKeys.reduce((s,k)=>s+fget(m,k).v,0)), atTot = atMes.reduce((a,b)=>a+b,0);
+    tf+='<tr class="pj-grp"><td class="l">💎 Alto ticket — por produto</td>'+atMes.map(v=>'<td>'+(v?R(v):'<span class="pj-sub">—</span>')+'</td>').join('')+'<td><b>'+R(atTot)+'</b></td></tr>';
+    atKeys.forEach(k=>{ tf+=fRow(k,'<span class="pj-ind">↳</span>'+cap(d.funis_label[k]),'pj-child'); });
+  }
+  tf+=fRow('outros','• Outros');
   tf+='</tbody></table>';
 
   // Produtos
@@ -1873,7 +1892,78 @@ async function renderProjeto(force){
       +'<div class="pj-card"><div class="pj-ct">🗓️ Linha do tempo</div><div class="pj-cs">🚀 lançamento (1ª venda) · 🧭 decisão registrada</div><div class="pj-mks">'+marcos+'</div></div></div>'
     +'<div class="pj-notas">'+(d.notas||[]).map(n=>'• '+n).join('<br>')+'<br>• Atualizado '+new Date(d.gerado_em).toLocaleString('pt-BR')+(d.cache?' (cache de até 1h)':'')+'</div>'
     +'</div>';
+  drawProjChart(M);
 }
+
+// Gráfico do Projeto — padrão dataviz: 1 eixo (R$), colunas ≤24px com topo arredondado 4px e 2px de respiro entre blocos,
+// grade hairline discreta, rótulo seletivo (total + ROAS por mês), tooltip por mês. Paleta validada (CVD/contraste) no fundo do card.
+function drawProjChart(M){
+  const box = document.getElementById('pjChart'); if (!box || !M.length) return;
+  const C = { pago:'#d95926', org:'#199e70', recup:'#3987e5', semutm:'#b9bccb', gasto:'#7c829b' }; // 3 matizes validadas (CVD/contraste); 4ª cor reprovava → sem-UTM e gasto são neutros separados por claridade + posição (esq=faturamento, dir=gasto)
+  const W = Math.max(640, box.clientWidth), H = 360, L = 46, Rp = 10, T = 78, B = 46;
+  const pw = W - L - Rp, ph = H - T - B;
+  const maxV = Math.max(...M.map(m => Math.max(m.proj_fat || m.fat, m.gasto)));
+  const step = [5000,10000,20000,25000,50000,100000].find(s => maxV / s <= 5) || 100000;
+  const topV = Math.ceil(maxV * 1.02 / step) * step;
+  const y = v => T + ph - (v / topV) * ph;
+  const slot = pw / M.length, bw = 24, gap = 10;
+  const k = v => (Math.round(v / 100) / 10).toLocaleString('pt-BR') + 'k';
+  const X = v => v == null ? '—' : v.toFixed(2).replace('.', ',') + 'x';
+  const topRound = (x, yt, yb, w, r) => { r = Math.min(r, (yb - yt)); return 'M'+x+' '+yb+' V'+(yt+r)+' Q'+x+' '+yt+' '+(x+r)+' '+yt+' H'+(x+w-r)+' Q'+(x+w)+' '+yt+' '+(x+w)+' '+(yt+r)+' V'+yb+' Z'; };
+  let s = '';
+  // grade + eixo
+  for (let t = 0; t <= topV; t += step) {
+    s += '<line x1="'+L+'" x2="'+(W-Rp)+'" y1="'+y(t)+'" y2="'+y(t)+'" stroke="'+(t===0?'rgba(255,255,255,.18)':'rgba(255,255,255,.06)')+'" stroke-width="1"/>';
+    s += '<text x="'+(L-10)+'" y="'+(y(t)+4)+'" text-anchor="end" class="pj-ax">'+(t ? 'R$ '+Math.round(t/1000)+'k' : '0')+'</text>';
+  }
+  // marcação: a partir de quando a origem da venda é rastreada
+  const iv = M.findIndex((m,i) => i > 0 && m.utm_confiavel && !M[i-1].utm_confiavel);
+  if (iv > 0) { const xv = L + iv * slot; s += '<line x1="'+xv+'" x2="'+xv+'" y1="'+(T-58)+'" y2="'+(T+ph)+'" stroke="rgba(255,255,255,.14)" stroke-width="1"/><text x="'+(xv+8)+'" y="'+(T-48)+'" class="pj-ax">origem da venda rastreada a partir daqui →</text>'; }
+  M.forEach((m, i) => {
+    const cx = L + (i + .5) * slot, x1 = cx - bw - gap/2, x2 = cx + gap/2;
+    // coluna de faturamento empilhada (base → topo)
+    const segs = m.utm_confiavel ? [[m.pago_v, C.pago], [m.org_v, C.org], [m.recup_v, C.recup]].filter(z => z[0] > 0) : [[m.fat, C.semutm]];
+    let acc = 0;
+    segs.forEach((z, j) => {
+      const yb = y(acc), yt = y(acc + z[0]); acc += z[0];
+      const last = j === segs.length - 1;
+      if (last) s += '<path d="'+topRound(x1, yt, yb, bw, 4)+'" fill="'+z[1]+'"/>';
+      else { const h = Math.max(0, yb - yt - 2); if (h > 0) s += '<rect x="'+x1+'" y="'+(yt+2)+'" width="'+bw+'" height="'+h+'" fill="'+z[1]+'"/>'; }
+    });
+    if (m.proj_fat) s += '<path d="'+topRound(x1, y(m.proj_fat), y(m.fat) - 2, bw, 4)+'" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.8)" stroke-width="1.5" stroke-dasharray="4 3"/>';
+    // coluna de gasto
+    s += '<path d="'+topRound(x2, y(m.gasto), y(0), bw, 4)+'" fill="'+C.gasto+'"/>';
+    s += '<text x="'+(x2+bw/2)+'" y="'+(y(m.gasto)-6)+'" text-anchor="middle" class="pj-ax">'+k(m.gasto)+'</text>';
+    // rótulos do mês: faturamento + ROAS
+    const ytop = Math.min(y(m.proj_fat || m.fat), y(m.gasto) - 14);
+    const tot = m.proj_fat ? k(m.fat)+' → '+k(m.proj_fat) : 'R$ '+k(m.fat);
+    s += '<text x="'+cx+'" y="'+(ytop-30)+'" text-anchor="middle" class="pj-tv">'+tot+'</text>';
+    const rt = 'ROAS '+X(m.roas_total), rw = rt.length * 6.4 + 16;
+    s += '<rect x="'+(cx-rw/2)+'" y="'+(ytop-23)+'" width="'+rw+'" height="17" rx="8.5" fill="rgba(255,255,255,.07)"/><text x="'+cx+'" y="'+(ytop-11)+'" text-anchor="middle" class="pj-roas">'+rt+'</text>';
+    s += '<text x="'+cx+'" y="'+(T+ph+19)+'" text-anchor="middle" class="pj-tl">'+m.label+'</text>';
+    if (m.parcial) s += '<text x="'+cx+'" y="'+(T+ph+34)+'" text-anchor="middle" class="pj-ax">'+(m.corrente ? 'em andamento' : 'desde 08/04')+'</text>';
+    s += '<rect x="'+(L + i*slot)+'" y="'+(T-40)+'" width="'+slot+'" height="'+(ph+40)+'" fill="transparent" class="pj-hit" data-i="'+i+'"/>';
+  });
+  box.innerHTML = '<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" class="pj-chart2" role="img" aria-label="Faturamento e gasto em anúncio por mês">'+s+'</svg><div class="pj-tip" id="pjTip"></div>';
+  // tooltip por mês
+  const tip = document.getElementById('pjTip'); const R = v => 'R$ '+Math.round(v||0).toLocaleString('pt-BR');
+  const row = (c,l,v) => '<div class="pj-tr"><span>'+(c?'<i style="background:'+c+'"></i>':'')+l+'</span><b>'+v+'</b></div>';
+  box.querySelectorAll('.pj-hit').forEach(r => {
+    r.addEventListener('mouseenter', () => {
+      const m = M[+r.dataset.i]; box.querySelectorAll('.pj-hit').forEach(h => h.classList.toggle('on', h === r));
+      tip.innerHTML = '<div class="pj-tt">'+m.label+(m.parcial?(m.corrente?' · em andamento ('+m.dias+' dias)':' · desde 08/04'):'')+'</div>'
+        + (m.utm_confiavel ? row(C.pago,'Tráfego pago',R(m.pago_v))+row(C.org,'Orgânico',R(m.org_v))+(m.recup_v?row(C.recup,'Recuperação/WhatsApp',R(m.recup_v)):'') : row(C.semutm,'Faturamento (origem não rastreada)',R(m.fat)))
+        + '<div class="pj-tsep"></div>' + row('', 'Faturamento', R(m.fat)) + (m.proj_fat ? row('', 'Projeção do mês', R(m.proj_fat)) : '')
+        + row(C.gasto, 'Gasto em anúncio', R(m.gasto)) + row('', 'ROAS total', X(m.roas_total)) + (m.utm_confiavel ? row('', 'ROAS de mídia (só pago)', X(m.roas_midia)) : '')
+        + row('', 'Vendas', m.vendas) + row('', 'Sobra após mídia', R(m.sobra));
+      const cx = L + (+r.dataset.i + .5) * slot; tip.style.display = 'block';
+      const tw = tip.offsetWidth; tip.style.left = Math.min(W - tw - 4, Math.max(4, cx + 30)) + 'px'; if (cx + 30 + tw > W) tip.style.left = Math.max(4, cx - tw - 30) + 'px';
+      tip.style.top = '40px';
+    });
+  });
+  box.onmouseleave = () => { tip.style.display = 'none'; box.querySelectorAll('.pj-hit').forEach(h => h.classList.remove('on')); };
+}
+window.addEventListener('resize', () => { clearTimeout(window._pjR); window._pjR = setTimeout(() => { if (activeTab === 'projeto' && _projData) drawProjChart(_projData.meses || []); }, 200); });
 
 let _reembPer = '30d';
 const REEMB_URL = '/api/n8n/meta-reembolsos';
