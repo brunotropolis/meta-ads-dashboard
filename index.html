@@ -289,6 +289,8 @@
     .pj-tab .l { text-align: left; }
     .pj-tab td.l { font-weight: 600; color: var(--text); white-space: normal; }
     .pj-tab tr.pj-bold td { font-weight: 800; background: rgba(167,139,250,.06); }
+    .pj-tab tr.pj-eng td { color: var(--muted); font-size: 12px; }
+    .pj-tab tr.pj-eng td.l { font-weight: 500; padding-left: 22px; color: var(--muted); }
     .pj-sub { display: block; font-size: 10.5px; color: var(--muted); font-weight: 500; }
     .pj-heat td { border-radius: 6px; }
     .pj-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -1828,13 +1830,13 @@ async function renderProjeto(force){
   const fechados = M.filter(m=>!m.corrente);
   const cur = M.find(m=>m.corrente), ult = fechados[fechados.length-1], pen = fechados[fechados.length-2];
   const soma = k => M.reduce((s,m)=>s+(m[k]||0),0);
-  const fatT=soma('fat'), gT=soma('gasto'), sobraT=soma('sobra');
+  const fatT=soma('fat'), gT=soma('gasto'), sobraT=soma('sobra'), gEngT=soma('gasto_eng'), gVendaT=gT-gEngT;
   const delta = (a,b,inv) => { if(a==null||b==null||!b) return ''; const p=(a/b-1)*100; const bom = inv? p<0 : p>0; return '<span class="pj-d '+(Math.abs(p)<2?'':(bom?'up':'dn'))+'">'+(p>=0?'▲':'▼')+' '+Math.abs(p).toFixed(0)+'%</span>'; };
 
   // Leitura automática (sempre calculada do dado, nunca texto fixo)
   const leitura = [];
   if (ult && pen) {
-    leitura.push(`<b>${ult.label}</b> fechou com <b>${R(ult.fat)}</b> de faturamento ${delta(ult.fat,pen.fat)} vs ${pen.label}, gastando ${R(ult.gasto)} em anúncio ${delta(ult.gasto,pen.gasto,true)}.`);
+    leitura.push(`<b>${ult.label}</b> fechou com <b>${R(ult.fat)}</b> de faturamento ${delta(ult.fat,pen.fat)} vs ${pen.label}, gastando ${R(ult.gasto)} em anúncio ${delta(ult.gasto,pen.gasto,true)}${ult.gasto_eng?` (${R(ult.gasto_eng)} em engajamento)`:''}.`);
     leitura.push(`O que <b>sobrou depois da mídia</b> foi ${R(ult.sobra)} ${delta(ult.sobra,pen.sobra)} · ROAS total ${X(ult.roas_total)} (mídia ${X(ult.roas_midia)}).`);
   }
   if (cur && cur.proj_fat && ult) leitura.push(`<b>${cur.label}</b> (em andamento, ${cur.dias} dias): ${R(cur.fat)} até agora, ritmo projeta <b>${R(cur.proj_fat)}</b> no mês ${delta(cur.proj_fat,ult.fat)} vs ${ult.label}.`);
@@ -1845,16 +1847,17 @@ async function renderProjeto(force){
 
   // Gráfico: desenhado depois do innerHTML (precisa da largura real do card) · ver drawProjChart()
   const chart = '<div id="pjChart" class="pj-chartbox"></div>'
-    +'<div class="pj-leg"><span><i style="background:#d95926"></i>Tráfego pago</span><span><i style="background:#199e70"></i>Orgânico</span><span><i style="background:#3987e5"></i>Recuperação/WhatsApp</span><span><i style="background:#b9bccb"></i>Faturamento, origem não rastreada (abr/mai)</span><span><i style="background:#7c829b"></i>Gasto em anúncio (coluna da direita)</span><span><i class="pj-leg-proj"></i>Projeção do mês em andamento</span></div>';
+    +'<div class="pj-leg"><span><i style="background:#d95926"></i>Tráfego pago</span><span><i style="background:#199e70"></i>Orgânico</span><span><i style="background:#3987e5"></i>Recuperação/WhatsApp</span><span><i style="background:#b9bccb"></i>Faturamento, origem não rastreada (abr/mai)</span><span><i style="background:#7c829b"></i>Gasto em campanhas de venda (coluna da direita)</span><span><i style="background:rgba(124,130,155,.45)"></i>Gasto em engajamento (fora do ROAS)</span><span><i class="pj-leg-proj"></i>Projeção do mês em andamento</span></div>';
 
   // Tabela mês a mês com deltas
   const linhas = [ // [nome, get, formato, inverso(caiu=bom), classe, somável]
     ['Vendas (pedidos)', m=>m.vendas, v=>v, 0, '', 1],
     ['Faturamento', m=>m.fat, R, 0, '', 1],
-    ['Gasto Meta', m=>m.gasto, R, 1, '', 1],
+    ['Gasto em anúncio', m=>m.gasto, R, 1, '', 1],
+    ['<span class="pj-ind">↳</span>em engajamento', m=>m.gasto_eng||0, R, 1, 'eng', 1],
     ['Sobra após mídia', m=>m.sobra, R, 0, 'bold', 1],
-    ['ROAS total', m=>m.roas_total, X, 0],
-    ['ROAS de mídia (só pago)', m=>m.roas_midia, (v,m)=>m.utm_confiavel?X(v):'<span class="pj-sub" title="webhook ainda não capturava UTM nesse mês">sem UTM</span>', 0],
+    ['ROAS total (venda)', m=>m.roas_total, X, 0],
+    ['ROAS de mídia (só pago, venda)', m=>m.roas_midia, (v,m)=>m.utm_confiavel?X(v):'<span class="pj-sub" title="webhook ainda não capturava UTM nesse mês">sem UTM</span>', 0],
     ['Orgânico', m=>m.org_v, (v,m)=>m.utm_confiavel?R(v)+' <span class="pj-sub">'+P(m.org_pct)+'</span>':'<span class="pj-sub" title="webhook ainda não capturava UTM nesse mês">sem UTM</span>', 0, '', 1],
     ['Ticket médio', m=>m.ticket, R, 0],
     ['Order bumps', m=>m.bump_n, (v,m)=>v+' <span class="pj-sub">'+m.attach+'% attach</span>', 0, '', 1],
@@ -1937,9 +1940,9 @@ async function renderProjeto(force){
     +'<div class="pj-head"><div><div class="pj-h1">📈 Projeto: histórico mês a mês</div><div class="pj-cs">Desde '+d.inicio.split('-').reverse().join('/')+' · vendas reais Greenn + gasto oficial Meta · independe do filtro de período lá em cima</div></div><button class="btn btn-sm" onclick="renderProjeto(true)">↻ recalcular</button></div>'
     +'<div class="finance-grid pj-kpis">'
       +kpi('💎','Faturamento acumulado',R(fatT),M.length+' meses','fc-green')
-      +kpi('📢','Investido em anúncio',R(gT),'','fc-red')
+      +kpi('📢','Investido em anúncio',R(gT),gEngT?R(gEngT)+' em engajamento (fora do ROAS)':'','fc-red')
       +kpi('💰','Sobra após mídia',R(sobraT),'faturamento − reembolsos − anúncio','fc-purple')
-      +kpi('📊','ROAS total do período',X(gT?fatT/gT:null),'','fc-yellow')
+      +kpi('📊','ROAS total do período',X(gVendaT?fatT/gVendaT:null),'só campanhas de venda','fc-yellow')
     +'</div>'
     +'<div class="pj-card pj-leitura"><div class="pj-ct">🧠 Leitura rápida</div><ul class="pj-ul">'+leitura.map((l,i)=>'<li><span class="pj-li">'+(['📅','💰','🚀','📈','🌱'][i]||'•')+'</span><span>'+l+'</span></li>').join('')+'</ul></div>'
     +'<div class="pj-card"><div class="pj-ct">💎 Faturamento por mês × gasto</div>'+chart+'</div>'
@@ -1959,7 +1962,7 @@ async function renderProjeto(force){
 // grade hairline discreta, rótulo seletivo (total + ROAS por mês), tooltip por mês. Paleta validada (CVD/contraste) no fundo do card.
 function drawProjChart(M){
   const box = document.getElementById('pjChart'); if (!box || !M.length) return;
-  const C = { pago:'#d95926', org:'#199e70', recup:'#3987e5', semutm:'#b9bccb', gasto:'#7c829b' }; // 3 matizes validadas (CVD/contraste); 4ª cor reprovava → sem-UTM e gasto são neutros separados por claridade + posição (esq=faturamento, dir=gasto)
+  const C = { pago:'#d95926', org:'#199e70', recup:'#3987e5', semutm:'#b9bccb', gasto:'#7c829b', eng:'rgba(124,130,155,.45)' }; // 3 matizes validadas (CVD/contraste); 4ª cor reprovava → sem-UTM e gasto são neutros separados por claridade + posição (esq=faturamento, dir=gasto)
   const W = Math.max(640, box.clientWidth), H = 360, L = 46, Rp = 10, T = 78, B = 46;
   const pw = W - L - Rp, ph = H - T - B;
   const maxV = Math.max(...M.map(m => Math.max(m.proj_fat || m.fat, m.gasto)));
@@ -1992,7 +1995,9 @@ function drawProjChart(M){
     });
     if (m.proj_fat) s += '<path d="'+topRound(x1, y(m.proj_fat), y(m.fat) - 2, bw, 4)+'" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.8)" stroke-width="1.5" stroke-dasharray="4 3"/>';
     // coluna de gasto
-    s += '<path d="'+topRound(x2, y(m.gasto), y(0), bw, 4)+'" fill="'+C.gasto+'"/>';
+    const gv = m.gasto - (m.gasto_eng||0);
+    if (m.gasto_eng > 0) { s += '<rect x="'+x2+'" y="'+y(gv)+'" width="'+bw+'" height="'+Math.max(0,y(0)-y(gv))+'" fill="'+C.gasto+'"/>'; const yb=y(gv)-2; if (yb - y(m.gasto) > 0) s += '<path d="'+topRound(x2, y(m.gasto), yb, bw, 4)+'" fill="'+C.eng+'"/>'; }
+    else s += '<path d="'+topRound(x2, y(m.gasto), y(0), bw, 4)+'" fill="'+C.gasto+'"/>';
     s += '<text x="'+(x2+bw/2)+'" y="'+(y(m.gasto)-6)+'" text-anchor="middle" class="pj-ax">'+k(m.gasto)+'</text>';
     // rótulos do mês: faturamento + ROAS
     const ytop = Math.min(y(m.proj_fat || m.fat), y(m.gasto) - 14);
@@ -2014,7 +2019,8 @@ function drawProjChart(M){
       tip.innerHTML = '<div class="pj-tt">'+m.label+(m.parcial?(m.corrente?' · em andamento ('+m.dias+' dias)':' · desde 08/04'):'')+'</div>'
         + (m.utm_confiavel ? row(C.pago,'Tráfego pago',R(m.pago_v))+row(C.org,'Orgânico',R(m.org_v))+(m.recup_v?row(C.recup,'Recuperação/WhatsApp',R(m.recup_v)):'') : row(C.semutm,'Faturamento (origem não rastreada)',R(m.fat)))
         + '<div class="pj-tsep"></div>' + row('', 'Faturamento', R(m.fat)) + (m.proj_fat ? row('', 'Projeção do mês', R(m.proj_fat)) : '')
-        + row(C.gasto, 'Gasto em anúncio', R(m.gasto)) + row('', 'ROAS total', X(m.roas_total)) + (m.utm_confiavel ? row('', 'ROAS de mídia (só pago)', X(m.roas_midia)) : '')
+        + row(C.gasto, 'Gasto em campanhas de venda', R(m.gasto - (m.gasto_eng||0))) + (m.gasto_eng ? row(C.eng, 'Gasto em engajamento', R(m.gasto_eng)) : '')
+        + row('', 'ROAS total (venda)', X(m.roas_total)) + (m.utm_confiavel ? row('', 'ROAS de mídia (só pago)', X(m.roas_midia)) : '')
         + row('', 'Vendas', m.vendas) + row('', 'Sobra após mídia', R(m.sobra));
       const cx = L + (+r.dataset.i + .5) * slot; tip.style.display = 'block';
       const tw = tip.offsetWidth; tip.style.left = Math.min(W - tw - 4, Math.max(4, cx + 30)) + 'px'; if (cx + 30 + tw > W) tip.style.left = Math.max(4, cx - tw - 30) + 'px';
@@ -3243,8 +3249,10 @@ function renderOverview() {
   // ROAS de Mídia = vendas do tráfego pago (canal trafego via UTM) ÷ meta
   // ROAS do Projeto = faturamento total (todos os canais) ÷ meta
   const vTrafego = parseFloat((DATA.vendas_por_canal && DATA.vendas_por_canal.trafego && DATA.vendas_por_canal.trafego.valor) || 0);
-  const roasMidia = gHoje > 0 && vTrafego > 0 ? (vTrafego / gHoje) : 0;
-  const roasProjeto = gHoje > 0 && fatBruto > 0 ? (fatBruto / gHoje) : 0;
+  // ROAS só com o gasto das campanhas de VENDA (engajamento tem régua própria, fica fora) — decisão Bruno 28/Set
+  const gEng = parseFloat(r.gasto_engajamento || 0), gVenda = r.gasto_venda != null ? parseFloat(r.gasto_venda) : gHoje;
+  const roasMidia = gVenda > 0 && vTrafego > 0 ? (vTrafego / gVenda) : 0;
+  const roasProjeto = gVenda > 0 && fatBruto > 0 ? (fatBruto / gVenda) : 0;
 
   // Delta gasto vs ontem
   const delta = gOntem > 0 ? ((gHoje - gOntem) / gOntem * 100).toFixed(1) : null;
@@ -3278,18 +3286,19 @@ function renderOverview() {
       <div class="fc-label">Investimento Meta</div>
       <div class="fc-value">R$ ${fmt(gHoje)}</div>
       ${deltaHtml}
+      ${gEng > 0 ? `<div class="fc-sub">R$ ${fmt(gEng)} em engajamento (fora do ROAS)</div>` : ''}
     </div>
     <div class="finance-card fc-yellow">
       <span class="fc-icon">📊</span>
       <div class="fc-label">ROAS de Mídia</div>
       <div class="fc-value">${roasMidia > 0 ? roasMidia.toFixed(2) + 'x' : '—'}</div>
-      <div class="fc-sub">Vendas do tráfego ÷ Meta</div>
+      <div class="fc-sub">Vendas do tráfego ÷ gasto de venda</div>
     </div>
     <div class="finance-card fc-purple">
       <span class="fc-icon">🎯</span>
       <div class="fc-label">ROAS do Projeto</div>
       <div class="fc-value">${roasProjeto > 0 ? roasProjeto.toFixed(2) + 'x' : (roasProjeto < 0 ? roasProjeto.toFixed(2) + 'x' : '—')}</div>
-      <div class="fc-sub">Tudo (todos os canais) ÷ Meta</div>
+      <div class="fc-sub">Tudo ÷ gasto de venda</div>
     </div>
   `;
 
@@ -3707,8 +3716,9 @@ function renderVendas() {
   // Summary cards
   const receitaFinalV = fatLiquido - gHoje;
   const vTrafegoV = parseFloat((DATA.vendas_por_canal && DATA.vendas_por_canal.trafego && DATA.vendas_por_canal.trafego.valor) || 0);
-  const roasMidiaV = gHoje > 0 && vTrafegoV > 0 ? (vTrafegoV / gHoje) : 0;
-  const roasProjetoV = gHoje > 0 && fatBruto > 0 ? (fatBruto / gHoje) : 0;
+  const gEngV = parseFloat(r.gasto_engajamento || 0), gVendaV = r.gasto_venda != null ? parseFloat(r.gasto_venda) : gHoje;
+  const roasMidiaV = gVendaV > 0 && vTrafegoV > 0 ? (vTrafegoV / gVendaV) : 0;
+  const roasProjetoV = gVendaV > 0 && fatBruto > 0 ? (fatBruto / gVendaV) : 0;
   document.getElementById('vendasSummary').innerHTML = `
     <div class="vendas-summary">
       <div class="finance-card fc-blue">
@@ -3727,7 +3737,7 @@ function renderVendas() {
         <span class="fc-icon">📢</span>
         <div class="fc-label">Investimento Meta</div>
         <div class="fc-value">R$ ${fmt(gHoje)}</div>
-        <div class="fc-sub">Ads no período</div>
+        <div class="fc-sub">${gEngV > 0 ? 'R$ ' + fmt(gEngV) + ' em engajamento (fora do ROAS)' : 'Ads no período'}</div>
       </div>
       <div class="finance-card fc-purple">
         <span class="fc-icon">🛒</span>
@@ -3739,13 +3749,13 @@ function renderVendas() {
         <span class="fc-icon">📊</span>
         <div class="fc-label">ROAS de Mídia</div>
         <div class="fc-value">${roasMidiaV > 0 ? roasMidiaV.toFixed(2) + 'x' : '·'}</div>
-        <div class="fc-sub">Vendas do tráfego ÷ Meta</div>
+        <div class="fc-sub">Vendas do tráfego ÷ gasto de venda</div>
       </div>
       <div class="finance-card ${roasProjetoV > 1 ? 'fc-green' : roasProjetoV > 0 ? 'fc-yellow' : 'fc-red'}" style="background: linear-gradient(135deg, #2d1b4a 0%, #231540 100%); border: 1px solid #3d2b5a;">
         <span class="fc-icon">🎯</span>
         <div class="fc-label">ROAS do Projeto</div>
         <div class="fc-value" style="color:var(--purple)">${roasProjetoV !== 0 ? roasProjetoV.toFixed(2) + 'x' : '·'}</div>
-        <div class="fc-sub">Tudo (todos os canais) ÷ Meta</div>
+        <div class="fc-sub">Tudo ÷ gasto de venda</div>
       </div>
     </div>
   `;
