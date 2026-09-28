@@ -571,9 +571,9 @@
       }).join('');
       const bCamp='background:rgba(168,85,247,.045);border-left:3px solid rgba(168,85,247,.45);border-radius:10px';
       const bHist='background:rgba(251,191,36,.045);border-left:3px solid rgba(251,191,36,.45);border-radius:10px';
-      const bEstr='background:rgba(45,212,191,.045);border-left:3px solid rgba(45,212,191,.45);border-radius:10px';
+      const bEstr='display:none';   // ⚫ OCULTO 28/Set (decisão Bruno): livro de estratégias virou lixo de teste, some da tela (API continua registrando)
       const bPag='background:rgba(34,211,238,.045);border-left:3px solid rgba(34,211,238,.45);border-radius:10px';
-      const bVer='background:rgba(148,163,184,.04);border-left:3px solid rgba(148,163,184,.4);border-radius:10px';
+      const bVer='display:none';    // ⚫ OCULTO 28/Set (decisão Bruno): histórico da página era localStorage local, de marcação
       return kpiStrip(r)+`
       <div class="section" style="${bCamp}"><div class="section-header"><div><div class="section-title">🚀 Campanhas do funil</div><div class="section-sub">${p?p.since+' → '+p.until:''}</div></div></div><div class="section-body" style="padding:0">${tabela(rows)}</div></div>
       ${esteiraSecao(fkey)}
