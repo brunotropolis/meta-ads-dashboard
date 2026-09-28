@@ -93,6 +93,16 @@
       {m:'Frequência', ideal:'2-3', media:'~2,0', k:'freq', f:'num'},
       {m:'Ticket médio', ideal:'—', media:'R$ 73', k:null, f:'rs'},
     ]},
+    guia:{ nome:'Guia da Pega', badge:'fb-guia', linhas:[
+      // "Nossa média" ainda em medição: o pixel NOVO (guiadapega.com.br) só mede desde 17/Set — sem cor até fechar baseline
+      {m:'CTR (link)', ideal:'1,3%', media:'medindo', k:'ctr', f:'pct', dir:'up'},
+      {m:'Connect rate', ideal:'80%', media:'medindo', k:'connect', f:'pct', dir:'up'},
+      {m:'Ida pro checkout', ideal:'25%', media:'medindo*', k:'ida', f:'pct', dir:'up', gargalo:true},
+      {m:'CPM', ideal:'—', media:'medindo', k:'cpm', f:'rs', dir:'down'},
+      {m:'CPA (real)', ideal:'R$ 36', media:'medindo', k:'cpa', f:'rs', dir:'down'},
+      {m:'ROAS real', ideal:'2,0', media:'medindo', k:'roas', f:'num', dir:'up'},
+      {m:'Frequência', ideal:'2-3', media:'medindo', k:'freq', f:'num'},
+    ]},
     quiz:{ nome:'Quiz Dream Baby', badge:'fb-quiz', linhas:[
       {m:'CTR (link)', ideal:'1,3%', media:'1,46%', k:'ctr', f:'pct', dir:'up'},
       {m:'Connect rate', ideal:'80%', media:'98%', k:'connect', f:'pct', dir:'up'},
@@ -209,8 +219,8 @@
   }
   function cmpBlocks(){
     return '<div class="section-header" style="border:0;padding:2px 2px 8px"><div class="section-title">📊 Comparativo por funil</div><div class="section-sub">como estamos × o ideal × o atual do período</div></div>'+
-      tabelaFunil('pocket')+tabelaFunil('quiz')+
-      '<div class="fcard"><div class="ftitle"><span class="fbadge fb-guia">GUIA</span> Guia da Pega</div><div class="empty" style="padding:22px">Baseline em breve — funil novo, ainda sem campanha paga rodando pra medir.</div></div>';
+      tabelaFunil('pocket')+tabelaFunil('guia')+tabelaFunil('quiz')+
+      '<div style="font-size:10.5px;color:var(--muted);margin:-8px 2px 14px">* Guia: métricas de página/checkout medidas pelo pixel NOVO (guiadapega.com.br) desde 17/Set — a estrutura antiga (materia.*) era cega, então "nossa média" ainda está em medição e as células ficam sem cor até fechar baseline.</div>';
   }
   function glossBlocks(){
     const reguas='<div class="section"><div class="section-header"><div class="section-title">📏 Réguas de decisão</div><div class="section-sub">os limiares que o Austin aplica pra manter, observar, cortar e escalar</div></div><div class="section-body"><div class="gloss">'+
