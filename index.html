@@ -172,7 +172,7 @@
     }
 
     /* ── Sidebar (menu lateral — desktop; no mobile vale a mtabbar de baixo) ── */
-    .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 226px; z-index: 120;
+    .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 288px; z-index: 120;
       display: flex; flex-direction: column;
       background: rgba(13, 15, 27, 0.92);
       backdrop-filter: blur(20px) saturate(170%); -webkit-backdrop-filter: blur(20px) saturate(170%);
@@ -186,9 +186,9 @@
     .sb-nav { flex: 1; overflow-y: auto; padding: 10px 9px; display: flex; flex-direction: column; gap: 2px; }
     .sb-nav::-webkit-scrollbar { width: 6px; }
     .sb-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-    .sb-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 11px; cursor: pointer;
-      color: var(--muted); font-weight: 700; font-size: 13.5px; transition: all .15s; border: 1px solid transparent; user-select: none; }
-    .sb-item .ico { font-size: 17px; filter: grayscale(40%); transition: all .2s; }
+    .sb-item { display: flex; align-items: center; gap: 11px; padding: 12px 14px; border-radius: 11px; cursor: pointer;
+      color: var(--muted); font-weight: 700; font-size: 14.5px; transition: all .15s; border: 1px solid transparent; user-select: none; }
+    .sb-item .ico { font-size: 19px; filter: grayscale(40%); transition: all .2s; }
     .sb-item:hover { color: var(--text); background: rgba(99, 102, 241, 0.10); }
     .sb-item:hover .ico { filter: grayscale(0%); }
     .sb-item.active { color: var(--text);
@@ -197,10 +197,10 @@
     .sb-item.active .ico { filter: grayscale(0%) drop-shadow(0 0 9px var(--purple-glow)); transform: scale(1.08); }
     .sb-caret { margin-left: auto; font-size: 9px; color: var(--muted); transition: transform .18s; }
     .sb-cat.open .sb-caret { transform: rotate(90deg); }
-    .sb-subs { display: none; flex-direction: column; gap: 1px; margin: 2px 0 5px; padding-left: 15px; }
+    .sb-subs { display: none; flex-direction: column; gap: 4px; margin: 3px 0 6px; padding-left: 16px; }
     .sb-subs.open { display: flex; }
-    .sb-sub { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 0 9px 9px 0;
-      font-size: 12.5px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .15s;
+    .sb-sub { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 0 9px 9px 0;
+      font-size: 13.5px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .15s;
       border-left: 2px solid var(--border); user-select: none; }
     .sb-sub:hover { color: var(--text); background: rgba(99, 102, 241, 0.08); }
     .sb-sub.active { color: var(--text); border-left-color: var(--purple);
@@ -210,7 +210,7 @@
     .sb-foot .btn { width: 100%; justify-content: center; text-align: center; }
     @media (max-width: 760px) { .sidebar { display: none; } }
     /* o conteúdo inteiro (navrow + main) desloca pela padding do body; a sidebar é fixed e não entra */
-    @media (min-width: 761px) { body { padding-left: 226px; } }
+    @media (min-width: 761px) { body { padding-left: 288px; } }
 
     /* ── Layout ── */
     .main { padding: 24px; max-width: 1440px; margin: 0 auto; }
@@ -474,13 +474,12 @@
       margin-bottom: 0 !important;
       background: transparent !important;
       border: none !important; border-radius: 0 !important;
-      padding: 4px 0 10px !important;
+      padding: 18px 0 !important; /* topo mais alto (pedido Bruno 28/Set) */
       flex: 1 1 100%; justify-content: center;
-      border-top: 1px solid var(--border);
     }
     /* versão compacta pra caber tudo numa linha só no desktop */
     .navrow .tab { padding: 14px 13px; font-size: 13.5px; }
-    .navrow .period-btn { padding: 7px 12px; font-size: 12.5px; }
+    .navrow .period-btn { padding: 9px 15px; font-size: 13px; }
     .navrow #periodSelector > span:first-child { display: none; }
     @media (max-width: 1280px) {
       /* não coube ao lado: período vira segunda linha da barra */
