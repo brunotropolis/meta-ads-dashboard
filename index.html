@@ -262,6 +262,21 @@
     .pj-tab tr.pj-grp td { font-weight: 800; background: rgba(255,255,255,.03); border-top: 1px solid rgba(167,139,250,.25); }
     .pj-tab tr.pj-child td.l { font-weight: 500; color: #c9cbe0; padding-left: 22px; }
     .pj-ind { color: var(--muted); margin-right: 6px; }
+    .pg-tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin: 6px 0 14px; }
+    .pg-tile { display: flex; gap: 10px; align-items: flex-start; background: rgba(255,255,255,.03); border: 1px solid var(--border); border-radius: 12px; padding: 11px 13px; }
+    .pg-tile > i { flex: none; width: 10px; height: 10px; border-radius: 3px; margin-top: 4px; }
+    .pg-tile.pg-card { background: rgba(213,81,129,.06); border-color: rgba(213,81,129,.25); }
+    .pg-tn { font-size: 11.5px; color: var(--muted); font-weight: 700; }
+    .pg-tv { font-size: 20px; font-weight: 800; color: var(--text); line-height: 1.2; }
+    .pg-sub { font-size: 11px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); margin: 12px 0 6px; }
+    .pg-bar { display: flex; gap: 2px; height: 22px; border-radius: 6px; overflow: hidden; }
+    .pg-bar.alto { height: 28px; }
+    .pg-seg { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 11.5px; white-space: nowrap; min-width: 0; }
+    .pg-rows { display: flex; flex-direction: column; gap: 7px; }
+    .pg-row { display: grid; grid-template-columns: 110px 1fr; align-items: center; gap: 12px; }
+    .pg-ml { font-size: 12.5px; font-weight: 700; color: var(--text); }
+    .pg-dot { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 8px; vertical-align: 0; }
+    @media (max-width: 1100px) { .pg-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     .pj-chart { width: 100%; min-width: 560px; height: 280px; display: block; }
     .pj-tv { fill: var(--text); font-size: 12px; font-weight: 800; }
     .pj-tl { fill: var(--muted); font-size: 12px; font-weight: 700; }
@@ -1877,6 +1892,32 @@ async function renderProjeto(force){
   tf+=fRow('outros','• Outros');
   tf+='</tbody></table>';
 
+  // Formas de pagamento (% dos pedidos) — cores validadas (CVD/contraste) e diferentes das do gráfico de faturamento
+  const PGC = { pix:{n:'PIX',c:'#3987e5',t:'#fff'}, cartao:{n:'Cartão',c:'#d55181',t:'#fff'}, apple_pay:{n:'Apple Pay',c:'#c98500',t:'#1a1305'}, outros:{n:'Outros',c:'#7c829b',t:'#fff'} };
+  const PG_OUT = {google_pay:'Google Pay', paypal:'PayPal', boleto:'Boleto', outros:'Outros', nao_registrado:'Não registrado'};
+  const pgGrupo = pg => { const o={pix:0,cartao:0,apple_pay:0,outros:0}; Object.entries(pg||{}).forEach(([k,x])=>{ o[PGC[k]?k:'outros'] += x.n; }); return o; };
+  const pgBar = (g, alto) => { const tot = Object.values(g).reduce((a,b)=>a+b,0)||1;
+    return '<div class="pg-bar'+(alto?' alto':'')+'">'+Object.keys(PGC).filter(k=>g[k]>0).map(k=>{ const pc=g[k]/tot*100; return '<div class="pg-seg" style="flex:'+g[k]+';background:'+PGC[k].c+';color:'+PGC[k].t+'" title="'+PGC[k].n+': '+g[k]+' pedidos ('+pc.toFixed(1).replace('.',',')+'%)">'+(pc>=9?'<b>'+Math.round(pc)+'%</b>'+(alto&&pc>=16?' '+PGC[k].n:''):'')+'</div>'; }).join('')+'</div>'; };
+  const pgTot = {pix:0,cartao:0,apple_pay:0,outros:0}; M.forEach(m=>{ const g=pgGrupo(m.pagamento); Object.keys(g).forEach(k=>pgTot[k]+=g[k]); });
+  const pgN = Object.values(pgTot).reduce((a,b)=>a+b,0)||1;
+  const cartT = M.reduce((a,m)=>{ const c=m.cartao||{}; a.n+=c.n||0; a.p+=c.parcelado||0; a.d+=c.em12||0; a.s+=(c.media_parcelas||0)*(c.n||0); return a; },{n:0,p:0,d:0,s:0});
+  const pgTiles = Object.keys(PGC).map(k=>'<div class="pg-tile"><i style="background:'+PGC[k].c+'"></i><div><div class="pg-tn">'+PGC[k].n+'</div><div class="pg-tv">'+(pgTot[k]/pgN*100).toFixed(1).replace('.',',')+'%</div><div class="pj-sub">'+pgTot[k].toLocaleString('pt-BR')+' pedidos</div></div></div>').join('')
+    + '<div class="pg-tile pg-card"><div><div class="pg-tn">No cartão</div><div class="pg-tv">'+(cartT.n?Math.round(cartT.p/cartT.n*100):0)+'% parcelado</div><div class="pj-sub">média '+(cartT.n?(cartT.s/cartT.n).toFixed(1).replace('.',','):'0')+'x · '+(cartT.n?Math.round(cartT.d/cartT.n*100):0)+'% em 12x</div></div></div>';
+  const pgMeses = M.map(m=>'<div class="pg-row"><div class="pg-ml">'+m.label+(m.corrente?'<span class="pj-sub">em andamento</span>':'')+'</div>'+pgBar(pgGrupo(m.pagamento), true)+'</div>').join('');
+  const pgLin = [['pix','PIX'],['cartao','Cartão'],['apple_pay','Apple Pay']].concat(Object.entries(PG_OUT));
+  let pgTab = '<table class="pj-tab"><thead><tr><th class="l">Forma de pagamento</th>'+M.map(m=>'<th>'+m.label+'</th>').join('')+'<th>Total</th></tr></thead><tbody>';
+  pgLin.forEach(([k,nome])=>{ const tot=M.reduce((a,m)=>a+((m.pagamento||{})[k]||{n:0}).n,0); if(!tot) return;
+    pgTab += '<tr><td class="l">'+(PGC[k]?'<i class="pg-dot" style="background:'+PGC[k].c+'"></i>':'<i class="pg-dot" style="background:#7c829b"></i>')+nome+'</td>'+M.map(m=>{ const n=((m.pagamento||{})[k]||{n:0}).n, t=Object.values(m.pagamento||{}).reduce((a,x)=>a+x.n,0)||1; const pc=n/t*100; return '<td>'+(n?(pc<1?'&lt;1':Math.round(pc))+'%<span class="pj-sub">'+n+' pedido'+(n===1?'':'s')+'</span>':'<span class="pj-sub">·</span>')+'</td>'; }).join('')+'<td><b>'+(tot/pgN*100<1?'&lt;1':Math.round(tot/pgN*100))+'%</b><span class="pj-sub">'+tot+'</span></td></tr>'; });
+  pgTab += '<tr class="pj-grp"><td class="l">Cartão parcelado</td>'+M.map(m=>{ const c=m.cartao||{}; return '<td>'+(c.n?Math.round((c.parcelado||0)/c.n*100)+'%<span class="pj-sub">média '+String(c.media_parcelas).replace('.',',')+'x</span>':'·')+'</td>'; }).join('')+'<td><b>'+(cartT.n?Math.round(cartT.p/cartT.n*100):0)+'%</b></td></tr>';
+  pgTab += '<tr><td class="l">Cartão em 12x</td>'+M.map(m=>{ const c=m.cartao||{}; return '<td>'+(c.n?Math.round((c.em12||0)/c.n*100)+'%<span class="pj-sub">'+(c.em12||0)+' pedidos</span>':'·')+'</td>'; }).join('')+'<td><b>'+(cartT.n?Math.round(cartT.d/cartT.n*100):0)+'%</b></td></tr>';
+  pgTab += '</tbody></table>';
+  const pgSec = '<div class="pj-card"><div class="pj-ct">💳 Formas de pagamento</div><div class="pj-cs">percentual dos pedidos (o bump vai no mesmo pagamento) · passe o mouse nas barras pra ver os números</div>'
+    + '<div class="pg-tiles">'+pgTiles+'</div>'
+    + '<div class="pg-sub">Período todo</div>'+pgBar(pgTot, true)
+    + '<div class="pg-sub">Mês a mês</div><div class="pg-rows">'+pgMeses+'</div>'
+    + '<div class="pj-leg">'+Object.keys(PGC).map(k=>'<span><i style="background:'+PGC[k].c+'"></i>'+PGC[k].n+(k==='outros'?' (Google Pay, PayPal, não registrado)':'')+'</span>').join('')+'</div>'
+    + '<div class="pj-scroll" style="margin-top:14px">'+pgTab+'</div></div>';
+
   // Produtos
   const prods = (d.produtos||[]).filter(p=>!p.bump), bumps=(d.produtos||[]).filter(p=>p.bump);
   const ultMes = (M[M.length-1]||{}).mes, penMes=(M[M.length-2]||{}).mes;
@@ -1904,6 +1945,7 @@ async function renderProjeto(force){
     +'<div class="pj-card"><div class="pj-ct">💎 Faturamento por mês × gasto</div>'+chart+'</div>'
     +'<div class="pj-card"><div class="pj-ct">📅 Comparativo mês a mês</div><div class="pj-cs">setas = variação contra o mês anterior (só entre meses fechados e comparáveis)</div><div class="pj-scroll">'+tab+'</div></div>'
     +'<div class="pj-card"><div class="pj-ct">🌪️ Receita por funil</div><div class="pj-cs">bumps somados no funil da venda principal · quanto mais forte o roxo, maior a receita</div><div class="pj-scroll">'+tf+'</div></div>'
+    +pgSec
     +'<div class="pj-grid2">'+tProd(topP,'🏆 Mais vendidos','receita acumulada no período · o Dream Baby Pocket soma todas as ofertas dele (quiz, página direta e Mathias)')+tProd(menosP,'🐢 Menos vendidos','com pelo menos 1 venda no período')+'</div>'
     +(parados.length?'<div class="pj-card"><div class="pj-ct">⏸️ Pararam de vender</div><div class="pj-cs">produtos com 5+ vendas que não vendem desde antes de '+(MN[penMes]||'')+'</div>'+parados.map(p=>'<span class="pj-chip">'+p.nome+' · último: '+(MN[p.ultimo_mes]||p.ultimo_mes)+' · '+p.n+' vendas</span>').join('')+'</div>':'')
     +(bumps.length?'<div class="pj-card"><div class="pj-ct">🎁 Order bumps</div><table class="pj-tab pj-mini"><thead><tr><th class="l">Bump</th><th>Vendas</th><th>Receita</th><th>por mês</th></tr></thead><tbody>'+bumps.map(prodRow).join('')+'</tbody></table></div>':'')
