@@ -213,7 +213,7 @@
     @media (min-width: 761px) { body { padding-left: 288px; } }
 
     /* ── Layout ── */
-    .main { padding: 24px; max-width: 1440px; margin: 0 auto; }
+    .main { padding: 24px; max-width: 1680px; margin: 0 auto; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
@@ -941,7 +941,7 @@
 
   <!-- TAB: OVERVIEW -->
   <style>
-      #panoramaBody{max-width:1080px;margin:0 auto}
+      #panoramaBody{max-width:1420px;margin:0 auto}
       .pano-hero{background:linear-gradient(135deg,rgba(167,139,250,.16),rgba(34,211,238,.08));border:1px solid rgba(167,139,250,.28);border-radius:18px;padding:20px 22px;margin-bottom:22px}
       .pano-hero .t{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.7px;text-transform:uppercase}
       .pano-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:14px}
@@ -1605,11 +1605,14 @@ function renderFunilPano(key){
           ['· order bumps','R$ '+fmt(f.pago_rec_bumps||0)],
           ['ROAS', roasM, '#fbbf24']])
       + _obox('🌱','Orgânico','#4ade80',[
-          ['Vendas',(f.org||0)],
+          ['Vendas',(f.org||0)+(f.vendas?' ('+((f.org||0)/f.vendas*100).toFixed(0)+'% do funil)':'')],
           ['Receita','R$ '+fmt(f.org_receita||0)],
-          ['Custo de mídia','R$ 0','var(--muted)']])
+          ['% da receita do funil',(f.receita?((f.org_receita||0)/f.receita*100).toFixed(1).replace('.',','):0)+'%'],
+          ['Ticket médio', f.org?('R$ '+fmt((f.org_receita||0)/f.org)):'—']])
       + _obox('🎁','Order bumps','#fbbf24',[
           ['Vendas de bump',(f.bumps||0)],
+          ['· no tráfego pago',(f.pago_bumps||0)+(f.pago?' ('+((f.pago_bumps||0)/f.pago*100).toFixed(0)+'% dos pedidos)':'')],
+          ['· no orgânico',(f.org_bumps||0)+(f.org?' ('+((f.org_bumps||0)/f.org*100).toFixed(0)+'% dos pedidos)':'')],
           ['Receita','R$ '+fmt(f.rec_bumps||0)],
           ['% da receita do funil',(f.receita?((f.rec_bumps||0)/f.receita*100).toFixed(1).replace('.',','):0)+'%'],
           ['Conversão no funil', attach+'% (meta 25%)', attach>=25?'#4ade80':'#fb923c']])
@@ -1636,7 +1639,7 @@ function renderFunilPano(key){
           _funilStep('Entrou na página', F.visitou||0, F.connect_rate!=null?('Connect '+F.connect_rate+'%'):'') ];
         if(F.checkout>0) steps.push(_funilStep('Foi pro checkout', F.checkout, F.ida!=null?(F.ida+'% da página'):''));
         steps.push(_funilStep('Comprou (pago)', comprouPago, F.checkout>0?((+(comprouPago/F.checkout*100).toFixed(1))+'% do checkout'):(F.visitou?((+(comprouPago/F.visitou*100).toFixed(1))+'% da página'):'')));
-        var nota = (key==='guia') ? ' — ⚠️ passo checkout não é medido (pixel do Guia restrito)' : '';
+        var nota = (key==='guia') ? (F.checkout>0 ? ' — checkout medido pelo pixel NOVO (guiadapega.com.br); períodos antes de 17/Set saem zerados (pixel antigo era cego)' : ' — sem checkout no período (pixel novo mede desde 17/Set; antes era cego)') : '';
         flow=_funilSub('🔻 Funil (tráfego pago)'+nota)
           +'<div class="funil-flow" style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">'
           +steps.join(_arrow())
