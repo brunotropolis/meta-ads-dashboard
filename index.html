@@ -118,6 +118,25 @@
     .btn-green:hover { background: var(--grad-pink); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(244, 114, 182, 0.4); }
     .btn-sm { padding: 5px 12px; font-size: 11px; }
     .last-update { font-size: 11px; color: var(--muted); }
+    .vendas-summary .fc-value { font-size: 22px; white-space: nowrap; }
+    @media (max-width: 1350px) and (min-width: 761px) { .vendas-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    .cn-list { padding: 4px 0 8px; }
+    .cn-it { padding: 8px 16px; border-bottom: 1px solid rgba(255,255,255,.04); }
+    .cn-l { font-size: 12px; color: var(--text); line-height: 1.35; word-break: break-word; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .cn-r { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+    .cn-r .bar-bg { flex: 1; height: 6px; min-width: 40px; }
+    .cn-r .bar-fill { height: 100%; }
+    .cn-v { font-size: 11.5px; color: var(--muted); font-weight: 700; white-space: nowrap; }
+    .cn-more { display: block; margin: 8px auto 2px; background: rgba(167,139,250,.10); border: 1px solid rgba(167,139,250,.30); color: var(--text); border-radius: 999px; padding: 5px 14px; font-size: 12px; font-weight: 700; cursor: pointer; }
+    .cn-more:hover { background: rgba(167,139,250,.2); }
+    .vt-tab { table-layout: auto; }
+    .vt-cut { max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .vt-wide { max-width: 250px; }
+    #vendasTable { overflow-x: auto; }
+    .vt-tab th, .vt-tab td { padding-left: 10px; padding-right: 10px; }
+    .pg-resumo { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px 16px; font-size: 12.5px; color: var(--muted); border-bottom: 1px solid var(--border); }
+    .pg-chip { background: rgba(255,255,255,.05); border: 1px solid var(--border); border-radius: 999px; padding: 3px 11px; color: var(--text); font-size: 12px; }
+    .pg-chip b { margin-left: 4px; }
     .dot-live { display: inline-block; width: 7px; height: 7px; background: var(--green); border-radius: 50%; margin-right: 5px; animation: blink 2s infinite; box-shadow: 0 0 8px var(--green-glow); }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
@@ -460,7 +479,7 @@
 
     .vendas-summary {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(6, minmax(0, 1fr)); /* 6 cards numa linha (pedido Bruno 28/Set) */
       gap: 12px;
       margin-bottom: 16px;
     }
@@ -1148,7 +1167,7 @@
     <div class="section">
       <div class="section-header">
         <div>
-          <div class="section-title">Vendas de Hoje</div>
+          <div class="section-title">Vendas do período</div>
           <div class="section-sub" id="vendasCount">0 vendas</div>
         </div>
       </div>
@@ -1637,7 +1656,7 @@ function paintPanorama(j, filtro){
     h+='<div class="pano-grid">';
     M.subs.forEach(function(s){
       var badges='';
-      if(s.key==='meteorico') badges='<span class="pano-b met">meteórico</span>';
+      if(s.key==='meteorico') badges='<span class="pano-b met">Clube do Soninho</span>';
       else if(s.gasto>0 && s.roas_midia!=null) badges='<span class="pano-b '+(s.roas_midia>=1.5?'roas':'roaslow')+'">mídia '+s.roas_midia.toFixed(2)+'x</span>'+(s.roas!=null?'<span class="pano-b" style="background:rgba(34,211,238,.14);color:#22d3ee">funil '+s.roas.toFixed(2)+'x</span>':'');
       else if(s.vendas>0) badges='<span class="pano-b org">orgânico</span>';
       else badges='<span class="pano-b zero">sem venda</span>';
@@ -1658,9 +1677,9 @@ function renderFunilPano(key){
   function paint(j){
     var f=null; ['dream','guia'].forEach(function(m){var x=j.macros[m].subs.find(function(y){return y.key===key});if(x)f=x;});
     if(!f){ el.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted)">Funil não encontrado.</div>'; return; }
-    var roasM = f.roas_midia!=null ? f.roas_midia.toFixed(2)+'x' : (f.gasto>0?'—':'sem mídia');
-    var roasF = f.roas!=null ? f.roas.toFixed(2)+'x' : (f.vendas>0?'orgânico':'—');
-    var roasP = f.roas_principal!=null ? f.roas_principal.toFixed(2)+'x' : '—';
+    var roasM = f.roas_midia!=null ? f.roas_midia.toFixed(2)+'x' : (f.gasto>0?'·':'sem mídia');
+    var roasF = f.roas!=null ? f.roas.toFixed(2)+'x' : (f.vendas>0?'orgânico':'·');
+    var roasP = f.roas_principal!=null ? f.roas_principal.toFixed(2)+'x' : '·';
     var kpis='<div class="finance-grid funis-kpi-grid" style="padding:4px">'
       +'<div class="finance-card fc-red"><span class="fc-icon">📢</span><div class="fc-label">Investido Meta</div><div class="fc-value">R$ '+fmt(f.gasto)+'</div></div>'
       +'<div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento'+(f.bumps?' (c/ '+f.bumps+' bumps)':'')+'</div><div class="fc-value">R$ '+fmt(f.receita)+'</div></div>'
@@ -1687,7 +1706,7 @@ function renderFunilPano(key){
           ['Vendas',(f.org||0)+(f.vendas?' ('+((f.org||0)/f.vendas*100).toFixed(0)+'% do funil)':'')],
           ['Receita','R$ '+fmt(f.org_receita||0)],
           ['% da receita do funil',(f.receita?((f.org_receita||0)/f.receita*100).toFixed(1).replace('.',','):0)+'%'],
-          ['Ticket médio', f.org?('R$ '+fmt((f.org_receita||0)/f.org)):'—']])
+          ['Ticket médio', f.org?('R$ '+fmt((f.org_receita||0)/f.org)):'·']])
       + _obox('🎁','Order bumps','#fbbf24',[
           ['Vendas de bump',(f.bumps||0)],
           ['· no tráfego pago',(f.pago_bumps||0)+(f.pago?' ('+((f.pago_bumps||0)/f.pago*100).toFixed(0)+'% dos pedidos)':'')],
@@ -1704,11 +1723,11 @@ function renderFunilPano(key){
     var flow='';
     if(key==='ebook'){
       if(f.sessoes_3d){
-        flow=_funilSub('🔻 Funil (Clarity · últimos 3 dias) — 100% orgânico')
+        flow=_funilSub('🔻 Funil (Clarity · últimos 3 dias) · 100% orgânico')
           +'<div class="funil-flow" style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">'
           +_funilStep('Visitas na página', f.sessoes_3d)+_arrow()
           +_funilStep('Comprou', f.vendas_3d||0, 'conversão '+String(f.conversao_3d).replace('.',',')+'%')
-          +'</div><div style="padding:6px;color:var(--muted);font-size:12.5px">Saúde da página (Clarity): scroll médio <b style="color:var(--text,#fff)">'+(f.scroll_medio!=null?f.scroll_medio+'%':'—')+'</b> · dead-click <b style="color:var(--text,#fff)">'+(f.dead_pct!=null?f.dead_pct+'%':'—')+'</b></div>';
+          +'</div><div style="padding:6px;color:var(--muted);font-size:12.5px">Saúde da página (Clarity): scroll médio <b style="color:var(--text,#fff)">'+(f.scroll_medio!=null?f.scroll_medio+'%':'·')+'</b> · dead-click <b style="color:var(--text,#fff)">'+(f.dead_pct!=null?f.dead_pct+'%':'·')+'</b></div>';
       } else { flow='<div style="padding:14px;color:var(--muted);font-size:13px">Sem dados do Clarity ainda pra esse funil.</div>'; }
     } else {
       var F=f.flow||{};
@@ -1718,7 +1737,7 @@ function renderFunilPano(key){
           _funilStep('Entrou na página', F.visitou||0, F.connect_rate!=null?('Connect '+F.connect_rate+'%'):'') ];
         if(F.checkout>0) steps.push(_funilStep('Foi pro checkout', F.checkout, F.ida!=null?(F.ida+'% da página'):''));
         steps.push(_funilStep('Comprou (pago)', comprouPago, F.checkout>0?((+(comprouPago/F.checkout*100).toFixed(1))+'% do checkout'):(F.visitou?((+(comprouPago/F.visitou*100).toFixed(1))+'% da página'):'')));
-        var nota = (key==='guia') ? (F.checkout>0 ? ' — checkout medido pelo pixel NOVO (guiadapega.com.br); períodos antes de 17/Set saem zerados (pixel antigo era cego)' : ' — sem checkout no período (pixel novo mede desde 17/Set; antes era cego)') : '';
+        var nota = (key==='guia') ? (F.checkout>0 ? ' · checkout medido pelo pixel NOVO (guiadapega.com.br); períodos antes de 17/Set saem zerados (pixel antigo era cego)' : ' · sem checkout no período (pixel novo mede desde 17/Set; antes era cego)') : '';
         flow=_funilSub('🔻 Funil (tráfego pago)'+nota)
           +'<div class="funil-flow" style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">'
           +steps.join(_arrow())
@@ -1777,7 +1796,7 @@ function switchTab(name) {
 
 // ─── REEMBOLSOS (aba própria, período independente) ─────────────────────────
 // ─── PROJETO: histórico mês a mês (28/Set, pedido Bruno) ─────────────────────
-// Fonte: GESTOR | Relatorio Mensal (xLt7CNttk3JovrMj) — vendas Greenn (Supabase) + gasto oficial Meta. Cache 1h no n8n.
+// Fonte: GESTOR | Relatorio Mensal (xLt7CNttk3JovrMj) · vendas Greenn (Supabase) + gasto oficial Meta. Cache 1h no n8n.
 let _projData = null;
 async function renderProjeto(force){
   const body = document.getElementById('projetoBody'); if (!body) return;
@@ -1789,8 +1808,8 @@ async function renderProjeto(force){
   const d = _projData; if (!d || !d.ok) { body.innerHTML='<div style="padding:40px;text-align:center;color:var(--muted)">Relatório indisponível.</div>'; return; }
   const M = d.meses || [];
   const R = v => 'R$ '+Math.round(v||0).toLocaleString('pt-BR');
-  const X = v => v==null?'—':v.toFixed(2).replace('.',',')+'x';
-  const P = v => v==null?'—':Math.round(v)+'%';
+  const X = v => v==null?'·':v.toFixed(2).replace('.',',')+'x';
+  const P = v => v==null?'·':Math.round(v)+'%';
   const fechados = M.filter(m=>!m.corrente);
   const cur = M.find(m=>m.corrente), ult = fechados[fechados.length-1], pen = fechados[fechados.length-2];
   const soma = k => M.reduce((s,m)=>s+(m[k]||0),0);
@@ -1801,7 +1820,7 @@ async function renderProjeto(force){
   const leitura = [];
   if (ult && pen) {
     leitura.push(`<b>${ult.label}</b> fechou com <b>${R(ult.fat)}</b> de faturamento ${delta(ult.fat,pen.fat)} vs ${pen.label}, gastando ${R(ult.gasto)} em anúncio ${delta(ult.gasto,pen.gasto,true)}.`);
-    leitura.push(`O que <b>sobrou depois da mídia</b> foi ${R(ult.sobra)} ${delta(ult.sobra,pen.sobra)} — ROAS total ${X(ult.roas_total)} (mídia ${X(ult.roas_midia)}).`);
+    leitura.push(`O que <b>sobrou depois da mídia</b> foi ${R(ult.sobra)} ${delta(ult.sobra,pen.sobra)} · ROAS total ${X(ult.roas_total)} (mídia ${X(ult.roas_midia)}).`);
   }
   if (cur && cur.proj_fat && ult) leitura.push(`<b>${cur.label}</b> (em andamento, ${cur.dias} dias): ${R(cur.fat)} até agora, ritmo projeta <b>${R(cur.proj_fat)}</b> no mês ${delta(cur.proj_fat,ult.fat)} vs ${ult.label}.`);
   const j6 = M.find(m=>m.mes==='2026-06'), base = j6 || M[0], topo = cur && cur.proj_fat ? {fat:cur.proj_fat,label:cur.label+' (proj.)'} : ult;
@@ -1809,7 +1828,7 @@ async function renderProjeto(force){
   const utmOk = M.filter(m=>m.utm_confiavel);
   if (utmOk.length>=2){ const a=utmOk[0], b=utmOk[utmOk.length-1]; leitura.push(`Orgânico: ${P(a.org_pct)} do faturamento em ${a.label} → ${P(b.org_pct)} em ${b.label}.`); }
 
-  // Gráfico: desenhado depois do innerHTML (precisa da largura real do card) — ver drawProjChart()
+  // Gráfico: desenhado depois do innerHTML (precisa da largura real do card) · ver drawProjChart()
   const chart = '<div id="pjChart" class="pj-chartbox"></div>'
     +'<div class="pj-leg"><span><i style="background:#d95926"></i>Tráfego pago</span><span><i style="background:#199e70"></i>Orgânico</span><span><i style="background:#3987e5"></i>Recuperação/WhatsApp</span><span><i style="background:#b9bccb"></i>Faturamento, origem não rastreada (abr/mai)</span><span><i style="background:#7c829b"></i>Gasto em anúncio (coluna da direita)</span><span><i class="pj-leg-proj"></i>Projeção do mês em andamento</span></div>';
 
@@ -1840,19 +1859,19 @@ async function renderProjeto(force){
   tab+='</tbody></table>';
 
   // Receita por funil × mês (heat)
-  const FN = {pocket:'🌙 Dream Baby Pocket',quiz:'☁️ Quiz',mathias:'🧔 Mathias',guia:'🤱 Guia da Pega',meteorico:'💬 Meteórico',ebook:'📕 Ebook'};
+  const FN = {pocket:'🌙 Dream Baby Pocket',quiz:'☁️ Quiz',mathias:'🧔 Mathias',guia:'🤱 Guia da Pega',meteorico:'💬 Clube do Soninho',ebook:'📕 Ebook'};
   const fget = (m,k) => (m.funis && m.funis[k]) || {n:0,v:0};
   const ftot = k => M.reduce((s,m)=>s+fget(m,k).v,0);
   const atKeys = Object.keys(d.funis_label||{}).filter(k=>ftot(k)>0).sort((a,b)=>ftot(b)-ftot(a));
   const PEQ = ['de','do','da','dos','das','e','com','a','o'];
   const cap = t => String(t||'').toLowerCase().split(' ').map((w,i)=>(i>0&&PEQ.indexOf(w)>=0)?w:w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
   const maxF = Math.max(1,...M.flatMap(m=>Object.values(m.funis||{}).map(f=>f.v)));
-  const fRow = (k,label,cls) => { const tot=ftot(k); if(!tot) return ''; return '<tr'+(cls?' class="'+cls+'"':'')+'><td class="l">'+label+'</td>'+M.map(m=>{ const f=fget(m,k); const a=f.v/maxF; return '<td style="background:rgba(167,139,250,'+(a*0.55).toFixed(2)+')">'+(f.v?R(f.v)+'<span class="pj-sub">'+f.n+(f.n===1?' venda':' vendas')+'</span>':'<span class="pj-sub">—</span>')+'</td>'; }).join('')+'<td><b>'+R(tot)+'</b></td></tr>'; };
+  const fRow = (k,label,cls) => { const tot=ftot(k); if(!tot) return ''; return '<tr'+(cls?' class="'+cls+'"':'')+'><td class="l">'+label+'</td>'+M.map(m=>{ const f=fget(m,k); const a=f.v/maxF; return '<td style="background:rgba(167,139,250,'+(a*0.55).toFixed(2)+')">'+(f.v?R(f.v)+'<span class="pj-sub">'+f.n+(f.n===1?' venda':' vendas')+'</span>':'<span class="pj-sub">·</span>')+'</td>'; }).join('')+'<td><b>'+R(tot)+'</b></td></tr>'; };
   let tf='<table class="pj-tab pj-heat"><thead><tr><th class="l">Funil</th>'+M.map(m=>'<th>'+m.label+'</th>').join('')+'<th>Total</th></tr></thead><tbody>';
   Object.keys(FN).forEach(k=>{ tf+=fRow(k,FN[k]); });
   if (atKeys.length) {
     const atMes = M.map(m=>atKeys.reduce((s,k)=>s+fget(m,k).v,0)), atTot = atMes.reduce((a,b)=>a+b,0);
-    tf+='<tr class="pj-grp"><td class="l">💎 Alto ticket — por produto</td>'+atMes.map(v=>'<td>'+(v?R(v):'<span class="pj-sub">—</span>')+'</td>').join('')+'<td><b>'+R(atTot)+'</b></td></tr>';
+    tf+='<tr class="pj-grp"><td class="l">💎 Alto ticket por produto</td>'+atMes.map(v=>'<td>'+(v?R(v):'<span class="pj-sub">·</span>')+'</td>').join('')+'<td><b>'+R(atTot)+'</b></td></tr>';
     atKeys.forEach(k=>{ tf+=fRow(k,'<span class="pj-ind">↳</span>'+cap(d.funis_label[k]),'pj-child'); });
   }
   tf+=fRow('outros','• Outros');
@@ -1874,7 +1893,7 @@ async function renderProjeto(force){
 
   const kpi = (ic,l,v,sub,cls) => '<div class="finance-card '+cls+'"><span class="fc-icon">'+ic+'</span><div class="fc-label">'+l+'</div><div class="fc-value">'+v+'</div>'+(sub?'<div class="pj-kpisub">'+sub+'</div>':'')+'</div>';
   body.innerHTML = '<div class="pj">'
-    +'<div class="pj-head"><div><div class="pj-h1">📈 Projeto — histórico mês a mês</div><div class="pj-cs">Desde '+d.inicio.split('-').reverse().join('/')+' · vendas reais Greenn + gasto oficial Meta · independe do filtro de período lá em cima</div></div><button class="btn btn-sm" onclick="renderProjeto(true)">↻ recalcular</button></div>'
+    +'<div class="pj-head"><div><div class="pj-h1">📈 Projeto: histórico mês a mês</div><div class="pj-cs">Desde '+d.inicio.split('-').reverse().join('/')+' · vendas reais Greenn + gasto oficial Meta · independe do filtro de período lá em cima</div></div><button class="btn btn-sm" onclick="renderProjeto(true)">↻ recalcular</button></div>'
     +'<div class="finance-grid pj-kpis">'
       +kpi('💎','Faturamento acumulado',R(fatT),M.length+' meses','fc-green')
       +kpi('📢','Investido em anúncio',R(gT),'','fc-red')
@@ -1888,14 +1907,13 @@ async function renderProjeto(force){
     +'<div class="pj-grid2">'+tProd(topP,'🏆 Mais vendidos','receita acumulada no período · o Dream Baby Pocket soma todas as ofertas dele (quiz, página direta e Mathias)')+tProd(menosP,'🐢 Menos vendidos','com pelo menos 1 venda no período')+'</div>'
     +(parados.length?'<div class="pj-card"><div class="pj-ct">⏸️ Pararam de vender</div><div class="pj-cs">produtos com 5+ vendas que não vendem desde antes de '+(MN[penMes]||'')+'</div>'+parados.map(p=>'<span class="pj-chip">'+p.nome+' · último: '+(MN[p.ultimo_mes]||p.ultimo_mes)+' · '+p.n+' vendas</span>').join('')+'</div>':'')
     +(bumps.length?'<div class="pj-card"><div class="pj-ct">🎁 Order bumps</div><table class="pj-tab pj-mini"><thead><tr><th class="l">Bump</th><th>Vendas</th><th>Receita</th><th>por mês</th></tr></thead><tbody>'+bumps.map(prodRow).join('')+'</tbody></table></div>':'')
-    +'<div class="pj-grid2"><div class="pj-card"><div class="pj-ct">🥇 Ações que mais deram retorno</div><div class="pj-cs">campanhas por lucro (venda Greenn casada − gasto) · '+d.casamento.pct+'% das vendas pagas casaram com a campanha — as antigas sem #id podem estar subestimadas</div><table class="pj-tab pj-mini"><thead><tr><th class="l">Campanha</th><th>Gasto</th><th>Receita</th><th>Lucro</th><th>ROAS</th></tr></thead><tbody>'+camp+'</tbody></table></div>'
-      +'<div class="pj-card"><div class="pj-ct">🗓️ Linha do tempo</div><div class="pj-cs">🚀 lançamento (1ª venda) · 🧭 decisão registrada</div><div class="pj-mks">'+marcos+'</div></div></div>'
+    +'<div class="pj-card"><div class="pj-ct">🗓️ Linha do tempo</div><div class="pj-cs">🚀 lançamento (1ª venda) · 🧭 decisão registrada</div><div class="pj-mks">'+marcos+'</div></div>'
     +'<div class="pj-notas">'+(d.notas||[]).map(n=>'• '+n).join('<br>')+'<br>• Atualizado '+new Date(d.gerado_em).toLocaleString('pt-BR')+(d.cache?' (cache de até 1h)':'')+'</div>'
     +'</div>';
   drawProjChart(M);
 }
 
-// Gráfico do Projeto — padrão dataviz: 1 eixo (R$), colunas ≤24px com topo arredondado 4px e 2px de respiro entre blocos,
+// Gráfico do Projeto · padrão dataviz: 1 eixo (R$), colunas ≤24px com topo arredondado 4px e 2px de respiro entre blocos,
 // grade hairline discreta, rótulo seletivo (total + ROAS por mês), tooltip por mês. Paleta validada (CVD/contraste) no fundo do card.
 function drawProjChart(M){
   const box = document.getElementById('pjChart'); if (!box || !M.length) return;
@@ -1908,7 +1926,7 @@ function drawProjChart(M){
   const y = v => T + ph - (v / topV) * ph;
   const slot = pw / M.length, bw = 24, gap = 10;
   const k = v => (Math.round(v / 100) / 10).toLocaleString('pt-BR') + 'k';
-  const X = v => v == null ? '—' : v.toFixed(2).replace('.', ',') + 'x';
+  const X = v => v == null ? '·' : v.toFixed(2).replace('.', ',') + 'x';
   const topRound = (x, yt, yb, w, r) => { r = Math.min(r, (yb - yt)); return 'M'+x+' '+yb+' V'+(yt+r)+' Q'+x+' '+yt+' '+(x+r)+' '+yt+' H'+(x+w-r)+' Q'+(x+w)+' '+yt+' '+(x+w)+' '+(yt+r)+' V'+yb+' Z'; };
   let s = '';
   // grade + eixo
@@ -1978,7 +1996,7 @@ async function renderReembolsos(){
   try { d = await fetch(REEMB_URL+'?periodo='+_reembPer+'&_='+Date.now()).then(r=>r.json()); }
   catch(e){ body.innerHTML = seletor + '<div style="padding:20px;color:var(--muted,#8a8a9a)">Erro ao carregar.</div>'; return; }
   const fmt = n => 'R$ '+(Math.round(n||0)).toLocaleString('pt-BR');
-  const FONTE = { trafego:{nome:'Tráfego',emoji:'📢',cor:'#fb923c'}, organico:{nome:'Orgânico',emoji:'🌱',cor:'#4ade80'}, time_vendas:{nome:'Time de vendas',emoji:'🎧',cor:'#38bdf8'}, meteorico:{nome:'Meteórico',emoji:'🌪️',cor:'#a78bfa'}, direto:{nome:'Direto',emoji:'🔗',cor:'#94a3b8'} };
+  const FONTE = { trafego:{nome:'Tráfego',emoji:'📢',cor:'#fb923c'}, organico:{nome:'Orgânico',emoji:'🌱',cor:'#4ade80'}, time_vendas:{nome:'Time de vendas',emoji:'🎧',cor:'#38bdf8'}, meteorico:{nome:'Clube do Soninho',emoji:'💬',cor:'#a78bfa'}, direto:{nome:'Direto',emoji:'🔗',cor:'#94a3b8'} };
   const FUNIL = { pocket:{nome:'Dream Baby Pocket',emoji:'👶',cor:'#a78bfa'}, quiz:{nome:'Quiz Pocket',emoji:'☁️',cor:'#38bdf8'}, guia:{nome:'Guia da Pega',emoji:'🤱',cor:'#f472b6'} };
   const ROSE = '#fb7185';
   const card = (inner,extra) => `<div style="background:linear-gradient(160deg,#181820,#131319);border:1px solid #2a2a35;border-radius:16px;padding:16px;${extra||''}">${inner}</div>`;
@@ -2044,7 +2062,7 @@ async function renderReembolsos(){
 let currentMacro = 'panorama';
 let currentFunisSub = null;
 const MACRO_SUBS = {
-  dream: [{k:'pocket',n:'🌙 Dream Baby Pocket'},{k:'quiz',n:'☁️ Quiz Dream Baby'},{k:'mathias',n:'🧔 Mathias'},{k:'meteorico',n:'💬 Meteórico'}],
+  dream: [{k:'pocket',n:'🌙 Dream Baby Pocket'},{k:'quiz',n:'☁️ Quiz Dream Baby'},{k:'mathias',n:'🧔 Mathias'},{k:'meteorico',n:'💬 Clube do Soninho'}],
   guia: [{k:'guia',n:'🤱 Guia da Pega'},{k:'ebook',n:'📕 Ebook amamentação'},{k:'mat_calo',n:'📰 Matéria Calo'},{k:'mat_ama',n:'📰 Matéria Amamentação'}]
 };
 function switchMacro(m){
@@ -2078,14 +2096,14 @@ function _renderFunisState(){
 }
 async function loadMeteorico() {
   const body = document.getElementById('funisBody');
-  body.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando funil meteórico (WhatsApp)...</div>';
+  body.innerHTML = '<div class="loading"><div class="spinner"></div>Carregando o Clube do Soninho...</div>';
   try {
     const resp = await fetch(`${API_URL}?view=meteorico&_=${Date.now()}`);
     const d = await resp.json();
     if (currentFunisSub !== 'meteorico') return;
     body.innerHTML = _meteoricoSection(d.meteorico || {});
   } catch (e) {
-    body.innerHTML = `<div style="padding:30px;text-align:center;color:var(--red)">Erro ao carregar meteórico: ${e.message}</div>`;
+    body.innerHTML = `<div style="padding:30px;text-align:center;color:var(--red)">Erro ao carregar o Clube do Soninho: ${e.message}</div>`;
   }
 }
 
@@ -2167,12 +2185,12 @@ function _bumpsTable(bumps, compras) {
 function _meteoricoSection(m) {
   const grupos = (m && m.grupos) || [];
   const tot = (m && m.totais) || {};
-  const head = `<div class="section-header"><div class="section-title">🌪️ Meteórico — Funil WhatsApp (por semana)</div></div>`;
+  const head = `<div class="section-header"><div class="section-title">💬 Clube do Soninho · funil do WhatsApp por semana</div></div>`;
   if (m && m.erro) {
-    return `<div class="section" style="margin-bottom:20px">${head}<div style="padding:14px;color:var(--red,#ff6b6b);font-size:13px">Erro ao carregar o meteórico: ${m.erro}</div></div>`;
+    return `<div class="section" style="margin-bottom:20px">${head}<div style="padding:14px;color:var(--red,#ff6b6b);font-size:13px">Erro ao carregar o Clube do Soninho: ${m.erro}</div></div>`;
   }
   if (!grupos.length) {
-    return `<div class="section" style="margin-bottom:20px">${head}<div style="padding:14px;color:var(--muted,#8a8a9a);font-size:13px">Nenhum meteórico realizado ainda.</div></div>`;
+    return `<div class="section" style="margin-bottom:20px">${head}<div style="padding:14px;color:var(--muted,#8a8a9a);font-size:13px">Nenhuma abertura do Clube do Soninho ainda.</div></div>`;
   }
   const ativo = grupos.find(g => g.status === 'ATIVO');
   const featured = ativo ? `
@@ -2206,7 +2224,7 @@ function _meteoricoSection(m) {
     <div class="section" style="margin-bottom:20px">
       ${head}
       <div class="finance-grid funis-kpi-grid" style="padding:4px">
-        <div class="finance-card fc-purple"><span class="fc-icon">🗓️</span><div class="fc-label">Semanas (meteóricos)</div><div class="fc-value">${tot.semanas||grupos.length}</div></div>
+        <div class="finance-card fc-purple"><span class="fc-icon">🗓️</span><div class="fc-label">Semanas (aberturas)</div><div class="fc-value">${tot.semanas||grupos.length}</div></div>
         <div class="finance-card fc-blue"><span class="fc-icon">👥</span><div class="fc-label">Leads Captados</div><div class="fc-value">${tot.leads||0}</div></div>
         <div class="finance-card fc-green"><span class="fc-icon">💎</span><div class="fc-label">Faturamento Total</div><div class="fc-value">R$ ${fmt(tot.faturamento||0)}</div></div>
         <div class="finance-card fc-yellow"><span class="fc-icon">🎟️</span><div class="fc-label">Ticket Médio</div><div class="fc-value">R$ ${fmt(tot.ticket_medio||0)}</div></div>
@@ -2219,7 +2237,7 @@ function _meteoricoSection(m) {
           <th style="text-align:right">Ticket médio</th><th style="text-align:right">Faturamento</th>
         </tr></thead><tbody>${rows}</tbody></table>
       </div>
-      <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:8px 6px 0">🌪️ Cada linha = um meteórico (abrimos ~toda quinta). Semana sem abertura não conta. Dados do funil WhatsApp (Clube do Soninho), independentes do período selecionado acima.</div>
+      <div style="font-size:11px;color:var(--muted,#8a8a9a);padding:8px 6px 0">💬 Cada linha = uma abertura do Clube do Soninho (abrimos ~toda quinta). Semana sem abertura não conta. Dados do funil do WhatsApp, independentes do período selecionado acima.</div>
     </div>`;
 }
 
@@ -3618,6 +3636,7 @@ function renderVendasChatgpt(vendas) {
     </div>`;
 }
 
+let _vendasVerTudo = false;
 function renderVendas() {
   const r = DATA.resumo || {};
   const v = DATA.vendas || {};
@@ -3628,7 +3647,7 @@ function renderVendas() {
   const porUtm = v.por_utm || [];
   const fatBruto = parseFloat(r.faturamento_hoje || 0);
   const fatLiquido = parseFloat(r.faturamento_liquido || r.faturamento_hoje || 0);
-  const fatHoje = fatLiquido; // alias — sempre usa líquido
+  const fatHoje = fatLiquido; // alias · sempre usa líquido
   const fatOntem = parseFloat(r.faturamento_ontem || 0);
   const reembolsos = parseFloat(r.reembolsos_hoje || 0);
   const totalVendas = parseInt(r.total_vendas_hoje || 0);
@@ -3677,13 +3696,13 @@ function renderVendas() {
       <div class="finance-card fc-yellow">
         <span class="fc-icon">📊</span>
         <div class="fc-label">ROAS de Mídia</div>
-        <div class="fc-value">${roasMidiaV > 0 ? roasMidiaV.toFixed(2) + 'x' : '—'}</div>
+        <div class="fc-value">${roasMidiaV > 0 ? roasMidiaV.toFixed(2) + 'x' : '·'}</div>
         <div class="fc-sub">Vendas do tráfego ÷ Meta</div>
       </div>
       <div class="finance-card ${roasProjetoV > 1 ? 'fc-green' : roasProjetoV > 0 ? 'fc-yellow' : 'fc-red'}" style="background: linear-gradient(135deg, #2d1b4a 0%, #231540 100%); border: 1px solid #3d2b5a;">
         <span class="fc-icon">🎯</span>
         <div class="fc-label">ROAS do Projeto</div>
-        <div class="fc-value" style="color:var(--purple)">${roasProjetoV !== 0 ? roasProjetoV.toFixed(2) + 'x' : '—'}</div>
+        <div class="fc-value" style="color:var(--purple)">${roasProjetoV !== 0 ? roasProjetoV.toFixed(2) + 'x' : '·'}</div>
         <div class="fc-sub">Tudo (todos os canais) ÷ Meta</div>
       </div>
     </div>
@@ -3716,7 +3735,7 @@ function renderVendas() {
       const pct = (u.valor / maxVal * 100).toFixed(1);
       html += `
       <div class="bar-item">
-        <div class="bar-label">${esc(u.source)}</div>
+        <div class="bar-label" title="${esc(u.source)}">${esc(_utmLimpo(u.source) || '(sem origem)')}</div>
         <div class="bar-bg"><div class="bar-fill bar-fill-blue" style="width:${pct}%"></div></div>
         <div class="bar-value">${u.count}x · R$ ${fmt(u.valor)}</div>
       </div>`;
@@ -3734,36 +3753,64 @@ function renderVendas() {
   renderReembolsoSection();
 
   // Vendas table
-  document.getElementById('vendasCount').textContent = `${vendasHoje.length} registro${vendasHoje.length !== 1 ? 's' : ''} hoje`;
+  document.getElementById('vendasCount').textContent = `${vendasHoje.length} registro${vendasHoje.length !== 1 ? 's' : ''} no período`;
   if (vendasHoje.length) {
-    const rows = vendasHoje.map(v => {
+    // resumo das formas de pagamento do período
+    const pgCont = {};
+    vendasHoje.filter(v => v.tipo === 'VENDA').forEach(v => { const k = _pagtoGrupo(v); pgCont[k] = (pgCont[k] || 0) + 1; });
+    const pgResumo = Object.entries(pgCont).sort((a, b) => b[1] - a[1]).map(([k, n]) => `<span class="pg-chip">${k} <b>${n}</b></span>`).join('');
+    const VT_LIM = 30, vtLista = _vendasVerTudo ? vendasHoje : vendasHoje.slice(0, VT_LIM);
+    const rows = vtLista.map(v => {
       const tipoColor = v.tipo === 'VENDA' ? 'color:var(--green)' : 'color:var(--red)';
       const tipoIcon = v.tipo === 'VENDA' ? '✅' : '↩️';
       const hora = v.timestamp ? v.timestamp.split(' ')[1] || '' : '';
       return `<tr>
         <td class="nowrap"><span style="${tipoColor};font-weight:600">${tipoIcon} ${v.tipo}</span></td>
-        <td class="nowrap">${esc(v.produto_nome)}</td>
+        <td><div class="vt-cut" title="${esc(v.produto_nome)}">${esc(v.produto_nome)}</div></td>
         <td class="text-right nowrap" style="font-weight:700">R$ ${fmt(v.valor)}</td>
-        <td>${esc(v.cliente_nome)}</td>
-        <td class="nowrap">${esc(v.metodo_pagamento)}</td>
-        <td class="nowrap">${esc(v.utm_source || '—')}</td>
-        <td class="nowrap">${esc(v.utm_campaign || '—')}</td>
+        <td><div class="vt-cut" title="${esc(v.cliente_nome)}">${esc(v.cliente_nome)}</div></td>
+        <td class="nowrap">${_pagtoLabel(v)}</td>
+        <td><div class="vt-cut" title="${esc(v.utm_source || '')}">${esc(_utmLimpo(v.utm_source) || '·')}</div></td>
+        <td><div class="vt-cut vt-wide" title="${esc(v.utm_campaign || '')}">${esc(v.utm_campaign || '·')}</div></td>
         <td class="text-right nowrap" style="color:var(--muted)">${hora}</td>
       </tr>`;
     }).join('');
 
     document.getElementById('vendasTable').innerHTML = `
-      <table>
+      <div class="pg-resumo">💳 Formas de pagamento: ${pgResumo || '<span class="pg-chip">sem vendas</span>'}</div>
+      <table class="vt-tab">
         <thead><tr>
           <th>Tipo</th><th>Produto</th><th class="text-right">Valor</th>
           <th>Cliente</th><th>Pagamento</th>
           <th>UTM Source</th><th>UTM Campaign</th><th class="text-right">Hora</th>
         </tr></thead>
         <tbody>${rows}</tbody>
-      </table>`;
+      </table>
+      ${vendasHoje.length > VT_LIM ? `<button class="cn-more" style="margin:12px auto" onclick="_vendasVerTudo=${_vendasVerTudo ? 'false' : 'true'};renderVendas()">${_vendasVerTudo ? 'ver menos' : 'ver mais (' + (vendasHoje.length - VT_LIM) + ')'}</button>` : ''}`;
   } else {
     document.getElementById('vendasTable').innerHTML = '<div class="empty">Nenhuma venda registrada hoje.</div>';
   }
+}
+
+// Forma de pagamento (Greenn manda sale.method + installments; webhook grava metodo_pagamento desde 28/Set · antes só as parcelas)
+const _PG = { PIX: 'PIX', CREDIT_CARD: 'Cartão', APPLE_PAY: 'Apple Pay', GOOGLE_PAY: 'Google Pay', BOLETO: 'Boleto', BANK_SLIP: 'Boleto', TWO_CREDIT_CARDS: '2 cartões' };
+function _pagtoGrupo(v) {
+  const m = String(v.metodo_pagamento || '').toUpperCase(), n = parseInt(v.parcelas || 0, 10);
+  if (m) return _PG[m] || m;
+  if (n > 1) return 'Cartão';        // venda antiga: parcelado só existe no cartão
+  return 'Não registrado';          // venda antiga à vista: PIX ou cartão 1x, o webhook não gravava
+}
+function _pagtoLabel(v) {
+  const g = _pagtoGrupo(v), n = parseInt(v.parcelas || 0, 10);
+  if ((g === 'Cartão' || g === '2 cartões') && n > 1) return `${g} <b>${n}x</b>`;
+  if (g === 'Cartão') return 'Cartão à vista';
+  if (g === 'Não registrado') return '<span style="color:var(--muted)">não registrado</span>';
+  return g;
+}
+function _utmLimpo(s) {
+  let t = String(s || '').trim();
+  if (t.charAt(0) === '[' && t.indexOf('"') > 0) { try { const a = JSON.parse(t); if (Array.isArray(a) && a.length) t = String(a[0]); } catch (e) {} }
+  return t.split('|').filter(Boolean).slice(0, 2).join(' › ');
 }
 
 // ─── REEMBOLSOS SECTION ────────────────────────────────────────────────────
@@ -3790,7 +3837,7 @@ function renderReembolsoSection() {
 
     for (const [canal, data] of Object.entries(reembPorCanal)) {
       if (data && data.total > 0) {
-        const canalName = canal === 'organico' ? 'Organico' : canal === 'trafego' ? 'Trafego' : canal === 'recuperacao' ? 'Recuperacao' : 'Meteorico';
+        const canalName = canal === 'organico' ? 'Orgânico' : canal === 'trafego' ? 'Tráfego' : canal === 'recuperacao' ? 'Recuperação' : canal === 'chatgpt' ? 'ChatGPT' : 'Clube do Soninho';
         reembHtml += `<div style="font-size:13px;padding:2px 0"><span style="color:var(--muted)">${canalName}:</span> ${data.total}x · R$ ${fmt(data.valor)}</div>`;
       }
     }
@@ -3818,6 +3865,9 @@ function renderReembolsoSection() {
 }
 
 // ─── VENDAS POR CANAL (UTM classification) ─────────────────────────────────
+const _canalVerMais = {};
+const _PEQ = ['de','do','da','dos','das','e','com','a','o'];
+function _capNome(t) { return String(t || '').toLowerCase().trim().split(/\s+/).map((w, i) => (i > 0 && _PEQ.indexOf(w) >= 0) ? w : w.charAt(0).toUpperCase() + w.slice(1)).join(' '); }
 function renderVendasCanais() {
   const canais = DATA.vendas_por_canal;
   if (!canais) {
@@ -3826,18 +3876,20 @@ function renderVendasCanais() {
   }
 
   const configs = [
-    { key: 'organico',    title: 'ORGANICO',               icon: '🌱', fillClass: 'bar-fill-green', borderColor: '#2a5a3a', bgGrad: 'linear-gradient(135deg, #1a4a2a 0%, #1a3a22 100%)', titleColor: 'var(--green)' },
-    { key: 'trafego',     title: 'TRAFEGO',                 icon: '📢', fillClass: 'bar-fill-blue',  borderColor: '#2a3a5a', bgGrad: 'linear-gradient(135deg, #1a2a4a 0%, #1a2240 100%)', titleColor: 'var(--blue)' },
-    { key: 'recuperacao', title: 'RECUPERACAO DE VENDAS', icon: '🔄', fillClass: 'bar-fill-purple', borderColor: '#3d2b5a', bgGrad: 'linear-gradient(135deg, #2d1b4a 0%, #231540 100%)', titleColor: 'var(--purple)' },
-    { key: 'meteorico',   title: 'METEÓRICO (FUNIL)',       icon: '🌪️', fillClass: 'bar-fill-purple', borderColor: '#4a3a6a', bgGrad: 'linear-gradient(135deg, #3a2a5a 0%, #2a2048 100%)', titleColor: 'var(--purple)' },
+    { key: 'organico',    title: 'ORGÂNICO',               icon: '🌱', fillClass: 'bar-fill-green', borderColor: '#2a5a3a', bgGrad: 'linear-gradient(135deg, #1a4a2a 0%, #1a3a22 100%)', titleColor: 'var(--green)' },
+    { key: 'trafego',     title: 'TRÁFEGO',                 icon: '📢', fillClass: 'bar-fill-blue',  borderColor: '#2a3a5a', bgGrad: 'linear-gradient(135deg, #1a2a4a 0%, #1a2240 100%)', titleColor: 'var(--blue)' },
+    { key: 'recuperacao', title: 'RECUPERAÇÃO DE VENDAS', icon: '🔄', fillClass: 'bar-fill-purple', borderColor: '#3d2b5a', bgGrad: 'linear-gradient(135deg, #2d1b4a 0%, #231540 100%)', titleColor: 'var(--purple)' },
+    { key: 'meteorico',   title: 'CLUBE DO SONINHO',        icon: '💬', fillClass: 'bar-fill-purple', borderColor: '#4a3a6a', bgGrad: 'linear-gradient(135deg, #3a2a5a 0%, #2a2048 100%)', titleColor: 'var(--purple)' },
     { key: 'chatgpt',     title: 'CHATGPT ADS',             icon: '🤖', fillClass: 'bar-fill-green', borderColor: '#1d5c4a', bgGrad: 'linear-gradient(135deg, #10402f 0%, #0d3327 100%)', titleColor: '#10a37f' },
   ];
 
   let html = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">';
 
+  const CN_LIM = 15; // lista curta por padrão; "ver mais" abre o resto (pedido Bruno 28/Set)
   for (const cfg of configs) {
     const ch = canais[cfg.key] || { total: 0, valor: 0, items: [] };
     const items = ch.items || [];
+    if (cfg.key === 'chatgpt' && !ch.total) continue; // GPT Ads pausado: card só volta se aparecer venda
 
     html += `<div class="section" style="margin-bottom:0">
       <div class="section-header" style="background:${cfg.bgGrad};border-bottom:1px solid ${cfg.borderColor}">
@@ -3849,19 +3901,21 @@ function renderVendasCanais() {
 
     if (items.length) {
       const maxVal = Math.max(...items.map(i => i.valor), 0.01);
-      html += '<div class="bar-chart">';
-      for (const item of items) {
+      const aberto = !!_canalVerMais[cfg.key], mostra = aberto ? items : items.slice(0, CN_LIM);
+      html += '<div class="cn-list">';
+      for (const item of mostra) {
         const pct = (item.valor / maxVal * 100).toFixed(1);
-        const label = item.campanha !== item.nome_campanha
-          ? `${esc(item.campanha)} > ${esc(item.nome_campanha)}`
-          : esc(item.campanha);
+        const nome = cfg.key === 'meteorico' ? _capNome(item.campanha) : item.campanha;
+        const label = (cfg.key !== 'meteorico' && item.campanha !== item.nome_campanha)
+          ? `${esc(nome)} › ${esc(item.nome_campanha)}`
+          : esc(nome);
         html += `
-        <div class="bar-item">
-          <div class="bar-label" title="${esc(item.campanha)} | ${esc(item.nome_campanha)} | ${esc(item.conteudo)}">${label}</div>
-          <div class="bar-bg"><div class="bar-fill ${cfg.fillClass}" style="width:${pct}%"></div></div>
-          <div class="bar-value">${item.count}x · R$ ${fmt(item.valor)}</div>
+        <div class="cn-it" title="${esc(item.campanha)} | ${esc(item.nome_campanha)} | ${esc(item.conteudo)}">
+          <div class="cn-l">${label}</div>
+          <div class="cn-r"><div class="bar-bg"><div class="bar-fill ${cfg.fillClass}" style="width:${pct}%"></div></div><span class="cn-v">${item.count}x · R$ ${fmt(item.valor)}</span></div>
         </div>`;
       }
+      if (items.length > CN_LIM) html += `<button class="cn-more" onclick="_canalVerMais['${cfg.key}']=${aberto ? 'false' : 'true'};renderVendasCanais()">${aberto ? 'ver menos' : 'ver mais (' + (items.length - CN_LIM) + ')'}</button>`;
       html += '</div>';
     } else {
       html += '<div class="empty">Nenhuma venda</div>';
