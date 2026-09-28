@@ -334,7 +334,7 @@
         ],
         versoes:[
           { nome:'Guia da Pega Pocket', when:'atual', status:'atual',
-            conversamos:['Conta de anúncio própria (act_1292645585152754), separada da Dream Baby','Produto Greenn 136511, mesma faixa de ticket (~R$72-80)','Campanhas ATIVAS — a venda é casada por UTM #id da Greenn (o pixel do Guia é restrito e não retorna compra, então o ROAS vem da venda real, não do pixel).','✅ O Guia NÃO tem lag: a venda vem da Greenn por UTM na hora da compra, então o 3d/hoje é confiável (o pixel restrito só afeta as métricas do gerenciador, não a venda casada). Pra ESCALAR olhe o RECENTE + a tendência (piorando = esfriou, não escala); o 7d/mês serve pra ver acúmulo, não pra justificar escala de campanha que caiu nos últimos dias.'],
+            conversamos:['Conta de anúncio própria (act_1292645585152754), separada da Dream Baby','Produto Greenn 136511, mesma faixa de ticket (~R$72-80)','Campanhas ATIVAS — a venda é casada por UTM #id da Greenn (verdade do dinheiro). Desde 17/Set o pixel NOVO 2192980584647606 (guiadapega.com.br) foi verificado: dispara Purchase e InitiateCheckout — os pixels ANTIGOS (domínio materia.*) é que eram cegos.','✅ O Guia NÃO tem lag: a venda vem da Greenn por UTM na hora da compra, então o 3d/hoje é confiável (o pixel novo já reporta no gerenciador; a Greenn segue sendo a verdade). Pra ESCALAR olhe o RECENTE + a tendência (piorando = esfriou, não escala); o 7d/mês serve pra ver acúmulo, não pra justificar escala de campanha que caiu nos últimos dias.'],
             ajustes:[] },
         ],
       },
@@ -362,7 +362,7 @@
       },
       mat_calo: {
         nome:'Matéria Calo', icon:'📰', page:'materia.manualdorecemnascido.com.br/v2',
-        pageMetrics:[{l:'Campanhas', v:'no ar', cls:'', meta:'', faq:'Funil de matéria (calo). Página materia.../v2. Venda casada por UTM da Greenn (pixel do Guia restrito). Vendas/ROAS reais na tabela abaixo.'}],
+        pageMetrics:[{l:'Campanhas', v:'no ar', cls:'', meta:'', faq:'Funil de matéria (calo). Página materia.../v2 — esta AINDA usa a estrutura antiga (pixel antigo cego). Venda casada por UTM da Greenn. Vendas/ROAS reais na tabela abaixo.'}],
         versoes:[{ nome:'Matéria Calo', when:'iniciado 24/08', status:'atual',
           conversamos:['Conta do Guia (act_1292645585152754), produto 136511.','2 campanhas CBO agendadas 25/08 05h: [GUIA MAT CALO] gerenciador (winners validados → /v2) + digital (criativos do conteúdo → /v2).','Link da página: materia.manualdorecemnascido.com.br/v2 (calo).'], ajustes:[] }],
       },
@@ -643,7 +643,7 @@
       guia:{ nome:'Guia da Pega', icon:'🤱', linhas:[
         {m:'CTR (link)', ideal:'1,2%', media:'2,3%', k:'ctr', f:'pct', dir:'up'},
         {m:'Connect rate', ideal:'85%', media:'—', k:'connect', f:'pct', dir:'up'},
-        {m:'Ida pro checkout', ideal:'25%', media:'pixel restrito*', k:null, f:'pct', gargalo:true},
+        {m:'Ida pro checkout', ideal:'25%', media:'pixel novo mede*', k:null, f:'pct', gargalo:true},
         {m:'CPM', ideal:'—', media:'R$ 23', k:'cpm', f:'rs', dir:'down'},
         {m:'CPA (real)', ideal:'R$ 36', media:'R$ 32', k:'cpa', f:'rs', dir:'down'},
         {m:'ROAS real', ideal:'2,0', media:'1,92', k:'roas', f:'num', dir:'up'},
@@ -687,7 +687,7 @@
         Fontes: entrega/custo/frequência = Meta · venda e ROAS = Greenn (nunca o pixel, que superconta) · comportamento da página = Clarity.
       </div></div>`;
       const guiaNota=`<div class="section" style="background:rgba(52,211,153,.06)"><div class="section-body" style="font-size:12px;color:var(--muted);line-height:1.6">
-        <b style="color:var(--text)">* Guia da Pega:</b> o pixel dele é restrito e não retorna checkout/compra — a <b>ida pro checkout não é medível pelo pixel</b> (só pelo Clarity: hero segura 48% aos 10%, scroll 23%). ROAS/CPA/vendas vêm da <b>venda real da Greenn</b> casada por UTM #id (nunca o pixel). Conta própria (act_1292645585152754), produto 136511.
+        <b style="color:var(--text)">* Guia da Pega — estrutura NOVA × antiga:</b> desde 17/Set o domínio novo guiadapega.com.br roda o pixel NOVO <b>2192980584647606</b> (verificado: Purchase + InitiateCheckout funcionando, Advanced Matching ligado) — a <b>ida pro checkout passou a ser medida</b> no funil. A estrutura ANTIGA (domínio materia.*, pixels 1662179248394613/1339270591500008) era cega: períodos antes de 17/Set saem zerados no checkout, não é queda. ROAS/CPA/vendas continuam vindo da <b>venda real da Greenn</b> casada por UTM #id. Conta própria (act_1292645585152754), produto 136511.
       </div></div>`;
       const engaj=`<div class="section" style="background:rgba(236,72,153,.06)"><div class="section-header"><div><div class="section-title">📣 Funil de Engajamento — régua própria</div><div class="section-sub">marca / alcance / aquecimento · NUNCA por ROAS (correlação ~0 com venda) · baseline Ago/2026, editável</div></div></div><div class="section-body" style="font-size:12.5px;color:var(--muted);line-height:1.9">
         <b style="color:var(--text)">Médias da casa (medidas em 12 campanhas):</b> CPM <b>R$ 3,13</b> <i>(🟢&lt;R$5 · 🟡R$5–13 · 🔴&gt;R$15)</i> · custo/engajamento <b>R$ 0,005</b> <i>(🟢&lt;R$0,02 · 🔴&gt;R$0,30)</i> · custo/view <b>R$ 0,006</b> <i>(🟢&lt;R$0,03)</i> · CTR pro perfil 🟢&gt;5% · freq &gt;3–4 = fadiga. Jogamos abaixo do "excelente" do mercado (custo/ThruPlay &lt;US$0,03).<br>
