@@ -1877,7 +1877,7 @@ async function renderProjeto(force){
   tab+='</tbody></table>';
 
   // Receita por funil × mês (heat)
-  const FN = {pocket:'🌙 Dream Baby Pocket',quiz:'☁️ Quiz',mathias:'🧔 Mathias',guia:'🤱 Guia da Pega',meteorico:'💬 Clube do Soninho',ebook:'📕 Ebook'};
+  const FN = {pocket:'🌙 Dream Baby Pocket',quiz:'☁️ Quiz',mathias:'🧔 Mathias',benicio:'👶 Benício',noite:'🍿 Noite de Filme',guia:'🤱 Guia da Pega',meteorico:'💬 Clube do Soninho',ebook:'📕 Ebook'};
   const fget = (m,k) => (m.funis && m.funis[k]) || {n:0,v:0};
   const ftot = k => M.reduce((s,m)=>s+fget(m,k).v,0);
   const atKeys = Object.keys(d.funis_label||{}).filter(k=>ftot(k)>0).sort((a,b)=>ftot(b)-ftot(a));
@@ -2110,7 +2110,7 @@ async function renderReembolsos(){
 let currentMacro = 'panorama';
 let currentFunisSub = null;
 const MACRO_SUBS = {
-  dream: [{k:'pocket',n:'🌙 Dream Baby Pocket'},{k:'quiz',n:'☁️ Quiz Dream Baby'},{k:'mathias',n:'🧔 Mathias'},{k:'meteorico',n:'💬 Clube do Soninho'}],
+  dream: [{k:'pocket',n:'🌙 Dream Baby Pocket'},{k:'quiz',n:'☁️ Quiz Dream Baby'},{k:'mathias',n:'🧔 Mathias'},{k:'benicio',n:'👶 Benício'},{k:'noite',n:'🍿 Noite de Filme'},{k:'meteorico',n:'💬 Clube do Soninho'}],
   guia: [{k:'guia',n:'🤱 Guia da Pega'},{k:'ebook',n:'📕 Ebook amamentação'},{k:'mat_calo',n:'📰 Matéria Calo'},{k:'mat_ama',n:'📰 Matéria Amamentação'}]
 };
 function switchMacro(m){

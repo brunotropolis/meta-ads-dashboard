@@ -86,6 +86,8 @@
   .fb-quiz { background:rgba(244,114,182,.16); color:var(--pink); }
   .fb-guia { background:rgba(52,211,153,.16); color:var(--green); }
   .fb-mathias { background:rgba(167,139,250,.16); color:#a78bfa; }
+  .fb-benicio { background:rgba(126,156,132,.18); color:#8BA888; }
+  .fb-noite { background:rgba(233,182,92,.18); color:#E9B65C; }
   .stdot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; vertical-align:middle; }
   .stdot.on { background:var(--green); box-shadow:0 0 6px var(--green); }
   .stpill { display:inline-block; font-size:9px; font-weight:700; letter-spacing:.3px; text-transform:uppercase; padding:1px 6px; border-radius:6px; margin-right:6px; background:rgba(156,163,184,.16); color:var(--muted); vertical-align:middle; }
@@ -378,7 +380,7 @@
     let fFiltro = 'todos';
     const money = n => 'R$ ' + Math.round(n).toLocaleString('pt-BR');
     const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
-    const fb = f => `<span class="fbadge fb-${f}">${f==='pocket'?'POCKET':f==='quiz'?'QUIZ':f==='guia'?'GUIA':f==='mathias'?'MATHIAS':'OUTRO'}</span>`;
+    const fb = f => `<span class="fbadge fb-${f}">${f==='pocket'?'POCKET':f==='quiz'?'QUIZ':f==='guia'?'GUIA':f==='mathias'?'MATHIAS':f==='benicio'?'BENÍCIO':f==='noite'?'NOITE':'OUTRO'}</span>`;
     const metaTag = t => t ? `<span class="meta-tag">${t}</span>` : '';
     const nomeCurto = c => c.nome.replace(/\[dream pocket\]/i,'').replace(/\[|\]/g,'').replace(/\s+/g,' ').trim().slice(0,34);
     const DEFS = { roas:'Receita real ÷ gasto. Saudável ≥1,5, winner 2,0 (break-even ~1,15).', cpa:'Custo por venda (gasto ÷ vendas). Ideal ~R$ 36.', freq:'Vezes que a mesma pessoa viu o anúncio. Ideal até 2-3.', ctr:'Cliques no link ÷ quem viu. Bom acima de 1,2%.', connect:'Quem carregou a página ÷ cliques. Abaixo de 85% = quebra técnica.', ida:'Quem foi pro checkout ÷ quem chegou na página. Alvo 12-18% (tráfego frio) — nosso gargalo.', receita:'O que sobra da venda depois da taxa da plataforma.', vendas:'Vendas casadas à campanha por UTM (fora = orgânico/resíduo).', principal:'Vendas do produto principal do funil (sem os order bumps), pela venda real da Greenn. pago = veio de anúncio · org = orgânico (bio/stories/direto). Distribui por funil e por período.', bumps:'Order bumps vendidos junto com o principal deste funil (linha separada no checkout), casados à venda principal pelo checkout.', roasmidia:'Receita PAGA do funil (com os bumps das vendas pagas) ÷ gasto de mídia. Mesma conta do Panorama e do Austin.', dead:'Cliques em algo que parece botão mas não é.', rage:'Cliques de raiva no mesmo lugar / voltar na hora.', scroll:'Quão fundo as pessoas rolam a página.', hero:'% que passa da 1ª tela (10% da página). Baixo = o topo não segura.', lcp:'Tempo até o maior elemento carregar. Acima de 2,5s = lento.' };
