@@ -1754,7 +1754,7 @@ function renderFunilPano(key){
           _funilStep('Entrou na página', F.visitou||0, F.connect_rate!=null?('Connect '+F.connect_rate+'%'):'') ];
         if(F.checkout>0) steps.push(_funilStep('Foi pro checkout', F.checkout, F.ida!=null?(F.ida+'% da página'):''));
         steps.push(_funilStep('Comprou (pago)', comprouPago, F.checkout>0?((+(comprouPago/F.checkout*100).toFixed(1))+'% do checkout'):(F.visitou?((+(comprouPago/F.visitou*100).toFixed(1))+'% da página'):'')));
-        var nota = (key==='guia') ? ' · ⚠️ desde 30/09 a Meta bloqueou o domínio do Guia (saúde): checkout pelo pixel zerado, julgue pela Greenn' + (F.checkout>0 ? ' · checkout medido pelo pixel NOVO (guiadapega.com.br); períodos antes de 17/Set saem zerados (pixel antigo era cego)' : ' · sem checkout no período (pixel novo mede desde 17/Set; antes era cego)')) : '';
+        var nota = (key==='guia') ? ' · ⚠️ desde 30/09 a Meta bloqueou o domínio do Guia (saúde): checkout pelo pixel zerado, julgue pela Greenn' + (F.checkout>0 ? ' · checkout medido pelo pixel NOVO (guiadapega.com.br); períodos antes de 17/Set saem zerados (pixel antigo era cego)' : ' · sem checkout no período (pixel novo mede desde 17/Set; antes era cego)') : '';
         flow=_funilSub('🔻 Funil (tráfego pago)'+nota)
           +'<div class="funil-flow" style="display:flex;flex-wrap:wrap;gap:8px;padding:14px 4px;align-items:stretch">'
           +steps.join(_arrow())
