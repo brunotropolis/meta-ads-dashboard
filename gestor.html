@@ -246,6 +246,8 @@
         <div class="subtab" data-tab="pocket">👶 Dream Baby Pocket</div>
         <div class="subtab" data-tab="quiz">🎯 Quiz Dream Baby</div>
         <div class="subtab" data-tab="mathias">🌙 Mathias</div>
+        <div class="subtab" data-tab="benicio">👶 Benício</div>
+        <div class="subtab" data-tab="noite">🍿 Noite de Filme</div>
         <div class="subtab" data-tab="guia">🤱 Guia da Pega</div>
         <div class="subtab" data-tab="mat_calo">📰 Matéria Calo</div>
         <div class="subtab" data-tab="mat_ama">📰 Matéria Amam.</div>
@@ -362,6 +364,18 @@
             ajustes:[{when:'17 set', what:'Fix de tracking (#id do nome da campanha)', goal:'venda casar com a campanha certa', ba:'—'}] },
         ],
       },
+      benicio: {
+        nome:'Dream Baby Benício', icon:'👶', page:'benicio.manualdorecemnascido.com.br',
+        pageMetrics:[{l:'Campanha', v:'#mt9506', cls:'', meta:'', faq:'ABO 2×R$30 (DB Benicio 01 e 02), no ar desde 03/10 06h. Oferta Greenn própria WXYrs8 (bumps hTW0sB/lsIeS0) — a venda separa do Mathias e do Pocket pelo código da oferta. Ida pro checkout e conversão aparecem quando a página juntar visitas (beacon "benicio" + Clarity por URL).'}],
+        versoes:[{ nome:'Landing Benício', when:'no ar desde 02/10', status:'atual',
+          conversamos:['Clone da mathiasdb v2 (vencedora do A/B) com topo antes/depois do Benício (chorando no colo → dormindo no berço).','Dores reescritas pro vídeo (acorda quando encosta no berço, ciclo sem fim); paleta sálvia/terracota.','Pergunta do teste: a congruência anúncio → página sobe a ida pro checkout em relação ao Mathias v2?'], ajustes:[] }],
+      },
+      noite: {
+        nome:'Dream Baby Noite de Filme', icon:'🍿', page:'noitedefilme.manualdorecemnascido.com.br',
+        pageMetrics:[{l:'Campanha', v:'#mt7k', cls:'', meta:'', faq:'1-1-1 R$30 (DB Noite 01), no ar desde 03/10 06h. Oferta Greenn própria fYLjrM (bumps hDn3gS/8v2zta). Ida pro checkout e conversão aparecem quando a página juntar visitas (beacon "noite" + Clarity por URL).'}],
+        versoes:[{ nome:'Landing Noite de Filme', when:'no ar desde 02/10', status:'atual',
+          conversamos:['Clone da mathiasdb v2 com topo casal no sofá + bebê no berço; promessa = a noite do casal de volta.','Ângulo de DESEJO (tempo a dois), diferente do ângulo de dor (colo) do Mathias/Benício; paleta índigo/âmbar.','Texto e endereço sem a palavra da marca de streaming (a logo aparece só na imagem do topo).'], ajustes:[] }],
+      },
       mat_calo: {
         nome:'Matéria Calo', icon:'📰', page:'materia.manualdorecemnascido.com.br/v2',
         pageMetrics:[{l:'Campanhas', v:'no ar', cls:'', meta:'', faq:'Funil de matéria (calo). Página materia.../v2 — esta AINDA usa a estrutura antiga (pixel antigo cego). Venda casada por UTM da Greenn. Vendas/ROAS reais na tabela abaixo.'}],
@@ -392,7 +406,7 @@
       const g=rows.reduce((s,c)=>s+c.gasto,0),v=rows.reduce((s,c)=>s+c.vendas,0),r=rows.reduce((s,c)=>s+c.receita,0);
       // breakdown POR FUNIL (mesma conta da funis-dash/Panorama): produto principal x order bumps, pago x org. Distribui por funil.
       const fv=(p&&p.funil_vendas)?p.funil_vendas:{};
-      const keys=(!fk||fk==='todos')?['pocket','quiz','guia','mat_calo','mat_ama']:(fv[fk]?[fk]:[]);
+      const keys=(!fk||fk==='todos')?['pocket','quiz','mathias','benicio','noite','guia','mat_calo','mat_ama']:(fv[fk]?[fk]:[]);
       let main=0,pago=0,org=0,bumps=0,pagoRec=0,orgRec=0,recPrinc=0,recBumps=0;
       keys.forEach(k=>{const t=fv[k];if(!t)return;main+=t.main;pago+=t.pago;org+=t.org;bumps+=t.bumps;pagoRec+=t.pago_receita;orgRec+=t.org_receita;recPrinc+=t.rec_principal;recBumps+=t.rec_bumps;});
       return {gasto:g,vendas:v,rec:r,roas:g>0?r/g:0,orfas:p?p.orfas:{n:0},main,pago,org,bumps,pagoRec,orgRec,recPrinc,recBumps,roasMidia:g>0?pagoRec/g:0};
@@ -445,6 +459,9 @@
             <div class="fp ${fFiltro==='todos'?'active':''}" data-f="todos">Todos</div>
             <div class="fp ${fFiltro==='pocket'?'active':''}" data-f="pocket">👶 Pocket</div>
             <div class="fp ${fFiltro==='quiz'?'active':''}" data-f="quiz">🎯 Quiz</div>
+            <div class="fp ${fFiltro==='mathias'?'active':''}" data-f="mathias">🌙 Mathias</div>
+            <div class="fp ${fFiltro==='benicio'?'active':''}" data-f="benicio">👶 Benício</div>
+            <div class="fp ${fFiltro==='noite'?'active':''}" data-f="noite">🍿 Noite</div>
             <div class="fp ${fFiltro==='guia'?'active':''}" data-f="guia">🤱 Guia</div>
             <div class="fp ${fFiltro==='mat_calo'?'active':''}" data-f="mat_calo">📰 Calo</div>
             <div class="fp ${fFiltro==='mat_ama'?'active':''}" data-f="mat_ama">📰 Amam.</div>
@@ -716,7 +733,7 @@
       const view=document.getElementById('view');
       if(!DATA.periodos){ view.innerHTML='<div class="empty" style="padding:60px">Sem dados. (snapshot não carregou)<br><small style="opacity:.6">'+(window.__snapErr?('motivo: '+window.__snapErr):'sem erro reportado')+'</small></div>'; return; }
       view.innerHTML = state.tab==='geral'?renderGeral():state.tab==='engajamento'?renderEngajamento():renderFunil(state.tab);
-      if(['pocket','quiz','guia','mat_calo','mat_ama'].includes(state.tab)){ loadEstrategias(state.tab); loadHistorico(state.tab); }
+      if(['pocket','quiz','mathias','benicio','noite','guia','mat_calo','mat_ama'].includes(state.tab)){ loadEstrategias(state.tab); loadHistorico(state.tab); }
       const p=periodo();
       document.getElementById('perHint').textContent = p?(p.since==p.until?p.since:p.dias+' dias'):'';
       const gEl=document.getElementById('gerado');
